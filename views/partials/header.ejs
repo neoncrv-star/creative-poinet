@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <% 
+        // Logic to determine SEO tags
+        // Expecting 'seo' object from controller (GlobalSeo instance)
+        // Expecting 'pageSeo' object (optional) from controller (Project or Post instance or custom object)
+        
+        let siteTitle = 'نقطة إبداعية';
+        let separator = '|';
+        let description = 'وكالة إبداعية متخصصة في الحلول الرقمية';
+        let keywords = 'تصميم, برمجة, تسويق';
+        
+        if (typeof seo !== 'undefined' && seo) {
+            siteTitle = seo.siteTitle || siteTitle;
+            separator = seo.titleSeparator || separator;
+            description = seo.defaultDescription || description;
+            keywords = seo.defaultKeywords || keywords;
+        }
+
+        // Page specific overrides
+        let pageTitle = title;
+        let pageDescription = description;
+        let pageKeywords = keywords;
+
+        if (typeof pageSeo !== 'undefined' && pageSeo) {
+            if (pageSeo.seoTitle) pageTitle = pageSeo.seoTitle;
+            else if (pageSeo.title) pageTitle = pageSeo.title; // Fallback to item title
+
+            if (pageSeo.seoDescription) pageDescription = pageSeo.seoDescription;
+            else if (pageSeo.excerpt) pageDescription = pageSeo.excerpt; // Fallback to item excerpt/desc
+            
+            if (pageSeo.seoKeywords) pageKeywords = pageSeo.seoKeywords;
+        }
+        
+        // Final Title Construction
+        let finalTitle = pageTitle;
+        if (pageTitle !== siteTitle) {
+            finalTitle = `${pageTitle} ${separator} ${siteTitle}`;
+        }
+    %>
+
+    <title><%= finalTitle %></title>
+    <meta name="description" content="<%= pageDescription %>">
+    <meta name="keywords" content="<%= pageKeywords %>">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= finalTitle %>">
+    <meta property="og:description" content="<%= pageDescription %>">
+    <% if (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.image) { %>
+        <meta property="og:image" content="<%= pageSeo.image %>">
+    <% } %>
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="<%= finalTitle %>">
+    <meta property="twitter:description" content="<%= pageDescription %>">
+    <% if (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.image) { %>
+        <meta property="twitter:image" content="<%= pageSeo.image %>">
+    <% } %>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a href="/">
+                    <h1>نقطة <span>إبداعية</span></h1>
+                    <p>وكالة إبداعية</p>
+                </a>
+            </div>
+            <nav>
+                <a href="/">الرئيسية</a>
+                <a href="/portfolio">أعمالنا</a>
+                <a href="/blog">المدونة</a>
+                <a href="/admin">لوحة التحكم</a>
+            </nav>
+        </div>
+    </header>
+    <main>

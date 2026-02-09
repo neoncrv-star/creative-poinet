@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <h2>نقطة إبداعية</h2>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin" class="<%= path === '/admin' ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="/admin/portfolio" class="<%= path.includes('/portfolio') ? 'active' : '' %>"><i class="fas fa-briefcase"></i> إدارة الأعمال</a>
+                <a href="/admin/blog" class="<%= path.includes('/blog') ? 'active' : '' %>"><i class="fas fa-pen-nib"></i> إدارة المدونة</a>
+                <a href="/admin/seo" class="<%= path.includes('/seo') ? 'active' : '' %>"><i class="fas fa-search"></i> إعدادات SEO</a>
+                <a href="/admin/logout" class="logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <header class="admin-header">
+                <h1><%= title %></h1>
+                <div class="admin-user">
+                    <span>مرحباً، أدمن</span>
+                </div>
+            </header>
+            <div class="admin-body">

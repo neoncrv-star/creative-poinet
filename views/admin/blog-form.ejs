@@ -1,0 +1,64 @@
+<%- include('layout-header') %>
+
+<div class="form-container">
+    <form action="/admin/blog/<%= post ? 'edit/' + post.id : 'add' %>" method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-main">
+                <div class="card">
+                    <h3>محتوى المقال</h3>
+                    <div class="form-group">
+                        <label>عنوان المقال</label>
+                        <input type="text" name="title" value="<%= post ? post.title : '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>مقتطف قصير</label>
+                        <textarea name="excerpt" rows="3" required><%= post ? post.excerpt : '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>نص المقال</label>
+                        <textarea name="content" rows="15" required><%= post ? post.content : '' %></textarea>
+                    </div>
+                </div>
+
+                <!-- SEO Section -->
+                <div class="card seo-card">
+                    <div class="seo-header">
+                        <i class="fas fa-search"></i> تحسين محركات البحث (SEO)
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان السيو (SEO Title)</label>
+                        <input type="text" name="seoTitle" value="<%= post ? post.seoTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان المقال">
+                    </div>
+                    <div class="form-group">
+                        <label>وصف السيو (Meta Description)</label>
+                        <textarea name="seoDescription" rows="3"><%= post ? post.seoDescription : '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>كلمات مفتاحية</label>
+                        <input type="text" name="seoKeywords" value="<%= post ? post.seoKeywords : '' %>">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-side">
+                <div class="card">
+                    <h3>نشر</h3>
+                    <div class="form-group">
+                        <label>تاريخ النشر</label>
+                        <input type="date" name="date" value="<%= post ? post.date : new Date().toISOString().split('T')[0] %>">
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>الصورة البارزة</h3>
+                    <% if (post && post.image) { %>
+                        <img src="<%= post.image %>" alt="Current Image" class="preview-img">
+                    <% } %>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><%= post ? 'تحديث' : 'نشر' %></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<%- include('layout-footer') %>

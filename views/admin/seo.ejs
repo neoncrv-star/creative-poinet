@@ -1,0 +1,40 @@
+<%- include('layout-header') %>
+
+<div class="seo-container">
+    <div class="card">
+        <h3>إعدادات السيو العامة</h3>
+        <form action="/admin/seo" method="POST">
+            <div class="form-group">
+                <label>عنوان الموقع (Site Title)</label>
+                <input type="text" name="siteTitle" value="<%= seo ? seo.siteTitle : 'نقطة إبداعية' %>" required>
+            </div>
+            <div class="form-group">
+                <label>فاصل العنوان (Separator)</label>
+                <input type="text" name="titleSeparator" value="<%= seo ? seo.titleSeparator : '|' %>" placeholder="|">
+            </div>
+            <div class="form-group">
+                <label>الوصف الافتراضي (Default Description)</label>
+                <textarea name="defaultDescription" rows="3"><%= seo ? seo.defaultDescription : '' %></textarea>
+            </div>
+            <div class="form-group">
+                <label>الكلمات المفتاحية الافتراضية</label>
+                <input type="text" name="defaultKeywords" value="<%= seo ? seo.defaultKeywords : '' %>">
+            </div>
+
+            <hr>
+            <h4>الصفحة الرئيسية</h4>
+            <div class="form-group">
+                <label>عنوان الرئيسية (Home Title)</label>
+                <input type="text" name="homeTitle" value="<%= seo ? seo.homeTitle : '' %>" placeholder="اتركه فارغاً لاستخدام الافتراضي">
+            </div>
+            <div class="form-group">
+                <label>وصف الرئيسية (Home Description)</label>
+                <textarea name="homeDescription" rows="3"><%= seo ? seo.homeDescription : '' %></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">حفظ الإعدادات</button>
+        </form>
+    </div>
+</div>
+
+<%- include('layout-footer') %>

@@ -1,0 +1,49 @@
+<%- include('layout-header') %>
+
+<div class="manage-header">
+    <h3>إدارة المشاريع</h3>
+    <a href="/admin/portfolio/add" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة مشروع جديد</a>
+</div>
+
+<div class="table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الصورة</th>
+                <th>العنوان</th>
+                <th>المشاهدات</th>
+                <th>تاريخ الإنشاء</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% projects.forEach((project, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td>
+                        <% if(project.image) { %>
+                            <img src="<%= project.image %>" alt="<%= project.title %>" class="table-thumb">
+                        <% } else { %>
+                            -
+                        <% } %>
+                    </td>
+                    <td><%= project.title %></td>
+                    <td><%= project.views %></td>
+                    <td><%= new Date(project.createdAt).toLocaleDateString('ar-EG') %></td>
+                    <td>
+                        <a href="/admin/portfolio/edit/<%= project.id %>" class="btn btn-sm btn-info" title="تعديل"><i class="fas fa-edit"></i></a>
+                        <a href="/admin/portfolio/delete/<%= project.id %>" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')" title="حذف"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+            <% }) %>
+            <% if (projects.length === 0) { %>
+                <tr>
+                    <td colspan="6" class="text-center">لا توجد مشاريع مضافة حالياً.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('layout-footer') %>

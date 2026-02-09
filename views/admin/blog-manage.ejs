@@ -1,0 +1,49 @@
+<%- include('layout-header') %>
+
+<div class="manage-header">
+    <h3>إدارة المقالات</h3>
+    <a href="/admin/blog/add" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة مقال جديد</a>
+</div>
+
+<div class="table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الصورة</th>
+                <th>العنوان</th>
+                <th>المشاهدات</th>
+                <th>تاريخ النشر</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% posts.forEach((post, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td>
+                        <% if(post.image) { %>
+                            <img src="<%= post.image %>" alt="<%= post.title %>" class="table-thumb">
+                        <% } else { %>
+                            -
+                        <% } %>
+                    </td>
+                    <td><%= post.title %></td>
+                    <td><%= post.views %></td>
+                    <td><%= new Date(post.date).toLocaleDateString('ar-EG') %></td>
+                    <td>
+                        <a href="/admin/blog/edit/<%= post.id %>" class="btn btn-sm btn-info" title="تعديل"><i class="fas fa-edit"></i></a>
+                        <a href="/admin/blog/delete/<%= post.id %>" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')" title="حذف"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+            <% }) %>
+            <% if (posts.length === 0) { %>
+                <tr>
+                    <td colspan="6" class="text-center">لا توجد مقالات مضافة حالياً.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('layout-footer') %>

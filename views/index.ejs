@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<!-- Override main container style for hero to span full width if needed, 
+     but for now we keep it inside main or move it out. 
+     Let's use a full width hero section outside of the constrained main if possible, 
+     but since header includes opening main tag, we will style .hero to break out or just look good inside.
+     Actually, better to close main, do hero, open main? 
+     No, let's just make the hero look good within the container or adjust layout.
+     
+     For this specific design, I'll close the main tag temporarily to do a full width hero, then reopen it?
+     No, that's messy. Let's just style the hero inside main but make main full width in CSS?
+     
+     The CSS I wrote has main { max-width: 1200px; ... }.
+     Let's keep the hero simple inside for now or use a negative margin trick if we really want full width,
+     OR better: Change header.ejs to NOT open <main>, and handle main in each view.
+     
+     Let's stick to the current structure for simplicity but make the hero look great.
+-->
+
+<div class="hero" style="margin: -2rem -2rem 3rem -2rem; width: calc(100% + 4rem); border-radius: 0 0 20px 20px;">
+    <h2>نحول أفكارك إلى واقع <span>رقمي</span></h2>
+    <p>نحن وكالة "نقطة إبداعية"، متخصصون في تصميم الهوية البصرية، تطوير المواقع، والتسويق الرقمي. نؤمن بقوة الإبداع في تغيير الأعمال.</p>
+    <div class="cta-buttons">
+        <a href="/portfolio" class="btn btn-outline">تصفح أعمالنا</a>
+        <a href="/contact" class="btn">تواصل معنا</a>
+    </div>
+</div>
+
+<section class="services-preview">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h2>خدماتنا المميزة</h2>
+        <p>نقدم مجموعة متكاملة من الخدمات الرقمية</p>
+    </div>
+    
+    <div class="projects-grid">
+        <div class="project-card" style="text-align: center; padding-bottom: 1rem;">
+            <div style="font-size: 3rem; color: var(--primary-color); padding: 1rem;">🎨</div>
+            <h3>الهوية البصرية</h3>
+            <p>تصميم شعارات وهويات بصرية تعكس قيم علامتك التجارية.</p>
+        </div>
+        <div class="project-card" style="text-align: center; padding-bottom: 1rem;">
+            <div style="font-size: 3rem; color: var(--primary-color); padding: 1rem;">💻</div>
+            <h3>تطوير المواقع</h3>
+            <p>مواقع سريعة، متجاوبة، ومصممة بأحدث التقنيات.</p>
+        </div>
+        <div class="project-card" style="text-align: center; padding-bottom: 1rem;">
+            <div style="font-size: 3rem; color: var(--primary-color); padding: 1rem;">📈</div>
+            <h3>التسويق الرقمي</h3>
+            <p>استراتيجيات تسويقية لزيادة وصولك ومبيعاتك.</p>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

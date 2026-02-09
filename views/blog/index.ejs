@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+
+<section class="blog">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h2>المدونة</h2>
+        <p>أفكار ورؤى في عالم التصميم والتكنولوجيا</p>
+    </div>
+    <div class="posts-list">
+        <% posts.forEach(post => { %>
+            <article class="post-summary">
+                <div style="padding: 1rem 1rem 0;">
+                    <small style="padding: 0; color: var(--primary-color); font-weight: bold;"><%= post.date %></small>
+                </div>
+                <h3><%= post.title %></h3>
+                <p><%= post.excerpt %></p>
+                <a href="/blog/<%= post.id %>">اقرأ المزيد</a>
+            </article>
+        <% }) %>
+    </div>
+</section>
+
+<%- include('../partials/footer') %>

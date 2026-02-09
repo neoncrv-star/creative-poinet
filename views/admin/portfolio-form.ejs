@@ -1,0 +1,57 @@
+<%- include('layout-header') %>
+
+<div class="form-container">
+    <form action="/admin/portfolio/<%= project ? 'edit/' + project.id : 'add' %>" method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-main">
+                <div class="card">
+                    <h3>بيانات المشروع</h3>
+                    <div class="form-group">
+                        <label>عنوان المشروع</label>
+                        <input type="text" name="title" value="<%= project ? project.title : '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>وصف قصير</label>
+                        <textarea name="description" rows="3" required><%= project ? project.description : '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>المحتوى الكامل</label>
+                        <textarea name="content" rows="10"><%= project ? project.content : '' %></textarea>
+                    </div>
+                </div>
+
+                <!-- SEO Section -->
+                <div class="card seo-card">
+                    <div class="seo-header">
+                        <i class="fas fa-search"></i> تحسين محركات البحث (SEO)
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان السيو (SEO Title)</label>
+                        <input type="text" name="seoTitle" value="<%= project ? project.seoTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان المشروع">
+                    </div>
+                    <div class="form-group">
+                        <label>وصف السيو (Meta Description)</label>
+                        <textarea name="seoDescription" rows="3"><%= project ? project.seoDescription : '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>كلمات مفتاحية</label>
+                        <input type="text" name="seoKeywords" value="<%= project ? project.seoKeywords : '' %>">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-side">
+                <div class="card">
+                    <h3>الصورة البارزة</h3>
+                    <% if (project && project.image) { %>
+                        <img src="<%= project.image %>" alt="Current Image" class="preview-img">
+                    <% } %>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><%= project ? 'تحديث' : 'نشر' %></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<%- include('layout-footer') %>
