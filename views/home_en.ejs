@@ -26,6 +26,17 @@
         <div class="preloader-img"></div>
     </div>
 
+    <!-- Menu Overlay -->
+    <div class="menu-overlay">
+        <div class="close-menu"><i class="ri-close-line"></i></div>
+        <nav class="menu-overlay-nav">
+            <a href="#journey">Journey</a>
+            <a href="#services">Services</a>
+            <a href="#partners">Partners</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </div>
+
     <!-- Header -->
     <header class="site-header">
         <div class="container header-inner">
@@ -35,13 +46,12 @@
                     <h2 style="color: #fff; font-size: 1.5rem; margin: 0;">CREATIVE <span style="font-weight: 300;">POINT</span></h2>
                 </a>
             </div>
-            <nav class="main-nav">
-                <a href="#journey">Journey</a>
-                <a href="#services">Services</a>
-                <a href="#partners">Partners</a>
-                <a href="#contact">Contact</a>
-                <a href="/" class="lang-switch">العربية</a>
-            </nav>
+            <div style="display: flex; align-items: center;">
+                 <a href="/" class="lang-switch lang-switch-header">العربية</a>
+                 <div class="menu-toggle-wrap">
+                     <div class="menu-toggle"></div>
+                 </div>
+            </div>
         </div>
     </header>
 
@@ -49,7 +59,9 @@
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="hero-bg">
-                <div class="placeholder-pattern" style="width: 100%; height: 100%;"></div>
+                <div class="hero-video-wrapper">
+                     <iframe src="https://www.youtube.com/embed/Scxs7L0vhZ4?autoplay=1&mute=1&loop=1&playlist=Scxs7L0vhZ4&controls=0&showinfo=0&rel=0&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
             </div>
             <div class="hero-content">
                 <h1 class="hero-title">Every Creativity Starts <br> <span style="color: #fff; -webkit-text-stroke: 1px #888;">With a Point</span></h1>
@@ -206,6 +218,46 @@
 
     <!-- Scripts -->
     <script>
+        // Menu Toggle Logic
+        const menuToggle = document.querySelector('.menu-toggle-wrap');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const closeMenu = document.querySelector('.close-menu');
+        const menuLinks = document.querySelectorAll('.menu-overlay-nav a');
+
+        const menuTl = gsap.timeline({ paused: true });
+        
+        menuTl.to(menuOverlay, { 
+            autoAlpha: 1, 
+            duration: 0.5,
+            ease: 'power2.inOut'
+        })
+        .from(menuLinks, { 
+            y: 50, 
+            opacity: 0, 
+            stagger: 0.1, 
+            duration: 0.6, 
+            ease: 'power3.out' 
+        }, '-=0.2')
+        .from(closeMenu, { 
+            rotation: 90, 
+            opacity: 0, 
+            duration: 0.4 
+        }, '-=0.4');
+
+        menuToggle.addEventListener('click', () => {
+            menuTl.play();
+        });
+
+        closeMenu.addEventListener('click', () => {
+            menuTl.reverse();
+        });
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuTl.reverse();
+            });
+        });
+
         // Preloader
         window.addEventListener('load', () => {
             const preloader = document.querySelector('.preloader');
