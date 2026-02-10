@@ -5,11 +5,11 @@ const sequelize = require('./config/database');
 const seed = require('./seed');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Session Config
 app.use(session({
-    secret: 'creative_point_secret_key', // Should be in env var
+    secret: process.env.SESSION_SECRET || 'creative_point_secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 3600000 } // 1 hour
