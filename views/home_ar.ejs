@@ -5,29 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
     
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
     
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body class="ar-page">
+    
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
 
-    <!-- Custom Header for Arabic Page -->
-    <header class="main-header">
-        <div class="container header-container">
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-img"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
             <div class="logo">
                 <a href="/">
-                    <h1>نقطة <span>إبداعية</span></h1>
+                    <!-- Placeholder Logo (White text for now) -->
+                    <h2 style="color: #fff; font-size: 1.5rem; margin: 0;">نقطة <span style="font-weight: 300;">إبداعية</span></h2>
                 </a>
             </div>
             <nav class="main-nav">
@@ -37,181 +42,160 @@
                 <a href="#contact">تواصل معنا</a>
                 <a href="/en" class="lang-switch">English</a>
             </nav>
-            <div class="mobile-menu-btn">
-                <i class="ri-menu-4-line"></i>
-            </div>
         </div>
     </header>
 
     <main>
         <!-- Hero Section -->
         <section class="hero-section">
-            <div class="hero-bg-overlay"></div>
-            <div class="container hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">كل إبداع يبدأ <span class="highlight">بنقطة</span></h1>
-                    <p class="hero-subtitle">هذا الشعار لا يختصر رؤيتنا فحسب، بل يعكس منهجنا العملي والاستراتيجي في نقطة إبداعية.</p>
-                    <a href="#contact" class="btn-primary">ابدأ رحلتك معنا <i class="ri-arrow-left-line"></i></a>
-                </div>
+            <div class="hero-bg">
+                <div class="placeholder-pattern" style="width: 100%; height: 100%;"></div>
             </div>
-            <div class="scroll-indicator">
-                <span>تصفح المزيد</span>
-                <i class="ri-arrow-down-line"></i>
+            <div class="hero-content">
+                <h1 class="hero-title">كل إبداع يبدأ <br> <span style="color: #fff; -webkit-text-stroke: 1px #888;">بنقطة</span></h1>
+                <p class="hero-subtitle">هذا الشعار لا يختصر رؤيتنا فحسب، بل يعكس منهجنا العملي والاستراتيجي في نقطة إبداعية.</p>
+                <div class="scroll-indicator">
+                    <span style="font-size: 0.8rem; letter-spacing: 2px;">تصفح</span>
+                    <i class="ri-arrow-down-line"></i>
+                </div>
             </div>
         </section>
 
-        <!-- Intro / Philosophy Section -->
+        <!-- Journey / Philosophy -->
         <section id="journey" class="section journey-section">
             <div class="container grid-2">
-                <div class="journey-text" data-aos="fade-up">
+                <div class="journey-text">
                     <h2 class="section-title">رحلتها</h2>
-                    <h3 class="section-subtitle">شركة وكالة نقطة إبداعية</h3>
-                    <p>وكالة إبداعية وتسويقية متكاملة الخدمات، ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. في عالم يعج بالضجيج البصري والإعلاني، لا نبدأ بالزخرفة، بل بقرار استراتيجي ذكي ومتكامل.</p>
-                    <p>من هذه النقطة، نعيد الإبداع إلى جوهره الحقيقي: هوية بصرية راسخة، حلول تصميم احترافية وتجهيزات عالية الجودة للمعارض والمؤتمرات.</p>
+                    <p class="section-desc">شركة وكالة نقطة إبداعية</p>
+                    <br>
+                    <p style="color: #bbb; margin-bottom: 20px;">وكالة إبداعية وتسويقية متكاملة الخدمات، ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. في عالم يعج بالضجيج البصري والإعلاني، لا نبدأ بالزخرفة، بل بقرار استراتيجي ذكي ومتكامل.</p>
+                    <p style="color: #bbb;">من هذه النقطة، نعيد الإبداع إلى جوهره الحقيقي: هوية بصرية راسخة، حلول تصميم احترافية وتجهيزات عالية الجودة للمعارض والمؤتمرات.</p>
                 </div>
-                <div class="journey-visual" data-aos="fade-left">
-                    <div class="visual-card">
-                        <i class="ri-lightbulb-flash-line icon-large"></i>
-                        <h4>فلسفتها</h4>
-                        <p>نؤمن أن وضوح البداية هو سر قوة النتيجة.</p>
+                <div class="journey-visual">
+                    <!-- Placeholder Image -->
+                    <div style="width: 100%; height: 100%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #333; font-size: 2rem;">
+                        <i class="ri-image-line"></i>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Services Grid -->
-        <section id="services" class="section services-section bg-light">
+        <!-- Services -->
+        <section id="services" class="section">
             <div class="container">
-                <div class="section-header center">
-                    <h2 class="section-title">خدماتها</h2>
-                    <p class="section-desc">حلول إبداعية متكاملة تنطلق من نقطة واحدة... وتتحول إلى نظام مؤثر</p>
-                </div>
-
+                <h2 class="section-title" style="text-align: center;">خدماتها</h2>
+                <p class="section-desc" style="text-align: center; margin: 0 auto;">حلول إبداعية متكاملة تنطلق من نقطة واحدة... وتتحول إلى نظام مؤثر</p>
+                
                 <div class="services-grid">
                     <!-- Service 1 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-pen-nib-line"></i>
-                        </div>
+                        <i class="ri-pen-nib-line service-icon"></i>
                         <h3>خدمات التصميم الإبداعي</h3>
                         <p>نحول الرسائل التسويقية إلى تصاميم ذكية تخدم الهدف ولا تشتت الانتباه.</p>
-                        <ul>
-                            <li>تصميم الهويات البصرية</li>
-                            <li>تصميم الحملات الإعلانية</li>
-                            <li>تصميم المحتوى الرقمي</li>
+                        <ul class="service-list">
+                            <li>- تصميم الهويات البصرية</li>
+                            <li>- تصميم الحملات الإعلانية</li>
+                            <li>- تصميم المحتوى الرقمي</li>
                         </ul>
                     </div>
-
+                    
                     <!-- Service 2 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-camera-lens-line"></i>
-                        </div>
+                        <i class="ri-camera-lens-line service-icon"></i>
                         <h3>التصوير والإنتاج المرئي</h3>
                         <p>نلتقط لحظة واحدة تعبّر عن الفكرة كاملة.</p>
-                        <ul>
-                            <li>تصوير المنتجات والفعاليات</li>
-                            <li>إنتاج الفيديوهات الترويجية</li>
-                            <li>تصوير جوي (Drone)</li>
+                        <ul class="service-list">
+                            <li>- تصوير المنتجات والفعاليات</li>
+                            <li>- إنتاج الفيديوهات الترويجية</li>
+                            <li>- تصوير جوي (Drone)</li>
                         </ul>
                     </div>
 
                     <!-- Service 3 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-code-s-slash-line"></i>
-                        </div>
+                        <i class="ri-code-s-slash-line service-icon"></i>
                         <h3>المواقع الإلكترونية والبرمجة</h3>
                         <p>نصمم التجربة قبل أن نصمم الواجهة.</p>
-                        <ul>
-                            <li>تصميم وتطوير المواقع</li>
-                            <li>تحسين تجربة المستخدم (UI/UX)</li>
-                            <li>تطبيقات الويب</li>
+                        <ul class="service-list">
+                            <li>- تصميم وتطوير المواقع</li>
+                            <li>- تحسين تجربة المستخدم (UI/UX)</li>
+                            <li>- تطبيقات الويب</li>
                         </ul>
                     </div>
 
                     <!-- Service 4 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-printer-line"></i>
-                        </div>
+                        <i class="ri-printer-line service-icon"></i>
                         <h3>الطباعة والإنتاج التنفيذي</h3>
                         <p>نحول التصميم من فكرة إلى واقع ملموس بنفس الجودة.</p>
-                        <ul>
-                            <li>المطبوعات الورقية والدعائية</li>
-                            <li>طباعة كبيرة الحجم</li>
-                            <li>الإشراف على التنفيذ</li>
+                        <ul class="service-list">
+                            <li>- المطبوعات الورقية والدعائية</li>
+                            <li>- طباعة كبيرة الحجم</li>
+                            <li>- الإشراف على التنفيذ</li>
                         </ul>
                     </div>
 
                     <!-- Service 5 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-building-2-line"></i>
-                        </div>
+                        <i class="ri-building-2-line service-icon"></i>
                         <h3>تجهيز المعارض والمؤتمرات</h3>
                         <p>نصنع تجربة تبدأ من نقطة وتعاش بكل تفاصيلها.</p>
-                        <ul>
-                            <li>تصميم وتنفيذ الأجنحة (Booths)</li>
-                            <li>إدارة الفعاليات</li>
-                            <li>الشاشات التفاعلية</li>
+                        <ul class="service-list">
+                            <li>- تصميم وتنفيذ الأجنحة</li>
+                            <li>- إدارة الفعاليات</li>
+                            <li>- الشاشات التفاعلية</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Partners Marquee -->
-        <section id="partners" class="section partners-section">
-            <div class="container">
-                <h2 class="section-title center">شركاؤها</h2>
+        <!-- Partners -->
+        <section id="partners" class="partners-section">
+            <div class="container" style="text-align: center; margin-bottom: 40px;">
+                <h2 class="section-title">شركاؤها</h2>
             </div>
             <div class="marquee-container">
                 <div class="marquee-content">
-                    <!-- Repeated for seamless loop -->
-                    <span>طيران أديل</span>
-                    <span>الأمن العام</span>
-                    <span>المرور</span>
-                    <span>المستشفى السعودي الألماني</span>
-                    <span>وزارة الدفاع</span>
-                    <span>وزارة الصحة</span>
-                    <span>المركز الطبي الدولي</span>
-                    <span>جامعة الملك عبد العزيز</span>
-                    <span>جامعة جدة</span>
-                    <span>LEXUS</span>
-                    <span>الماجد للعود</span>
-                    <span>جدة بروميناد</span>
-                    <!-- Duplicate -->
-                    <span>طيران أديل</span>
-                    <span>الأمن العام</span>
-                    <span>المرور</span>
-                    <span>المستشفى السعودي الألماني</span>
-                    <span>وزارة الدفاع</span>
-                    <span>وزارة الصحة</span>
-                    <span>المركز الطبي الدولي</span>
-                    <span>جامعة الملك عبد العزيز</span>
-                    <span>جامعة جدة</span>
-                    <span>LEXUS</span>
-                    <span>الماجد للعود</span>
-                    <span>جدة بروميناد</span>
+                    <span class="partner-item">طيران أديل</span>
+                    <span class="partner-item">الأمن العام</span>
+                    <span class="partner-item">المرور</span>
+                    <span class="partner-item">المستشفى السعودي الألماني</span>
+                    <span class="partner-item">وزارة الدفاع</span>
+                    <span class="partner-item">وزارة الصحة</span>
+                    <span class="partner-item">المركز الطبي الدولي</span>
+                    <span class="partner-item">جامعة الملك عبد العزيز</span>
+                    <span class="partner-item">جامعة جدة</span>
+                    <span class="partner-item">LEXUS</span>
+                    <span class="partner-item">الماجد للعود</span>
+                    <span class="partner-item">جدة بروميناد</span>
+                    <!-- Repeat -->
+                    <span class="partner-item">طيران أديل</span>
+                    <span class="partner-item">الأمن العام</span>
+                    <span class="partner-item">المرور</span>
+                    <span class="partner-item">المستشفى السعودي الألماني</span>
+                    <span class="partner-item">وزارة الدفاع</span>
+                    <span class="partner-item">وزارة الصحة</span>
+                    <span class="partner-item">المركز الطبي الدولي</span>
+                    <span class="partner-item">جامعة الملك عبد العزيز</span>
+                    <span class="partner-item">جامعة جدة</span>
+                    <span class="partner-item">LEXUS</span>
+                    <span class="partner-item">الماجد للعود</span>
+                    <span class="partner-item">جدة بروميناد</span>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
-        <section id="contact" class="section contact-section">
-            <div class="container center">
+        <!-- Contact -->
+        <section id="contact" class="contact-section">
+            <div class="container">
                 <h2 class="contact-title">لم ينتهي الإبداع</h2>
-                <a href="tel:+966568394945" class="btn-primary large">اكتشفونا</a>
-                <p class="contact-info">+966 56 839 49 45</p>
-                <div class="social-icons">
-                    <a href="#"><i class="ri-linkedin-fill"></i></a>
-                    <a href="#"><i class="ri-twitter-x-fill"></i></a>
-                    <a href="#"><i class="ri-instagram-line"></i></a>
-                </div>
-                <p class="website-url">WWW.CPOINT-SA.COM</p>
+                <a href="tel:+966568394945" class="contact-btn">اكتشفونا</a>
+                <p style="font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 20px;">+966 56 839 49 45</p>
+                <p class="website-url" style="color: #666; letter-spacing: 2px;">WWW.CPOINT-SA.COM</p>
             </div>
         </section>
+
     </main>
 
     <footer class="main-footer">
@@ -220,42 +204,103 @@
         </div>
     </footer>
 
-    <!-- GSAP Animations -->
+    <!-- Scripts -->
     <script>
+        // Preloader
+        window.addEventListener('load', () => {
+            const preloader = document.querySelector('.preloader');
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        });
+
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+            
+            // Add slight delay to circle for organic feel
+            setTimeout(() => {
+                cursorCircle.style.left = e.clientX + 'px';
+                cursorCircle.style.top = e.clientY + 'px';
+            }, 50);
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursorCircle.style.transform = 'translate(-50%, -50%) scale(0.8)';
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursorCircle.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        document.querySelectorAll('a, button, .service-card').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+        });
+
+        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero Animations
-        gsap.from('.hero-title', { duration: 1, y: 50, opacity: 0, ease: 'power3.out', delay: 0.2 });
-        gsap.from('.hero-subtitle', { duration: 1, y: 30, opacity: 0, ease: 'power3.out', delay: 0.5 });
-        gsap.from('.btn-primary', { duration: 1, y: 20, opacity: 0, ease: 'power3.out', delay: 0.8 });
+        // Header Scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.site-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
-        // Sections Fade Up
-        gsap.utils.toArray('.section').forEach(section => {
-            gsap.from(section.children, {
+        // Hero Reveal
+        gsap.from('.hero-title', { 
+            duration: 1.5, 
+            y: 100, 
+            opacity: 0, 
+            ease: 'power4.out',
+            delay: 0.5 
+        });
+
+        gsap.from('.hero-subtitle', { 
+            duration: 1.5, 
+            y: 50, 
+            opacity: 0, 
+            ease: 'power4.out', 
+            delay: 0.8 
+        });
+
+        // Sections Reveal
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.from(title, {
                 scrollTrigger: {
-                    trigger: section,
-                    start: 'top 80%',
+                    trigger: title,
+                    start: 'top 85%',
                 },
                 y: 50,
                 opacity: 0,
                 duration: 1,
-                stagger: 0.2,
                 ease: 'power3.out'
             });
         });
 
-        // Service Cards Stagger
-        gsap.from('.service-card', {
-            scrollTrigger: {
-                trigger: '.services-grid',
-                start: 'top 75%',
-            },
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'back.out(1.7)'
+        gsap.utils.toArray('.service-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 90%',
+                },
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                delay: i * 0.1,
+                ease: 'power3.out'
+            });
         });
+
     </script>
 </body>
 </html>

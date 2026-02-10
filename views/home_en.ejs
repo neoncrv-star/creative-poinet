@@ -5,29 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
     
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
     
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body class="en-page">
+    
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
 
-    <!-- Custom Header for English Page -->
-    <header class="main-header">
-        <div class="container header-container">
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-img"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
             <div class="logo">
                 <a href="/en">
-                    <h1>Creative <span>Point</span></h1>
+                    <!-- Placeholder Logo -->
+                    <h2 style="color: #fff; font-size: 1.5rem; margin: 0;">CREATIVE <span style="font-weight: 300;">POINT</span></h2>
                 </a>
             </div>
             <nav class="main-nav">
@@ -37,225 +42,265 @@
                 <a href="#contact">Contact</a>
                 <a href="/" class="lang-switch">العربية</a>
             </nav>
-            <div class="mobile-menu-btn">
-                <i class="ri-menu-4-line"></i>
-            </div>
         </div>
     </header>
 
     <main>
         <!-- Hero Section -->
         <section class="hero-section">
-            <div class="hero-bg-overlay"></div>
-            <div class="container hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">Every Creativity Start's With a <span class="highlight">Point</span></h1>
-                    <p class="hero-subtitle">This slogan goes beyond summarizing our vision—it embodies our practical and strategic mindset at Creative Point.</p>
-                    <a href="#contact" class="btn-primary">Start Your Journey <i class="ri-arrow-right-line"></i></a>
-                </div>
+            <div class="hero-bg">
+                <div class="placeholder-pattern" style="width: 100%; height: 100%;"></div>
             </div>
-            <div class="scroll-indicator">
-                <span>Discover More</span>
-                <i class="ri-arrow-down-line"></i>
+            <div class="hero-content">
+                <h1 class="hero-title">Every Creativity Starts <br> <span style="color: #fff; -webkit-text-stroke: 1px #888;">With a Point</span></h1>
+                <p class="hero-subtitle">This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset at Creative Point.</p>
+                <div class="scroll-indicator">
+                    <span style="font-size: 0.8rem; letter-spacing: 2px;">SCROLL</span>
+                    <i class="ri-arrow-down-line"></i>
+                </div>
             </div>
         </section>
 
-        <!-- Intro / Philosophy Section -->
+        <!-- Journey / Philosophy -->
         <section id="journey" class="section journey-section">
             <div class="container grid-2">
-                <div class="journey-text" data-aos="fade-up">
+                <div class="journey-text">
                     <h2 class="section-title">Journey</h2>
-                    <h3 class="section-subtitle">Creative Point Agency</h3>
-                    <p>A full-service creative and marketing agency built around one clear idea before any execution begins. In a world crowded with visual and advertising noise, we don't start with decoration; we start with a smart, unified strategic decision.</p>
-                    <p>From this point, we bring creativity back to its true essence: a solid visual identity, professional design solutions, and high-quality exhibition and conference setups.</p>
+                    <p class="section-desc">Creative Point Agency</p>
+                    <br>
+                    <p style="color: #bbb; margin-bottom: 20px;">A full-service creative and marketing agency built around one clear idea before any execution begins. In a world crowded with visual and advertising noise, we don't start with decoration; we start with a smart, unified strategic decision.</p>
+                    <p style="color: #bbb;">From this point, we bring creativity back to its true essence: a solid visual identity, professional design solutions, and high-quality exhibition and conference setups.</p>
                 </div>
-                <div class="journey-visual" data-aos="fade-right">
-                    <div class="visual-card">
-                        <i class="ri-lightbulb-flash-line icon-large"></i>
-                        <h4>Philosophy</h4>
-                        <p>We believe that clarity at the starting point is the key to strong results.</p>
+                <div class="journey-visual">
+                    <!-- Placeholder Image -->
+                    <div style="width: 100%; height: 100%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #333; font-size: 2rem;">
+                        <i class="ri-image-line"></i>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Services Grid -->
-        <section id="services" class="section services-section bg-light">
+        <!-- Services -->
+        <section id="services" class="section">
             <div class="container">
-                <div class="section-header center">
-                    <h2 class="section-title">Services</h2>
-                    <p class="section-desc">Integrated creative solutions that start from a single point... and evolve into an impactful system</p>
-                </div>
-
+                <h2 class="section-title" style="text-align: center;">Services</h2>
+                <p class="section-desc" style="text-align: center; margin: 0 auto;">Integrated creative solutions that start from a single point... and evolve into an impactful system</p>
+                
                 <div class="services-grid">
                     <!-- Service 1 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-pen-nib-line"></i>
-                        </div>
+                        <i class="ri-pen-nib-line service-icon"></i>
                         <h3>Creative Design Services</h3>
                         <p>We turn marketing messages into smart designs that achieve their purpose without distraction.</p>
-                        <ul>
-                            <li>Professional Company Profiles</li>
-                            <li>Advertising Campaigns</li>
-                            <li>Digital & Social Media Content</li>
+                        <ul class="service-list">
+                            <li>- Professional company profiles</li>
+                            <li>- Advertising campaigns</li>
+                            <li>- Digital posts & print materials</li>
                         </ul>
                     </div>
-
+                    
                     <!-- Service 2 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-camera-lens-line"></i>
-                        </div>
+                        <i class="ri-camera-lens-line service-icon"></i>
                         <h3>Photography & Visual Production</h3>
                         <p>We capture a single moment that expresses the entire idea.</p>
-                        <ul>
-                            <li>Product & Event Photography</li>
-                            <li>Promotional Video Production</li>
-                            <li>Aerial (Drone) Photography</li>
+                        <ul class="service-list">
+                            <li>- Professional product photography</li>
+                            <li>- Promotional videos</li>
+                            <li>- Aerial (drone) photography</li>
                         </ul>
                     </div>
 
                     <!-- Service 3 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-code-s-slash-line"></i>
-                        </div>
+                        <i class="ri-code-s-slash-line service-icon"></i>
                         <h3>Websites & Programming</h3>
                         <p>We design the experience before we design the interface.</p>
-                        <ul>
-                            <li>Website Design & Development</li>
-                            <li>UI/UX Design</li>
-                            <li>Web Applications</li>
+                        <ul class="service-list">
+                            <li>- Professional website design</li>
+                            <li>- User experience (UX) design</li>
+                            <li>- Website & application development</li>
                         </ul>
                     </div>
 
                     <!-- Service 4 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-printer-line"></i>
-                        </div>
-                        <h3>Printing & Production Execution</h3>
+                        <i class="ri-printer-line service-icon"></i>
+                        <h3>Printing & Production</h3>
                         <p>We turn design from an idea into a tangible reality with the same level of quality.</p>
-                        <ul>
-                            <li>Paper & Commercial Printing</li>
-                            <li>Large-format Printing</li>
-                            <li>Quality Supervision</li>
+                        <ul class="service-list">
+                            <li>- Paper print materials</li>
+                            <li>- Large-format printing</li>
+                            <li>- Full supervision of execution</li>
                         </ul>
                     </div>
 
                     <!-- Service 5 -->
                     <div class="service-card">
-                        <div class="icon-box">
-                            <i class="ri-building-2-line"></i>
-                        </div>
+                        <i class="ri-building-2-line service-icon"></i>
                         <h3>Exhibition & Conference Setup</h3>
                         <p>We create an experience that starts from a single point and is lived in every detail.</p>
-                        <ul>
-                            <li>Exhibition Booths Design</li>
-                            <li>Event Management</li>
-                            <li>Interactive Screens</li>
+                        <ul class="service-list">
+                            <li>- Exhibition booths design</li>
+                            <li>- Conference setup</li>
+                            <li>- Interactive screens</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Partners Marquee -->
-        <section id="partners" class="section partners-section">
-            <div class="container">
-                <h2 class="section-title center">Partners</h2>
+        <!-- Partners -->
+        <section id="partners" class="partners-section">
+            <div class="container" style="text-align: center; margin-bottom: 40px;">
+                <h2 class="section-title">Partners</h2>
             </div>
             <div class="marquee-container">
                 <div class="marquee-content">
-                    <!-- Repeated for seamless loop -->
-                    <span>flyadeal</span>
-                    <span>Public Security</span>
-                    <span>Traffic Dept</span>
-                    <span>Saudi German Hospital</span>
-                    <span>Ministry of Defense</span>
-                    <span>Ministry of Health</span>
-                    <span>IMC</span>
-                    <span>KAU</span>
-                    <span>University of Jeddah</span>
-                    <span>LEXUS</span>
-                    <span>Al Majed Oud</span>
-                    <span>Jeddah Promenade</span>
-                    <!-- Duplicate -->
-                    <span>flyadeal</span>
-                    <span>Public Security</span>
-                    <span>Traffic Dept</span>
-                    <span>Saudi German Hospital</span>
-                    <span>Ministry of Defense</span>
-                    <span>Ministry of Health</span>
-                    <span>IMC</span>
-                    <span>KAU</span>
-                    <span>University of Jeddah</span>
-                    <span>LEXUS</span>
-                    <span>Al Majed Oud</span>
-                    <span>Jeddah Promenade</span>
+                    <span class="partner-item">Flyadeal</span>
+                    <span class="partner-item">Public Security</span>
+                    <span class="partner-item">Traffic Dept</span>
+                    <span class="partner-item">Saudi German Hospital</span>
+                    <span class="partner-item">Ministry of Defense</span>
+                    <span class="partner-item">Ministry of Health</span>
+                    <span class="partner-item">IMC</span>
+                    <span class="partner-item">KAU</span>
+                    <span class="partner-item">University of Jeddah</span>
+                    <span class="partner-item">LEXUS</span>
+                    <span class="partner-item">Al Majed Oud</span>
+                    <span class="partner-item">Jeddah Promenade</span>
+                    <!-- Repeat -->
+                    <span class="partner-item">Flyadeal</span>
+                    <span class="partner-item">Public Security</span>
+                    <span class="partner-item">Traffic Dept</span>
+                    <span class="partner-item">Saudi German Hospital</span>
+                    <span class="partner-item">Ministry of Defense</span>
+                    <span class="partner-item">Ministry of Health</span>
+                    <span class="partner-item">IMC</span>
+                    <span class="partner-item">KAU</span>
+                    <span class="partner-item">University of Jeddah</span>
+                    <span class="partner-item">LEXUS</span>
+                    <span class="partner-item">Al Majed Oud</span>
+                    <span class="partner-item">Jeddah Promenade</span>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
-        <section id="contact" class="section contact-section">
-            <div class="container center">
+        <!-- Contact -->
+        <section id="contact" class="contact-section">
+            <div class="container">
                 <h2 class="contact-title">Creativity Has Not Ended</h2>
-                <a href="tel:+966568394945" class="btn-primary large">Discover Us</a>
-                <p class="contact-info">+966 56 839 49 45</p>
-                <div class="social-icons">
-                    <a href="#"><i class="ri-linkedin-fill"></i></a>
-                    <a href="#"><i class="ri-twitter-x-fill"></i></a>
-                    <a href="#"><i class="ri-instagram-line"></i></a>
-                </div>
-                <p class="website-url">WWW.CPOINT-SA.COM</p>
+                <a href="tel:+966568394945" class="contact-btn">Discover Us</a>
+                <p style="font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 20px;">+966 56 839 49 45</p>
+                <p class="website-url" style="color: #666; letter-spacing: 2px;">WWW.CPOINT-SA.COM</p>
             </div>
         </section>
+
     </main>
 
     <footer class="main-footer">
         <div class="container">
-            <p>&copy; <%= new Date().getFullYear() %> Creative Point. All Rights Reserved.</p>
+            <p>&copy; <%= new Date().getFullYear() %> Creative Point. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- GSAP Animations -->
+    <!-- Scripts -->
     <script>
+        // Preloader
+        window.addEventListener('load', () => {
+            const preloader = document.querySelector('.preloader');
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        });
+
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+            
+            // Add slight delay to circle for organic feel
+            setTimeout(() => {
+                cursorCircle.style.left = e.clientX + 'px';
+                cursorCircle.style.top = e.clientY + 'px';
+            }, 50);
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursorCircle.style.transform = 'translate(-50%, -50%) scale(0.8)';
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursorCircle.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        document.querySelectorAll('a, button, .service-card').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+        });
+
+        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero Animations
-        gsap.from('.hero-title', { duration: 1, y: 50, opacity: 0, ease: 'power3.out', delay: 0.2 });
-        gsap.from('.hero-subtitle', { duration: 1, y: 30, opacity: 0, ease: 'power3.out', delay: 0.5 });
-        gsap.from('.btn-primary', { duration: 1, y: 20, opacity: 0, ease: 'power3.out', delay: 0.8 });
+        // Header Scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.site-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
-        // Sections Fade Up
-        gsap.utils.toArray('.section').forEach(section => {
-            gsap.from(section.children, {
+        // Hero Reveal
+        gsap.from('.hero-title', { 
+            duration: 1.5, 
+            y: 100, 
+            opacity: 0, 
+            ease: 'power4.out',
+            delay: 0.5 
+        });
+
+        gsap.from('.hero-subtitle', { 
+            duration: 1.5, 
+            y: 50, 
+            opacity: 0, 
+            ease: 'power4.out', 
+            delay: 0.8 
+        });
+
+        // Sections Reveal
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.from(title, {
                 scrollTrigger: {
-                    trigger: section,
-                    start: 'top 80%',
+                    trigger: title,
+                    start: 'top 85%',
                 },
                 y: 50,
                 opacity: 0,
                 duration: 1,
-                stagger: 0.2,
                 ease: 'power3.out'
             });
         });
 
-        // Service Cards Stagger
-        gsap.from('.service-card', {
-            scrollTrigger: {
-                trigger: '.services-grid',
-                start: 'top 75%',
-            },
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'back.out(1.7)'
+        gsap.utils.toArray('.service-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 90%',
+                },
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                delay: i * 0.1,
+                ease: 'power3.out'
+            });
         });
+
     </script>
 </body>
 </html>
