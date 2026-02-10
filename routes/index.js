@@ -5,6 +5,7 @@ const portfolioController = require('../controllers/portfolioController');
 const blogController = require('../controllers/blogController');
 
 router.get('/', pageController.getHome);
+router.get('/en', pageController.getHomeEn);
 
 // Portfolio Routes
 router.get('/portfolio', portfolioController.getPortfolio);
