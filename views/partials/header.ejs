@@ -78,20 +78,36 @@
 
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="lang-ar"> <!-- Default to Arabic -->
     <header>
         <div class="header-container">
             <div class="logo">
                 <a href="/">
-                    <h1>نقطة <span>إبداعية</span></h1>
-                    <p>وكالة إبداعية</p>
+                    <h1>
+                        <span class="ar">نقطة <span>إبداعية</span></span>
+                        <span class="en">Creative <span>Point</span></span>
+                    </h1>
+                    <p>
+                        <span class="ar">وكالة إبداعية</span>
+                        <span class="en">Creative Agency</span>
+                    </p>
                 </a>
             </div>
             <nav>
-                <a href="/">الرئيسية</a>
-                <a href="/portfolio">أعمالنا</a>
-                <a href="/blog">المدونة</a>
-                <a href="/admin">لوحة التحكم</a>
+                <a href="/">
+                    <span class="ar">الرئيسية</span>
+                    <span class="en">Home</span>
+                </a>
+                <a href="/portfolio">
+                    <span class="ar">أعمالنا</span>
+                    <span class="en">Portfolio</span>
+                </a>
+                <a href="/blog">
+                    <span class="ar">المدونة</span>
+                    <span class="en">Blog</span>
+                </a>
+                <!-- Admin link hidden as requested -->
+                <button id="lang-toggle" class="btn-lang">English</button>
             </nav>
         </div>
     </header>

@@ -1,53 +1,354 @@
 <%- include('partials/header') %>
 
-<!-- Override main container style for hero to span full width if needed, 
-     but for now we keep it inside main or move it out. 
-     Let's use a full width hero section outside of the constrained main if possible, 
-     but since header includes opening main tag, we will style .hero to break out or just look good inside.
-     Actually, better to close main, do hero, open main? 
-     No, let's just make the hero look good within the container or adjust layout.
-     
-     For this specific design, I'll close the main tag temporarily to do a full width hero, then reopen it?
-     No, that's messy. Let's just style the hero inside main but make main full width in CSS?
-     
-     The CSS I wrote has main { max-width: 1200px; ... }.
-     Let's keep the hero simple inside for now or use a negative margin trick if we really want full width,
-     OR better: Change header.ejs to NOT open <main>, and handle main in each view.
-     
-     Let's stick to the current structure for simplicity but make the hero look great.
--->
-
-<div class="hero" style="margin: -2rem -2rem 3rem -2rem; width: calc(100% + 4rem); border-radius: 0 0 20px 20px;">
-    <h2>نحول أفكارك إلى واقع <span>رقمي</span></h2>
-    <p>نحن وكالة "نقطة إبداعية"، متخصصون في تصميم الهوية البصرية، تطوير المواقع، والتسويق الرقمي. نؤمن بقوة الإبداع في تغيير الأعمال.</p>
-    <div class="cta-buttons">
-        <a href="/portfolio" class="btn btn-outline">تصفح أعمالنا</a>
-        <a href="/contact" class="btn">تواصل معنا</a>
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="slogan">
+            <span class="en">Every Creativity Start's With a <span class="highlight-point">Point</span></span>
+            <span class="ar">كل إبداع يبدأ <span class="highlight-point">بنقطة</span></span>
+        </h1>
+        
+        <div class="hero-description">
+            <div class="ar">
+                <p>هذا الشعار لا يختصر رؤيتنا فحسب، بل يعكس منهجنا العملي والاستراتيجي في نقطة إبداعية. نحن نؤمن بأن وضوح الرؤية هو أساس كل مشروع ناجح. فمن التخطيط الاستراتيجي، مرورا بالتطوير الإبداعي، وصولا إلى التنفيذ النهائي، يبقى الوضوح مبدأنا التوجيهي. ترسخ نقطة البداية الواضحة اتساق الرسائل، وتركيز الأهداف، والثقة في تحقيق النتائج الملموسة التي تسعى علامتك التجارية إلى تحقيقها.</p>
+            </div>
+            <div class="en">
+                <p>This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset at Creative Point. We believe that a clear point is the foundation upon which every successful project is built. From strategic planning, through creative development, and all the way to final execution, clarity remains our guiding principle. A clear starting point creates consistency in messaging, focus in objectives, and confidence in delivering the tangible results your brand strives for.</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<section class="services-preview">
-    <div style="text-align: center; margin-bottom: 3rem;">
-        <h2>خدماتنا المميزة</h2>
-        <p>نقدم مجموعة متكاملة من الخدمات الرقمية</p>
+<!-- Contents / Navigation -->
+<section class="contents-nav">
+    <h2 class="section-header">
+        <span class="ar">المحتويات</span>
+        <span class="en">Contents</span>
+    </h2>
+    <div class="nav-grid">
+        <a href="#journey" class="nav-item">
+            <span class="ar">رحلتها</span>
+            <span class="en">Journey</span>
+        </a>
+        <a href="#philosophy" class="nav-item">
+            <span class="ar">فلسفتها</span>
+            <span class="en">Philosophy</span>
+        </a>
+        <a href="#services" class="nav-item">
+            <span class="ar">خدماتها</span>
+            <span class="en">Services</span>
+        </a>
+        <a href="#partners" class="nav-item">
+            <span class="ar">شركاؤها</span>
+            <span class="en">Partners</span>
+        </a>
+    </div>
+</section>
+
+<!-- Journey Section -->
+<section id="journey" class="content-section journey-section">
+    <div class="section-title-wrapper">
+        <h2>
+            <span class="ar">رحلتها</span>
+            <span class="en">Journey</span>
+        </h2>
     </div>
     
-    <div class="projects-grid">
-        <div class="project-card" style="text-align: center; padding-bottom: 1rem;">
-            <div style="font-size: 3rem; color: var(--primary-color); padding: 1rem;">🎨</div>
-            <h3>الهوية البصرية</h3>
-            <p>تصميم شعارات وهويات بصرية تعكس قيم علامتك التجارية.</p>
+    <div class="journey-content">
+        <div class="ar">
+            <h3>شركة وكالة نقطة إبداعية</h3>
+            <p>وكالة إبداعية وتسويقية متكاملة الخدمات، ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. في عالم يعج بالضجيج البصري والإعلاني، لا نبدأ بالزخرفة، بل بقرار استراتيجي ذكي ومتكامل.</p>
+            <p>من هذه النقطة، نعيد الإبداع إلى جوهره الحقيقي: هوية بصرية راسخة، حلول تصميم احترافية وتجهيزات عالية الجودة للمعارض والمؤتمرات، تقدم عبر نظام شامل وقابل للتطوير، خال من التشويش والفوضى.</p>
+            <p>انطلاقًا من هذا الأساس الواضح نبني منظومة إبداعية متكاملة، حيث تتحول المفاهيم المجردة إلى حضور قوي ونتائج ملموسة. تبدأ الرحلة بتصميم يخاطب العقل ثم تنتقل عبر صور فوتوغرافية تلتقط اللحظات وتروي قصصًا مؤثرة، وتتوج بطباعة وإنتاج ملموسين يحوّلان الأفكار إلى واقع. هنا تبدأ الوضوح، وهنا ينبض نظامنا الإبداعي المتكامل بالحياة.</p>
         </div>
-        <div class="project-card" style="text-align: center; padding-bottom: 1rem;">
-            <div style="font-size: 3rem; color: var(--primary-color); padding: 1rem;">💻</div>
-            <h3>تطوير المواقع</h3>
-            <p>مواقع سريعة، متجاوبة، ومصممة بأحدث التقنيات.</p>
+        <div class="en">
+            <h3>CREATIVE POINT AGENCY .CO</h3>
+            <p>is a full-service creative and marketing agency built around one clear idea before any execution begins. In a world crowded with visual and advertising noise, we don't start with decoration; we start with a smart, unified strategic decision.</p>
+            <p>From this point, we bring creativity back to its true essence: a solid visual identity, professional design solutions, and high-quality exhibition and conference setups-delivered through a comprehensive, scalable system without distortion or clutter.</p>
+            <p>From this clear foundation, we create an integrated creative ecosystem where abstract concepts are transformed into a powerful presence and measurable results. The journey begins with design that speaks to the mind, flows through photography that captures moments and tells compelling stories, and culminates in tangible printing and production that brings ideas into the real world. This is where clarity begins and where an integrated creative system comes to life.</p>
         </div>
-        <div class="project-card" style="text-align: center; padding-bottom: 1rem;">
-            <div style="font-size: 3rem; color: var(--primary-color); padding: 1rem;">📈</div>
-            <h3>التسويق الرقمي</h3>
-            <p>استراتيجيات تسويقية لزيادة وصولك ومبيعاتك.</p>
+    </div>
+</section>
+
+<!-- Philosophy Section -->
+<section id="philosophy" class="content-section philosophy-section">
+    <div class="section-title-wrapper">
+        <h2>
+            <span class="ar">فلسفتها</span>
+            <span class="en">Philosophy</span>
+        </h2>
+    </div>
+    
+    <div class="philosophy-intro">
+        <div class="ar">
+            <h3>لم ولن نكن صدفة او حدث عشوائي</h3>
+            <p>في نقطة إبداعية بدأ الإبداع من الداخل قبل أن يصل إلى الخارج. صغنا هويتنا بمنهج واع، وبنينا نظامًا إبداعيا لأنفسنا أولا قبل أن نطبقه مع عملائنا. لم نكن صدفة ولا نعمل بعشوائية؛ فكل فكرة محسوبة، وكل قرار مقصود، وكل عنصر في هويتنا يحمل معنى ودورًا واضحا.</p>
+            <p>نؤمن أن وضوح البداية هو سر قوة النتيجة، لذلك تنطلق مع العلامات التجارية من نقطة واضحة، نحول فيها الأفكار إلى أنظمة، والأنظمة إلى حضور مؤثر، والنتائج إلى قيمة حقيقية ومستدامة.</p>
         </div>
+        <div class="en">
+            <h3>We were not and will never be a coincidence or a random occurrence</h3>
+            <p>At Creative Point, creativity began from within before reaching the outside world. We shaped our identity through a conscious approach and built our creative system for ourselves first, before applying it with our clients. We were not a coincidence, nor do we work randomly: every idea is calculated, every decision is intentional, and every element of our identity carries a clear meaning and purpose.</p>
+            <p>We believe that clarity at the starting point is the key to strong results. That's why we begin with brands from a clear point-transforming ideas into systems, systems into impactful presence, and results into real, sustainable value.</p>
+        </div>
+    </div>
+    
+    <div class="philosophy-diagram">
+        <div class="diagram-item">
+            <div class="diagram-content">
+                <h4>Branding / Creative Direction</h4>
+                <div>
+                    <p class="ar">أساس ثابت ونظام متوازن ينطلق من فكرة واحدة ويبنى بثبات.</p>
+                    <p class="en">A stable foundation built from one clear idea.</p>
+                </div>
+                <div>
+                    <p class="ar">قرار إبداعي يقود الحركة ويحول الفكرة إلى مسار.</p>
+                    <p class="en">A clear creative decision that leads the direction.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="diagram-connector">
+            <div class="point-marker"></div>
+        </div>
+
+        <div class="diagram-item">
+            <div class="diagram-content">
+                <h4>Photography / Content / Digital / Campaigns</h4>
+                <div>
+                    <p class="ar">تركيز بصري على لحظة واحدة بدون تشتيت.</p>
+                    <p class="en">Focused visuals capturing a single moment.</p>
+                </div>
+                <div>
+                    <p class="ar">انتشار من نقطة واحدة وتعدد نقاط التواصل.</p>
+                    <p class="en">Expansion from one core idea across multiple touchpoints.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="content-section services-section">
+    <div class="section-title-wrapper">
+        <h2>
+            <span class="ar">خدماتها</span>
+            <span class="en">Services</span>
+        </h2>
+    </div>
+    
+    <div class="services-intro">
+        <h3 class="ar">حلول إبداعية متكاملة تنطلق من نقطة واحدة... وتتحول إلى نظام مؤثر</h3>
+        <h3 class="en">Integrated creative solutions that start from a single point... and evolve into an impactful system</h3>
+    </div>
+    
+    <div class="services-list">
+        
+        <!-- Service 1: Creative Design -->
+        <div class="service-item">
+            <div class="service-icon">✦</div>
+            <div class="service-details">
+                <h4 class="ar">خدمات التصميم الإبداعي</h4>
+                <h4 class="en">Creative design services</h4>
+                <p class="ar">نحول الرسائل التسويقية إلى تصاميم ذكية تخدم الهدف ولا تشتت الانتباه</p>
+                <p class="en">We turn marketing messages into smart designs that achieve their purpose without distraction</p>
+                
+                <ul class="service-points ar">
+                    <li>تصميم بروفايلات الشركات الاحترافية.</li>
+                    <li>تصميم العروض التقديمية (Pitch Decks).</li>
+                    <li>تصميم الحملات الإعلانية.</li>
+                    <li>تصميم البوستات الرقمية والمطبوعات.</li>
+                    <li>تصميم ثلاثي الأبعاد (3D) للمنتجات والمعارض.</li>
+                    <li>تصميم المحتوى البصري لوسائل التواصل الاجتماعي.</li>
+                </ul>
+                <ul class="service-points en">
+                    <li>Designing professional company profiles.</li>
+                    <li>Designing presentations (Pitch Decks).</li>
+                    <li>Designing advertising campaigns.</li>
+                    <li>Designing digital posts and print materials.</li>
+                    <li>3D design for products and exhibitions.</li>
+                    <li>Designing visual content for social media platforms.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Service 2: Photography & Visual Production -->
+        <div class="service-item">
+            <div class="service-icon">📷</div>
+            <div class="service-details">
+                <h4 class="ar">التصوير والإنتاج المرئي</h4>
+                <h4 class="en">Photography and visual production</h4>
+                <p class="ar">نلتقط لحظة واحدة تعبّر عن الفكرة كاملة</p>
+                <p class="en">We capture a single moment that expresses the entire idea</p>
+                
+                <ul class="service-points ar">
+                    <li>تصوير المنتجات الاحترافي.</li>
+                    <li>تصوير الفعاليات والمؤتمرات.</li>
+                    <li>توثيق المشاريع والإنجازات.</li>
+                    <li>إنتاج الفيديوهات الترويجية.</li>
+                    <li>تصوير جوي (Drone).</li>
+                    <li>مونتاج وإخراج مرئي متوافق مع هوية العلامة.</li>
+                </ul>
+                <ul class="service-points en">
+                    <li>Professional product photography.</li>
+                    <li>Event and conference photography.</li>
+                    <li>Documenting projects and achievements.</li>
+                    <li>Producing promotional videos.</li>
+                    <li>Aerial (drone) photography.</li>
+                    <li>Visual editing and production aligned with the brand identity.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Service 3: Websites & Programming -->
+        <div class="service-item">
+            <div class="service-icon">💻</div>
+            <div class="service-details">
+                <h4 class="ar">المواقع الإلكترونية والبرمجة</h4>
+                <h4 class="en">Websites and programming</h4>
+                <p class="ar">نصمم التجربة قبل أن نصمم الواجهة</p>
+                <p class="en">We design the experience before we design the interface</p>
+                
+                <ul class="service-points ar">
+                    <li>تصميم مواقع إلكترونية احترافية.</li>
+                    <li>تصميم تجربة المستخدم (UX).</li>
+                    <li>تصميم واجهات المستخدم (UI).</li>
+                    <li>برمجة المواقع والتطبيقات.</li>
+                    <li>تحسين سرعة الأداء وتجربة التصفح.</li>
+                    <li>توافق كامل مع الهوية البصرية.</li>
+                </ul>
+                <ul class="service-points en">
+                    <li>Professional website design.</li>
+                    <li>User experience (UX) design.</li>
+                    <li>User interface (UI) design.</li>
+                    <li>Website and application development.</li>
+                    <li>Performance speed optimization and browsing experience enhancement.</li>
+                    <li>Full alignment with the visual identity.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Service 4: Printing & Production -->
+        <div class="service-item">
+            <div class="service-icon">🖨️</div>
+            <div class="service-details">
+                <h4 class="ar">الطباعة والإنتاج التنفيذي</h4>
+                <h4 class="en">Printing and production execution</h4>
+                <p class="ar">نحول التصميم من فكرة إلى واقع ملموس بنفس الجودة</p>
+                <p class="en">We turn design from an idea into a tangible reality with the same level of quality</p>
+                
+                <ul class="service-points ar">
+                    <li>المطبوعات الورقية (بروشورات - كتالوجات - فلايرات).</li>
+                    <li>المطبوعات الدعائية والتجارية.</li>
+                    <li>المطبوعات كبيرة الحجم.</li>
+                    <li>تفصيل الهدايا الإبتكارية.</li>
+                    <li>إنتاج مواد المعارض والفعاليات.</li>
+                    <li>الإشراف الكامل على جودة التنفيذ.</li>
+                </ul>
+                <ul class="service-points en">
+                    <li>Paper print materials (brochures - catalogs - flyers).</li>
+                    <li>Promotional and commercial print materials.</li>
+                    <li>Large-format printing.</li>
+                    <li>Custom creative gifts production.</li>
+                    <li>Production of exhibition and event materials.</li>
+                    <li>Full supervision of execution quality.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Service 5: Exhibition & Event Setup -->
+        <div class="service-item">
+            <div class="service-icon">🏗️</div>
+            <div class="service-details">
+                <h4 class="ar">تجهيز المعارض والمؤتمرات</h4>
+                <h4 class="en">Exhibition and conference setup</h4>
+                <p class="ar">نصنع تجربة تبدأ من نقطة وتعاش بكل تفاصيلها.</p>
+                <p class="en">We create an experience that starts from a single point and is lived in every detail</p>
+                
+                <ul class="service-points ar">
+                    <li>تصميم وتنفيذ أجنحة المعارض (Booths).</li>
+                    <li>تجهيز المعارض والمؤتمرات.</li>
+                    <li>تصميم المساحات الداخلية المؤقتة.</li>
+                    <li>تركيب الشاشات التفاعلية.</li>
+                    <li>تصميم وتنفيذ اللوحات الإرشادية.</li>
+                    <li>إدارة المشروع من الفكرة حتى التنفيذ.</li>
+                </ul>
+                <ul class="service-points en">
+                    <li>Design and execution of exhibition booths.</li>
+                    <li>Exhibition and conference setup.</li>
+                    <li>Design of temporary interior spaces.</li>
+                    <li>Installation of interactive screens.</li>
+                    <li>Design and execution of wayfinding signage.</li>
+                    <li>Project management from concept to execution.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Partners Section -->
+<section id="partners" class="content-section partners-section">
+    <div class="section-title-wrapper">
+        <h2>
+            <span class="ar">شركاؤها</span>
+            <span class="en">Partners</span>
+        </h2>
+    </div>
+    <div class="partners-grid">
+        <div class="partner-item">MM</div>
+        <div class="partner-item">
+            <span class="ar">طيران أديل</span>
+            <span class="en">flyadeal</span>
+        </div>
+        <div class="partner-item"><span class="ar">الأمن العام</span></div>
+        <div class="partner-item"><span class="ar">المرور</span></div>
+        <div class="partner-item"><span class="ar">المستشفى السعودي الألماني</span></div>
+        <div class="partner-item"><span class="ar">الملكية السعودية وات البحرية</span></div>
+        <div class="partner-item">
+            <span class="ar">وزارة الدفاع</span>
+            <span class="en">MINISTRY OF DEFENSE</span>
+        </div>
+        <div class="partner-item">
+            <span class="ar">وزارة الصحة</span>
+            <span class="en">Ministry of Health</span>
+        </div>
+        <div class="partner-item">
+            <span class="ar">المركز الطبي الدولي</span>
+            <span class="en">International Medical Center</span>
+        </div>
+        <div class="partner-item"><span class="ar">جامعة الملك عبد العزيز</span></div>
+        <div class="partner-item">
+            <span class="ar">جامعة جدة</span>
+            <span class="en">University of Jeddah</span>
+        </div>
+        <div class="partner-item">LEXUS</div>
+        <div class="partner-item">
+            <span class="ar">الماجد للعود</span>
+            <span class="en">Al majed oud</span>
+        </div>
+        <div class="partner-item">
+            <span class="ar">جدة بروميناد</span>
+            <span class="en">JEDDAH PROMENADE</span>
+        </div>
+    </div>
+</section>
+
+<!-- Contact / Footer Section -->
+<section class="contact-footer">
+    <div class="contact-content">
+        <h2>
+            <span class="ar">لم ينتهي الإبداع</span>
+            <span class="en">Creativity has not ended</span>
+        </h2>
+        <a href="tel:+966568394945" class="contact-btn">
+            <span class="ar">اكتشفونا</span>
+            <span class="en">Discover us</span>
+        </a>
+        <p class="contact-number">+966 56 839 49 45</p>
+        <div class="social-links">
+            <span>in</span> <span>X</span> <span>CPOINT_SA</span>
+        </div>
+        <p class="website-link">WWW.CPOINT-SA.COM</p>
     </div>
 </section>
 
