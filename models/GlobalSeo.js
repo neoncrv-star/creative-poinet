@@ -6,6 +6,10 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
         type: DataTypes.STRING,
         defaultValue: 'نقطة إبداعية'
     },
+    siteUrl: {
+        type: DataTypes.STRING,
+        defaultValue: 'https://cpoint-sa.com'
+    },
     titleSeparator: {
         type: DataTypes.STRING,
         defaultValue: '|'

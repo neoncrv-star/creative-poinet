@@ -9,6 +9,10 @@
                 <input type="text" name="siteTitle" value="<%= seo ? seo.siteTitle : 'نقطة إبداعية' %>" required>
             </div>
             <div class="form-group">
+                <label>رابط الموقع (Site URL)</label>
+                <input type="url" name="siteUrl" value="<%= seo ? seo.siteUrl : 'https://cpoint-sa.com' %>" required>
+            </div>
+            <div class="form-group">
                 <label>فاصل العنوان (Separator)</label>
                 <input type="text" name="titleSeparator" value="<%= seo ? seo.titleSeparator : '|' %>" placeholder="|">
             </div>

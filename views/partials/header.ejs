@@ -10,21 +10,27 @@
         // Expecting 'pageSeo' object (optional) from controller (Project or Post instance or custom object)
         
         let siteTitle = 'نقطة إبداعية';
+        let siteUrl = 'https://cpoint-sa.com';
         let separator = '|';
         let description = 'وكالة إبداعية متخصصة في الحلول الرقمية';
         let keywords = 'تصميم, برمجة, تسويق';
         
         if (typeof seo !== 'undefined' && seo) {
             siteTitle = seo.siteTitle || siteTitle;
+            siteUrl = seo.siteUrl || siteUrl;
             separator = seo.titleSeparator || separator;
             description = seo.defaultDescription || description;
             keywords = seo.defaultKeywords || keywords;
         }
 
+        // Ensure siteUrl doesn't have trailing slash for consistency
+        if (siteUrl.endsWith('/')) siteUrl = siteUrl.slice(0, -1);
+
         // Page specific overrides
         let pageTitle = title;
         let pageDescription = description;
         let pageKeywords = keywords;
+        let pageImage = null;
 
         if (typeof pageSeo !== 'undefined' && pageSeo) {
             if (pageSeo.seoTitle) pageTitle = pageSeo.seoTitle;
@@ -34,12 +40,19 @@
             else if (pageSeo.excerpt) pageDescription = pageSeo.excerpt; // Fallback to item excerpt/desc
             
             if (pageSeo.seoKeywords) pageKeywords = pageSeo.seoKeywords;
+
+            if (pageSeo.image) pageImage = pageSeo.image;
         }
         
         // Final Title Construction
         let finalTitle = pageTitle;
         if (pageTitle !== siteTitle) {
             finalTitle = `${pageTitle} ${separator} ${siteTitle}`;
+        }
+
+        // Prepare Absolute Image URL
+        if (pageImage && !pageImage.startsWith('http')) {
+            pageImage = siteUrl + (pageImage.startsWith('/') ? '' : '/') + pageImage;
         }
     %>
 
@@ -51,16 +64,16 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="<%= finalTitle %>">
     <meta property="og:description" content="<%= pageDescription %>">
-    <% if (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.image) { %>
-        <meta property="og:image" content="<%= pageSeo.image %>">
+    <% if (pageImage) { %>
+        <meta property="og:image" content="<%= pageImage %>">
     <% } %>
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:title" content="<%= finalTitle %>">
     <meta property="twitter:description" content="<%= pageDescription %>">
-    <% if (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.image) { %>
-        <meta property="twitter:image" content="<%= pageSeo.image %>">
+    <% if (pageImage) { %>
+        <meta property="twitter:image" content="<%= pageImage %>">
     <% } %>
 
     <link rel="stylesheet" href="/css/style.css">
