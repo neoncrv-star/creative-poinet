@@ -8,7 +8,7 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     },
     siteUrl: {
         type: DataTypes.STRING,
-        defaultValue: 'https://deepskyblue-ibis-975175.hostingersite.com'
+        defaultValue: 'https://cpoint-sa.com'
     },
     titleSeparator: {
         type: DataTypes.STRING,
