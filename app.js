@@ -10,14 +10,25 @@ const debugLog = (msg) => {
     }
 };
 
-const serverEnvPath = '/home/u494530316/domains/cpoint-sa.com/public_html/.env';
-const localEnvPath = path.join(__dirname, '.env');
+const loadEnv = () => {
+    const envFiles = [
+        '/home/u494530316/domains/cpoint-sa.com/public_html/.env',
+        '/home/u494530316/domains/cpoint-sa.com/public_html/.env.prod',
+        path.join(__dirname, '.env'),
+        path.join(__dirname, '.env.prod')
+    ];
 
-if (fs.existsSync(serverEnvPath)) {
-    require('dotenv').config({ path: serverEnvPath });
-} else {
-    require('dotenv').config({ path: localEnvPath });
-}
+    for (const file of envFiles) {
+        if (fs.existsSync(file)) {
+            require('dotenv').config({ path: file });
+            debugLog(`Loaded environment from: ${file}`);
+            console.log(`Loaded environment from: ${file}`);
+            break;
+        }
+    }
+};
+
+loadEnv();
 
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
