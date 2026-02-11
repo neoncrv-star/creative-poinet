@@ -8,11 +8,18 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Session Config
+app.set('trust proxy', 1); // trust first proxy
 app.use(session({
     secret: process.env.SESSION_SECRET || 'creative_point_secret_key',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 3600000 } // 1 hour
+    name: 'creative_point_session',
+    cookie: { 
+        maxAge: 3600000, // 1 hour
+        secure: false, // Set to false if not using HTTPS, but true is better for production
+        httpOnly: true,
+        sameSite: 'lax'
+    }
 }));
 
 // Import Routes

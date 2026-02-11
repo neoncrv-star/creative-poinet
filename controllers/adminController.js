@@ -26,21 +26,27 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     const { username, password } = req.body;
     try {
+        console.log(`Login attempt for username: ${username}`);
         const user = await User.findOne({ where: { username } });
         if (!user) {
+            console.log(`User not found: ${username}`);
             return res.render('admin/login', { title: 'تسجيل الدخول', error: 'بيانات الدخول غير صحيحة' });
         }
         
+        console.log(`User found, comparing passwords...`);
         const isMatch = await user.validPassword(password);
+        console.log(`Password match result: ${isMatch}`);
+        
         if (!isMatch) {
             return res.render('admin/login', { title: 'تسجيل الدخول', error: 'بيانات الدخول غير صحيحة' });
         }
         
         req.session.userId = user.id;
         req.session.userRole = user.role;
+        console.log(`Session set for user ID: ${user.id}. Redirecting to /admin...`);
         res.redirect('/admin');
     } catch (error) {
-        console.error(error);
+        console.error('Login error details:', error);
         res.render('admin/login', { title: 'تسجيل الدخول', error: 'حدث خطأ ما' });
     }
 };
