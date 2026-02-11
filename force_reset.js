@@ -13,11 +13,12 @@ async function forceReset() {
 
         // 2. Create new admin with manual hash to be 100% sure
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash('password123', salt);
-
+        const rawPassword = 'password123';
+        
+        // We will NOT hash here, let the hook handle it
         await User.create({
             username: 'admin',
-            password: hashedPassword, // The beforeCreate hook might hash it again, let's check
+            password: rawPassword, 
             role: 'super_admin'
         });
 
