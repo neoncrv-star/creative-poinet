@@ -9,8 +9,8 @@
 
 <style>
     :root {
-        --service-overlay-opacity: <%= globalSeo && globalSeo.serviceOverlayOpacity !== undefined ? globalSeo.serviceOverlayOpacity : 0.8 %>;
-        --service-image-brightness: <%= globalSeo && globalSeo.serviceImageBrightness !== undefined ? globalSeo.serviceImageBrightness : 0.5 %>;
+        --service-overlay-opacity: <%= (globalSeo && globalSeo.serviceOverlayOpacity !== undefined) ? globalSeo.serviceOverlayOpacity : 0.8 %>;
+        --service-image-brightness: <%= (globalSeo && globalSeo.serviceImageBrightness !== undefined) ? globalSeo.serviceImageBrightness : 0.5 %>;
     }
     
     .panel-overlay {
