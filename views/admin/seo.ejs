@@ -132,27 +132,6 @@
                         <textarea name="customScriptsFooter" rows="5" placeholder="Chat widgets, Tracking pixels..." style="direction: ltr; font-family: monospace; font-size: 0.85rem;"><%= seo ? seo.customScriptsFooter : "" %></textarea>
                     </div>
                 </div>
-
-                <!-- Service Section Customization Card -->
-                <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-paint-brush"></i> تخصيص قسم الخدمات
-                    </h3>
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="form-group">
-                            <label>شفافية الطبقة فوق الصورة (Overlay Opacity)</label>
-                            <input type="range" name="serviceOverlayOpacity" min="0" max="1" step="0.1" value="<%= seo ? seo.serviceOverlayOpacity : 0.8 %>" oninput="this.nextElementSibling.value = this.value">
-                            <output><%= seo ? seo.serviceOverlayOpacity : 0.8 %></output>
-                            <small style="display: block; margin-top: 5px; color: var(--text-muted);">0 شفافة تماماً، 1 معتمة تماماً.</small>
-                        </div>
-                        <div class="form-group">
-                            <label>سطوع الصورة (Image Brightness)</label>
-                            <input type="range" name="serviceImageBrightness" min="0" max="1" step="0.1" value="<%= seo ? seo.serviceImageBrightness : 0.5 %>" oninput="this.nextElementSibling.value = this.value">
-                            <output><%= seo ? seo.serviceImageBrightness : 0.5 %></output>
-                            <small style="display: block; margin-top: 5px; color: var(--text-muted);">0 سوداء تماماً، 1 سطوع كامل.</small>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Sidebar Column -->

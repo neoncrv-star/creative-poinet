@@ -91,7 +91,37 @@ exports.getSeoSettings = async (req, res) => {
         if (!seo) {
             seo = await GlobalSeo.create({});
         }
-        res.render('admin/seo', { title: 'لوحة التحكم | إعدادات SEO', seo });
+        res.render('admin/seo', { title: 'لوحة التحكم | إعدادات SEO', seo, path: '/admin/seo' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getDesignSettings = async (req, res) => {
+    try {
+        let seo = await GlobalSeo.findOne();
+        if (!seo) {
+            seo = await GlobalSeo.create({});
+        }
+        res.render('admin/design', { title: 'لوحة التحكم | إعدادات التصميم', seo, path: '/admin/design' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postDesignSettings = async (req, res) => {
+    try {
+        let seo = await GlobalSeo.findOne();
+        const data = { ...req.body };
+
+        if (!seo) {
+            seo = await GlobalSeo.create(data);
+        } else {
+            await seo.update(data);
+        }
+        res.redirect('/admin/design');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');

@@ -33,6 +33,10 @@ router.post('/seo', upload.fields([
     { name: 'ogImage', maxCount: 1 }
 ]), adminController.postSeoSettings);
 
+// Design Routes
+router.get('/design', adminController.getDesignSettings);
+router.post('/design', adminController.postDesignSettings);
+
 // Portfolio Routes
 router.get('/portfolio', adminController.managePortfolio);
 router.get('/portfolio/add', adminController.getAddProject);

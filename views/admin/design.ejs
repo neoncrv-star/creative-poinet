@@ -1,0 +1,75 @@
+<%- include('layout-header') %>
+
+<div class="admin-content-inner">
+    <div class="admin-topbar-actions" style="margin-bottom: 2rem;">
+        <h2 style="font-weight: 700; color: var(--secondary-color);"><i class="fas fa-paint-brush"></i> إعدادات التصميم والمظهر</h2>
+        <p style="color: var(--text-muted); margin-top: 5px;">تحكم في العناصر البصرية وتنسيقات الأقسام المختلفة في الموقع.</p>
+    </div>
+
+    <form action="/admin/design" method="POST">
+        <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <!-- Main Settings Column -->
+            <div class="form-main-col">
+                <!-- Service Section Customization Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-layer-group"></i> تخصيص قسم الخدمات
+                    </h3>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>شفافية الطبقة فوق الصورة (Overlay Opacity)</label>
+                            <input type="range" name="serviceOverlayOpacity" min="0" max="1" step="0.1" value="<%= seo ? seo.serviceOverlayOpacity : 0.8 %>" oninput="this.nextElementSibling.value = this.value">
+                            <output><%= seo ? seo.serviceOverlayOpacity : 0.8 %></output>
+                            <small style="display: block; margin-top: 5px; color: var(--text-muted);">0 شفافة تماماً، 1 معتمة تماماً.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>سطوع الصورة (Image Brightness)</label>
+                            <input type="range" name="serviceImageBrightness" min="0" max="1" step="0.1" value="<%= seo ? seo.serviceImageBrightness : 0.5 %>" oninput="this.nextElementSibling.value = this.value">
+                            <output><%= seo ? seo.serviceImageBrightness : 0.5 %></output>
+                            <small style="display: block; margin-top: 5px; color: var(--text-muted);">0 سوداء تماماً، 1 سطوع كامل.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Future Design Settings can be added here -->
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="form-side-col">
+                <!-- Save Card -->
+                <div class="admin-card" style="position: sticky; top: 90px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">يتم تطبيق التغييرات فور الحفظ على الواجهة الأمامية للموقع.</p>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; padding: 1rem;">
+                        <i class="fas fa-check-circle"></i> حفظ إعدادات التصميم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+@media (max-width: 992px) {
+    .form-layout {
+        grid-template-columns: 1fr !important;
+    }
+    .form-side-col {
+        order: -1;
+    }
+}
+input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+output {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+</style>
+
+<%- include('layout-footer') %>
