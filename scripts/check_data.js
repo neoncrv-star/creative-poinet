@@ -6,7 +6,7 @@ const GlobalSeo = require('../models/GlobalSeo');
 const Project = require('../models/Project');
 const Service = require('../models/Service');
 const Partner = require('../models/Partner');
-const BlogPost = require('../models/BlogPost');
+const BlogPost = require('../models/Post');
 const Contact = require('../models/Contact');
 
 async function run() {
