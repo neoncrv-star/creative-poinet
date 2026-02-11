@@ -20,16 +20,17 @@ app.set('trust proxy', 1); // trust first proxy
 app.use(session({
     store: new FileStore({
         path: './sessions',
-        retries: 1,
+        retries: 5, // Increase retries for reliability
         fileExtension: '.json',
-        ttl: 86400
+        ttl: 86400 * 7, // Session persists for 7 days
+        reapInterval: 3600 // Clean up expired sessions every hour
     }),
     secret: process.env.SESSION_SECRET || 'creative_point_secret_key',
-    resave: false,
+    resave: true, // Force session to be saved back to the session store
     saveUninitialized: false,
     name: 'creative_point_session',
     cookie: { 
-        maxAge: 3600000 * 24, // 24 hours
+        maxAge: 3600000 * 24 * 7, // 7 days
         secure: false, // Set to false if not using HTTPS
         httpOnly: true,
         sameSite: 'lax'
