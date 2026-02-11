@@ -58,11 +58,11 @@ app.use('/', mainRoutes);
 
 // Sync Database & Start server
 sequelize.sync({ alter: true }).then(async () => {
-    // Check if we need to seed (simple check: if no users exist)
+    // Safety check: only seed if NO users exist at all
     const User = require('./models/User');
     const userCount = await User.count();
     if (userCount === 0) {
-        console.log('Seeding database...');
+        console.log('No users found. Running initial seed...');
         await seed();
     }
     

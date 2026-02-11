@@ -7,14 +7,21 @@ const GlobalSeo = require('./models/GlobalSeo');
 
 async function seed() {
     try {
-        await sequelize.sync({ force: true }); // Reset DB
+        // NEVER use force: true in production as it wipes all data.
+        // We use alter: true to update schema without losing data.
+        await sequelize.sync({ alter: true }); 
 
-        // Create Super Admin
-        await User.create({
-            username: 'admin',
-            password: 'password123', // Will be hashed by hook
-            role: 'super_admin'
-        });
+        // Check if admin already exists to avoid duplicates
+        const adminExists = await User.findOne({ where: { username: 'admin' } });
+        if (!adminExists) {
+            // Create Super Admin
+            await User.create({
+                username: 'admin',
+                password: 'password123', // Will be hashed by hook
+                role: 'super_admin'
+            });
+            console.log('Admin user created.');
+        }
 
         // Create Default Categories
         const categories = await Category.bulkCreate([
