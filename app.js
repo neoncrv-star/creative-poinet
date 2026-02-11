@@ -32,10 +32,18 @@ loadEnv();
 
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const compression = require('compression');
 const sequelize = require('./config/database');
 
 const app = express();
-console.log('App version: 1.0.2 - Robust path handling');
+app.use(compression()); // Compress all responses
+console.log('App version: 1.0.3 - Performance Optimized');
+
+// Serve static files FIRST to avoid running middleware for assets
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1d', // Cache static assets for 1 day
+    etag: true
+}));
 
 // Ensure necessary directories exist
 ['public/uploads', 'sessions', 'data'].forEach(dir => {
@@ -72,16 +80,39 @@ app.use(session({
 const mainRoutes = require('./routes/index');
 const adminRoutes = require('./routes/admin');
 
-// Global Data Middleware
+// Global Data Middleware with Simple Cache
 const GlobalSeo = require('./models/GlobalSeo');
 const Category = require('./models/Category');
 
+let globalDataCache = {
+    seo: null,
+    categories: [],
+    lastFetch: 0
+};
+const CACHE_TTL = 60 * 5 * 1000; // 5 minutes cache
+
 app.use(async (req, res, next) => {
+    // Skip for static-like paths just in case (though static middleware is now above)
+    if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
+        return next();
+    }
+
     try {
-        const seo = await GlobalSeo.findOne();
-        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
-        res.locals.globalSeo = seo;
-        res.locals.globalCategories = categories;
+        const now = Date.now();
+        if (!globalDataCache.seo || (now - globalDataCache.lastFetch) > CACHE_TTL) {
+            const [seo, categories] = await Promise.all([
+                GlobalSeo.findOne(),
+                Category.findAll({ order: [['display_order', 'ASC']] })
+            ]);
+            globalDataCache = {
+                seo,
+                categories,
+                lastFetch: now
+            };
+        }
+        
+        res.locals.globalSeo = globalDataCache.seo;
+        res.locals.globalCategories = globalDataCache.categories;
         res.locals.path = req.path;
         next();
     } catch (error) {
@@ -96,9 +127,6 @@ app.use(async (req, res, next) => {
 // Set view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Parse body
 app.use(express.urlencoded({ extended: true }));
