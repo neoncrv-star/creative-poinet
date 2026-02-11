@@ -3,7 +3,6 @@ require('dotenv').config();
 const path = require('path');
 const session = require('express-session');
 const sequelize = require('./config/database');
-const seed = require('./seed');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -58,14 +57,6 @@ app.use('/', mainRoutes);
 
 // Sync Database & Start server
 sequelize.sync({ alter: true }).then(async () => {
-    // Safety check: only seed if NO users exist at all
-    const User = require('./models/User');
-    const userCount = await User.count();
-    if (userCount === 0) {
-        console.log('No users found. Running initial seed...');
-        await seed();
-    }
-    
     app.listen(port, () => {
         console.log(`Server is running at http://localhost:${port}`);
     });
