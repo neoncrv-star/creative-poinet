@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollTrigger: {
             trigger: stickySection,
             start: "top top",
-            end: window.innerWidth < 768 ? "+=1500" : "+=2500", // Shorter scroll on mobile
-            scrub: 0.5,
+            end: window.innerWidth < 768 ? "+=2000" : "+=3000", // Slightly longer for radical feel
+            scrub: 1, // Smoother scrub
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true
@@ -58,57 +58,59 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.set(redDot, { scale: 0, opacity: 1 });
     gsap.set(initialText, { opacity: 1, color: initialTextColor, fontWeight: "300", scale: 1, y: 0 });
 
-    // Sequence:
-    // 0. Fade out mouse icon immediately
+    // Sequence based on user request:
+    // 1. White Dot expands
+    // 2. Red Dot expands with "Strong Marketing Text"
+    // 3. Final Point (Video Mask) expands
+    // 4. End of scroll: Reveal Title, Subtitle, and Button
+
     scrollTl
-        .to(scrollMouse, { opacity: 0, duration: 0.2 }, 0)
+        .to(scrollMouse, { opacity: 0, duration: 0.5 }, 0)
 
-        // 1. White Dot Expands (Background becomes White/Black depending on theme)
-        .to(whiteDot, { scale: 100, duration: 1.5, ease: "power2.inOut" }, 0)
+        // Step 1: White Dot expands to fill screen
+        .to(whiteDot, { scale: 150, duration: 2, ease: "none" }, 0)
         
-        // 2. Text Adaptation (Text becomes Red on expanded dot)
-        .to(initialText, { 
-            color: "#ff0000", 
-            fontWeight: "700", 
-            scale: 1.5,
-            duration: 0.8 
-        }, 0.5)
-
-        // 3. Red Dot Expands (Background becomes Red)
-        // Start earlier and scale larger to ensure no black bars
+        // Step 2: Red Dot expands over white with strong text
         .fromTo(redDot, 
             { scale: 0 },
-            { scale: 500, duration: 2, ease: "power2.in" }, 
-            1.0 
+            { scale: 300, duration: 3, ease: "none" }, 
+            1.5 
         )
-        
-        // 4. Text Adaptation (Text becomes White on Red BG)
         .to(initialText, { 
+            opacity: 1,
             color: "#fff", 
-            zIndex: 10,
-            duration: 0.8 
-        }, 1.5)
+            scale: 1.5,
+            fontWeight: "900", // Strong marketing feel
+            duration: 1,
+            ease: "none"
+        }, 2.0)
         
-        // 5. Video Mask Reveal (The Final Dot)
-        // Step 5a: Appear as a small "Black Dot" (Video inside)
+        // Step 3: Radical Mask Reveal (Video Point)
         .to(maskContainer, 
-            { clipPath: "circle(20px at 50% 50%)", webkitClipPath: "circle(20px at 50% 50%)", duration: 0.5, ease: "power1.out" },
-            2.0 
+            { 
+                clipPath: "circle(50px at 50% 50%)", 
+                webkitClipPath: "circle(50px at 50% 50%)", 
+                duration: 1, 
+                ease: "none" 
+            },
+            4.5 
+        )
+        .to(initialText, { opacity: 0, scale: 0, duration: 0.5 }, 4.5) // Remove initial text as video starts
+        
+        .to(maskContainer, 
+            { 
+                clipPath: "circle(150% at 50% 50%)", 
+                webkitClipPath: "circle(150% at 50% 50%)", 
+                duration: 4, 
+                ease: "power2.inOut" 
+            },
+            5.5 
         )
         
-        // Step 5b: Expand from Dot to Full Screen
-        .to(maskContainer, 
-            { clipPath: "circle(150% at 50% 50%)", webkitClipPath: "circle(150% at 50% 50%)", duration: 2.5, ease: "power2.inOut" },
-            2.5 // Starts after the dot is formed
-        )
-        
-        // 6. Initial Text Removal
-        .to(initialText, { opacity: 0, scale: 3, duration: 1 }, 3.0)
-
-        // 7. Reveal Hero Content
+        // Step 4: End of scroll - Reveal final content
         .to(contentOverlay, 
-            { opacity: 1, y: 0, duration: 1.5, ease: "power2.out" }, 
-            4.0
+            { opacity: 1, y: 0, duration: 2, ease: "power2.out" }, 
+            9.0
         );
 
 });

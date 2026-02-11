@@ -30,19 +30,31 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 6; /* Above dots */
-    /* Initial State: Hidden completely */
-    clip-path: circle(0% at 50% 50%); 
-    will-change: clip-path;
+    z-index: 6;
+    /* Use a combined clip-path for smoother transition */
+    clip-path: circle(0% at 50% 50%);
+    -webkit-clip-path: circle(0% at 50% 50%);
+    will-change: clip-path, -webkit-clip-path;
     background-color: #000;
-    pointer-events: none; /* Allow click-through until content is revealed */
+    pointer-events: none;
+    overflow: hidden;
 }
 
 [data-theme="light"] .hero-mask-container {
-    background-color: #fff; /* Match white theme background */
+    background-color: #fff;
 }
 
 /* Video Styling */
+.hero-video-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+}
+
 .hero-video {
     position: absolute;
     top: 50%;
@@ -51,23 +63,18 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 1; /* Changed from 0.8 to 1 for full visibility */
+    opacity: 1;
     pointer-events: none;
-    z-index: 1; /* Ensure it's above the background */
-    will-change: opacity;
+    will-change: transform;
 }
 
-/* Specific styling for YouTube Iframe to simulate object-fit: cover */
+/* Specific styling for YouTube Iframe to simulate object-fit: cover - Radical Fix */
 iframe.hero-video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
     width: 100vw;
     height: 56.25vw; /* 16:9 Aspect Ratio */
     min-height: 100vh;
     min-width: 177.77vh; /* 16:9 Aspect Ratio */
-    transform: translate(-50%, -50%) scale(1.3); /* Scale up to ensure coverage and hide controls */
-    pointer-events: none; /* Prevent interaction with video controls */
+    transform: translate(-50%, -50%); /* Removed scale(1.3) to avoid blur, will handle coverage with min-width/height */
 }
 
 /* Initial Overlay Container */

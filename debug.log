@@ -1,0 +1,2 @@
+[2026-02-11T17:23:27.605Z] Attempting to load .env from: /home/u494530316/domains/cpoint-sa.com/public_html/.env
+[2026-02-11T17:23:27.613Z] DB_NAME from process.env: undefined

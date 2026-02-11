@@ -6,8 +6,11 @@ const GlobalSeo = require('../models/GlobalSeo');
 const Service = require('../models/Service');
 const Partner = require('../models/Partner');
 const Contact = require('../models/Contact');
+const sequelize = require('../config/database');
 const fs = require('fs');
 const path = require('path');
+const logFile = path.join(__dirname, '../debug.log');
+const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
 
 // Helper to delete file
 const deleteFile = (filePath) => {
@@ -26,26 +29,29 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     const { username, password } = req.body;
     try {
-        console.log(`Login attempt for username: ${username}`);
+        debugLog(`Login attempt for username: ${username}`);
+        debugLog(`Current DB dialect: ${sequelize.getDialect()}`);
         const user = await User.findOne({ where: { username } });
         if (!user) {
-            console.log(`User not found: ${username}`);
+            debugLog(`User not found: ${username}`);
             return res.render('admin/login', { title: 'تسجيل الدخول', error: 'بيانات الدخول غير صحيحة' });
         }
         
-        console.log(`User found, comparing passwords...`);
+        debugLog(`User found, comparing passwords...`);
         const isMatch = await user.validPassword(password);
-        console.log(`Password match result: ${isMatch}`);
+        debugLog(`Password match result: ${isMatch}`);
         
         if (!isMatch) {
+            debugLog(`Password mismatch for user: ${username}`);
             return res.render('admin/login', { title: 'تسجيل الدخول', error: 'بيانات الدخول غير صحيحة' });
         }
         
         req.session.userId = user.id;
         req.session.userRole = user.role;
-        console.log(`Session set for user ID: ${user.id}. Redirecting to /admin...`);
+        debugLog(`Session set for user ID: ${user.id}. Redirecting to /admin...`);
         res.redirect('/admin');
     } catch (error) {
+        debugLog(`Login error: ${error.message}`);
         console.error('Login error details:', error);
         res.render('admin/login', { title: 'تسجيل الدخول', error: 'حدث خطأ ما' });
     }

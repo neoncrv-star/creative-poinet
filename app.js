@@ -1,18 +1,38 @@
 const express = require('express');
-require('dotenv').config();
 const path = require('path');
+const fs = require('fs');
+const logFile = path.join(__dirname, 'debug.log');
+const debugLog = (msg) => {
+    try {
+        fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
+    } catch (e) {
+        console.error('Logging error:', e);
+    }
+};
+
+const serverEnvPath = '/home/u494530316/domains/cpoint-sa.com/public_html/.env';
+const localEnvPath = path.join(__dirname, '.env');
+
+if (fs.existsSync(serverEnvPath)) {
+    require('dotenv').config({ path: serverEnvPath });
+} else {
+    require('dotenv').config({ path: localEnvPath });
+}
+
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const sequelize = require('./config/database');
-const fs = require('fs');
 
 const app = express();
+console.log('App version: 1.0.2 - Robust path handling');
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, 'public/uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Ensure necessary directories exist
+['public/uploads', 'sessions', 'data'].forEach(dir => {
+    const fullPath = path.join(__dirname, dir);
+    if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath, { recursive: true });
+    }
+});
 const port = process.env.PORT || 3000;
 
 // Session Config
@@ -78,8 +98,25 @@ app.use('/admin', adminRoutes);
 app.use('/', mainRoutes);
 
 // Sync Database & Start server
-sequelize.sync({ alter: true }).then(async () => {
-    app.listen(port, () => {
-        console.log(`Server is running at http://localhost:${port}`);
+const isSQLite = !process.env.DB_NAME;
+const syncOptions = { 
+    alter: !isSQLite && (process.env.NODE_ENV === 'development'),
+    force: false 
+};
+
+sequelize.sync(syncOptions)
+    .then(async () => {
+        console.log(`Database synced successfully (${isSQLite ? 'SQLite' : 'MySQL'})`);
+        app.listen(port, () => {
+            console.log(`Server is running at http://localhost:${port}`);
+        });
+    })
+    .catch(err => {
+        console.error('Database sync error (trying fallback):', err);
+        // Fallback sync for constraint issues
+        sequelize.sync().then(() => {
+            app.listen(port, () => {
+                console.log(`Server is running at http://localhost:${port} (Fallback Sync)`);
+            });
+        }).catch(finalErr => console.error('Critical Database error:', finalErr));
     });
-}).catch(err => console.error('Database sync error:', err));
