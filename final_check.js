@@ -5,6 +5,7 @@ const sequelize = require('./config/database');
 
 async function check() {
     try {
+        await sequelize.sync({ alter: true });
         const sCount = await Service.count();
         const pCount = await Partner.count();
         const uCount = await User.count();
