@@ -28,14 +28,14 @@ async function run() {
         console.log('Record counts:');
         console.log(JSON.stringify(counts, null, 2));
         
-        if (counts.Categories > 0) {
-            const categories = await Category.findAll({ limit: 5, raw: true });
-            console.log('Sample Categories:', categories.map(c => c.name_ar || c.name_en));
+        if (counts.BlogPosts > 0) {
+            const posts = await BlogPost.findAll({ limit: 5, raw: true });
+            console.log('Sample Blog Posts:', posts.map(p => p.title));
         }
         
-        if (counts.Projects > 0) {
-            const projects = await Project.findAll({ limit: 5, raw: true });
-            console.log('Sample Projects:', projects.map(p => p.title_ar || p.title_en));
+        if (counts.Services > 0) {
+            const services = await Service.findAll({ limit: 5, raw: true });
+            console.log('Sample Services:', services.map(s => s.title));
         }
 
     } catch (e) {
