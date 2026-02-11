@@ -4,6 +4,7 @@ require('dotenv').config();
 
 async function updateUrl() {
     try {
+        await sequelize.sync({ alter: true });
         const seo = await GlobalSeo.findOne();
         if (seo) {
             seo.siteUrl = 'https://cpoint-sa.com';
