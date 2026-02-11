@@ -24,11 +24,14 @@ User.prototype.validPassword = async function(password) {
 };
 
 // Hash password before saving
-User.beforeCreate(async (user) => {
-    if (user.password) {
+const hashPassword = async (user) => {
+    if (user.changed('password')) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
     }
-});
+};
+
+User.beforeCreate(hashPassword);
+User.beforeUpdate(hashPassword);
 
 module.exports = User;
