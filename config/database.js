@@ -23,12 +23,18 @@ const loadEnv = () => {
 
 loadEnv();
 
-let sequelize;
+console.log('Using MySQL Database Configuration (Mandatory)');
 
-// Force MySQL if credentials exist, otherwise use SQLite locally
-if (process.env.DB_NAME && process.env.DB_USER) {
-    console.log('Using MySQL Database Configuration');
-    sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+if (!process.env.DB_NAME || !process.env.DB_USER) {
+    console.error('CRITICAL ERROR: MySQL credentials missing in environment variables!');
+    // On local, we might want to throw error or provide clear guidance
+}
+
+const sequelize = new Sequelize(
+    process.env.DB_NAME || 'creative_db', 
+    process.env.DB_USER || 'root', 
+    process.env.DB_PASSWORD || '', 
+    {
         host: process.env.DB_HOST || '127.0.0.1',
         dialect: 'mysql',
         logging: false,
@@ -38,19 +44,7 @@ if (process.env.DB_NAME && process.env.DB_USER) {
             acquire: 30000,
             idle: 10000
         }
-    });
-} else {
-    console.log('Using SQLite Fallback Database');
-    const dataDir = path.join(__dirname, '../data');
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
     }
-    
-    sequelize = new Sequelize({
-        dialect: 'sqlite',
-        storage: path.join(dataDir, 'database.sqlite'),
-        logging: false
-    });
-}
+);
 
 module.exports = sequelize;

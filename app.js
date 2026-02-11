@@ -46,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 // Ensure necessary directories exist
-['public/uploads', 'sessions', 'data'].forEach(dir => {
+['public/uploads', 'sessions'].forEach(dir => {
     const fullPath = path.join(__dirname, dir);
     if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
@@ -137,15 +137,14 @@ app.use('/admin', adminRoutes);
 app.use('/', mainRoutes);
 
 // Sync Database & Start server
-const isSQLite = !process.env.DB_NAME;
 const syncOptions = { 
-    alter: !isSQLite && (process.env.NODE_ENV === 'development'),
+    alter: process.env.NODE_ENV === 'development',
     force: false 
 };
 
 sequelize.sync(syncOptions)
     .then(async () => {
-        const msg = `Database synced successfully (${isSQLite ? 'SQLite' : 'MySQL'})`;
+        const msg = `Database synced successfully (MySQL)`;
         debugLog(msg);
         console.log(msg);
         app.listen(port, () => {
@@ -155,20 +154,8 @@ sequelize.sync(syncOptions)
         });
     })
     .catch(err => {
-        const errMsg = `Database sync error (trying fallback): ${err.message}`;
+        const errMsg = `Critical Database sync error: ${err.message}`;
         debugLog(errMsg);
         console.error(errMsg, err);
-        // Fallback sync for constraint issues
-        sequelize.sync().then(() => {
-            const fallbackMsg = `Server is running at http://localhost:${port} (Fallback Sync)`;
-            debugLog(fallbackMsg);
-            console.log(fallbackMsg);
-            app.listen(port, () => {
-                console.log(fallbackMsg);
-            });
-        }).catch(finalErr => {
-            const critMsg = `Critical Database error: ${finalErr.message}`;
-            debugLog(critMsg);
-            console.error(critMsg, finalErr);
-        });
+        process.exit(1); // Exit if database connection fails in mandatory MySQL mode
     });
