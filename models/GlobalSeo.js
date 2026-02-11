@@ -96,6 +96,15 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     address: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    // Service Section Customization
+    serviceOverlayOpacity: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.8
+    },
+    serviceImageBrightness: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.5
     }
 });
 

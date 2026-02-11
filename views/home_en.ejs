@@ -8,6 +8,24 @@
 <link rel="stylesheet" href="/css/portfolio-slider.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
+<style>
+    :root {
+        --service-overlay-opacity: <%= globalSeo && globalSeo.serviceOverlayOpacity !== undefined ? globalSeo.serviceOverlayOpacity : 0.8 %>;
+        --service-image-brightness: <%= globalSeo && globalSeo.serviceImageBrightness !== undefined ? globalSeo.serviceImageBrightness : 0.5 %>;
+    }
+    
+    .panel-overlay {
+        background: linear-gradient(to right, 
+            rgba(0,0,0, var(--service-overlay-opacity)) 0%, 
+            rgba(0,0,0, calc(var(--service-overlay-opacity) / 4)) 50%, 
+            rgba(0,0,0, var(--service-overlay-opacity)) 100%) !important;
+    }
+    
+    .parallax-img {
+        filter: brightness(var(--service-image-brightness)) contrast(1.1) !important;
+    }
+</style>
+
 <main>
         <!-- =========================
              Sticky Mask Hero Section
