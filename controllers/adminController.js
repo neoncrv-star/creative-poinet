@@ -122,6 +122,9 @@ exports.postDesignSettings = async (req, res) => {
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
 
+        // Handle checkbox
+        data.sliderAutoplay = req.body.sliderAutoplay === 'on';
+
         if (!seo) {
             seo = await GlobalSeo.create(data);
         } else {

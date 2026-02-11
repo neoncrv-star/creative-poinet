@@ -173,39 +173,55 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof Swiper !== 'undefined') {
         const isRtl = html.getAttribute('dir') === 'rtl';
         
+        // Read config from JSON script tag
+        let config = {};
+        const configElement = document.getElementById('slider-config-data');
+        if (configElement) {
+            try {
+                config = JSON.parse(configElement.textContent);
+            } catch (e) {
+                console.error('Error parsing slider config:', e);
+            }
+        }
+        
         const portfolioSwiper = new Swiper('.portfolio-swiper', {
-            slidesPerView: 1,
-            spaceBetween: 30,
+            slidesPerView: config.slidesPerView || 1,
+            spaceBetween: config.spaceBetween || 30,
             loop: true,
             centeredSlides: true,
             grabCursor: true,
             speed: 800,
             rtl: isRtl,
+            effect: config.effect || 'slide',
+            autoplay: config.autoplay ? {
+                delay: config.autoplayDelay || 3000,
+                disableOnInteraction: false,
+            } : false,
             navigation: {
-            nextEl: '.next-btn',
-            prevEl: '.prev-btn',
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-            dynamicBullets: true,
-        },
+                nextEl: '.next-btn',
+                prevEl: '.prev-btn',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true,
+            },
             breakpoints: {
                 640: {
-                    slidesPerView: 1.5,
+                    slidesPerView: Math.min(config.slidesPerView || 1.5, 1.5),
                     spaceBetween: 20,
                 },
                 768: {
-                    slidesPerView: 2,
+                    slidesPerView: Math.min(config.slidesPerView || 2, 2),
                     spaceBetween: 30,
                 },
                 1024: {
-                    slidesPerView: 2.5,
+                    slidesPerView: Math.min(config.slidesPerView || 2.5, 2.5),
                     spaceBetween: 40,
                 },
                 1200: {
-                    slidesPerView: 3,
-                    spaceBetween: 50,
+                    slidesPerView: config.slidesPerView || 3,
+                    spaceBetween: config.spaceBetween || 50,
                 }
             },
             on: {

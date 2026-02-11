@@ -31,6 +31,55 @@
                     </div>
                 </div>
 
+                <!-- Slider Customization Card -->
+                <div class="admin-card" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-images"></i> إعدادات سلايدر المشاريع
+                    </h3>
+                    
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>تأثير الانتقال (Slider Effect)</label>
+                            <select name="sliderEffect" class="form-control">
+                                <option value="slide" <%= seo.sliderEffect === 'slide' ? 'selected' : '' %>>انزلاق (Slide)</option>
+                                <option value="fade" <%= seo.sliderEffect === 'fade' ? 'selected' : '' %>>تلاشي (Fade)</option>
+                                <option value="cube" <%= seo.sliderEffect === 'cube' ? 'selected' : '' %>>مكعب (Cube)</option>
+                                <option value="coverflow" <%= seo.sliderEffect === 'coverflow' ? 'selected' : '' %>>تدفق (Coverflow)</option>
+                                <option value="flip" <%= seo.sliderEffect === 'flip' ? 'selected' : '' %>>قلب (Flip)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ارتفاع السلايدر (Slider Height)</label>
+                            <input type="text" name="sliderHeight" class="form-control" value="<%= seo.sliderHeight %>" placeholder="مثال: 500px أو 70vh">
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>عدد العروض في الشاشة (Slides Per View)</label>
+                            <input type="number" name="sliderSlidesPerView" class="form-control" value="<%= seo.sliderSlidesPerView %>" step="0.1" min="1" max="5">
+                        </div>
+                        <div class="form-group">
+                            <label>المسافة بين العناصر (Space Between)</label>
+                            <input type="number" name="sliderSpaceBetween" class="form-control" value="<%= seo.sliderSpaceBetween %>" min="0" max="100">
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>التشغيل التلقائي (Autoplay)</label>
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" name="sliderAutoplay" class="custom-control-input" id="sliderAutoplay" <%= seo.sliderAutoplay ? 'checked' : '' %>>
+                                <label class="custom-control-label" for="sliderAutoplay">تفعيل التشغيل التلقائي</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>سرعة التشغيل (Autoplay Delay - ms)</label>
+                            <input type="number" name="sliderAutoplayDelay" class="form-control" value="<%= seo.sliderAutoplayDelay %>" min="500" step="500">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Future Design Settings can be added here -->
             </div>
 

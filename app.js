@@ -4,8 +4,15 @@ const path = require('path');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const sequelize = require('./config/database');
+const fs = require('fs');
 
 const app = express();
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
 const port = process.env.PORT || 3000;
 
 // Session Config
@@ -13,7 +20,9 @@ app.set('trust proxy', 1); // trust first proxy
 app.use(session({
     store: new FileStore({
         path: './sessions',
-        retries: 0
+        retries: 1,
+        fileExtension: '.json',
+        ttl: 86400
     }),
     secret: process.env.SESSION_SECRET || 'creative_point_secret_key',
     resave: false,

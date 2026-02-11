@@ -11,8 +11,22 @@
     :root {
         --service-overlay-opacity: <%= (globalSeo && globalSeo.serviceOverlayOpacity !== undefined) ? globalSeo.serviceOverlayOpacity : 0.8 %>;
         --service-image-brightness: <%= (globalSeo && globalSeo.serviceImageBrightness !== undefined) ? globalSeo.serviceImageBrightness : 0.5 %>;
+        --slider-height: <%= (globalSeo && globalSeo.sliderHeight) ? globalSeo.sliderHeight : '500px' %>;
     }
     
+    .portfolio-swiper {
+        height: var(--slider-height) !important;
+    }
+    
+    .project-card {
+        height: 100% !important;
+    }
+
+    .project-card img, .project-card video {
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
     .panel-overlay {
         background: linear-gradient(to right, 
             rgba(0,0,0, var(--service-overlay-opacity)) 0%, 
@@ -451,4 +465,14 @@
     <script src="/js/journey-animation.js"></script>
     <script src="/js/services-animation.js"></script>
 
-<%- include('partials/footer') %>
+    <!-- Slider Config Injection -->
+    <script id="slider-config-data" type="application/json">
+        <%- JSON.stringify({
+            effect: (seo && seo.sliderEffect) ? seo.sliderEffect : "slide",
+            autoplay: (seo && seo.sliderAutoplay) ? true : false,
+            autoplayDelay: (seo && seo.sliderAutoplayDelay) ? seo.sliderAutoplayDelay : 3000,
+            slidesPerView: (seo && seo.sliderSlidesPerView) ? seo.sliderSlidesPerView : 3,
+            spaceBetween: (seo && seo.sliderSpaceBetween) ? seo.sliderSpaceBetween : 30
+        }) %>
+    </script>
+    <%- include('partials/footer') %>

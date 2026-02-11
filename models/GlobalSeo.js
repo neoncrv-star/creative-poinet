@@ -105,6 +105,31 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     serviceImageBrightness: {
         type: DataTypes.FLOAT,
         defaultValue: 0.5
+    },
+    // Slider Customization
+    sliderEffect: {
+        type: DataTypes.STRING,
+        defaultValue: 'slide' // slide, fade, cube, coverflow, flip
+    },
+    sliderHeight: {
+        type: DataTypes.STRING,
+        defaultValue: '500px'
+    },
+    sliderAutoplay: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
+    sliderAutoplayDelay: {
+        type: DataTypes.INTEGER,
+        defaultValue: 3000
+    },
+    sliderSlidesPerView: {
+        type: DataTypes.FLOAT,
+        defaultValue: 3
+    },
+    sliderSpaceBetween: {
+        type: DataTypes.INTEGER,
+        defaultValue: 30
     }
 });
 
