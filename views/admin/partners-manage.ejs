@@ -1,0 +1,73 @@
+<%- include('layout-header') %>
+
+<div class="admin-card">
+    <div class="card-header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 1.25rem; color: var(--secondary-color);">إدارة الشركاء</h2>
+        <a href="/admin/partners/add" class="btn btn-primary">
+            <i class="fas fa-plus"></i> إضافة شريك جديد
+        </a>
+    </div>
+
+    <div class="admin-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>الشعار</th>
+                    <th>اسم الشريك</th>
+                    <th>الترتيب</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (partners.length > 0) { %>
+                    <% partners.forEach(partner => { %>
+                        <tr>
+                            <td>
+                                <% if (partner.logo) { %>
+                                    <img src="<%= partner.logo %>" alt="<%= partner.name %>" style="width: 80px; height: 40px; object-fit: contain; background: #f8f9fa; border-radius: 4px; padding: 5px; border: 1px solid #eee;">
+                                <% } else { %>
+                                    <div style="width: 80px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-handshake text-muted"></i>
+                                    </div>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; color: var(--secondary-color);"><%= partner.name %></div>
+                            </td>
+                            <td>
+                                <span class="badge badge-read"><%= partner.display_order %></span>
+                            </td>
+                            <td>
+                                <% if(partner.is_active) { %>
+                                    <span class="badge" style="background: #dff9fb; color: #0984e3;">نشط</span>
+                                <% } else { %>
+                                    <span class="badge" style="background: #ffeaa7; color: #d35400;">غير نشط</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="/admin/partners/edit/<%= partner.id %>" class="btn btn-sm btn-info" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/admin/partners/delete/<%= partner.id %>" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            <i class="fas fa-users fa-3x" style="display: block; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            لا يوجد شركاء مضافون حالياً.
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('layout-footer') %>

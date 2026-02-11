@@ -1,0 +1,169 @@
+<%- include('layout-header') %>
+
+<div class="admin-content-inner">
+    <div class="admin-topbar-actions" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-weight: 700; color: var(--secondary-color);"><%= service ? 'تعديل الخدمة' : 'إضافة خدمة جديدة' %></h2>
+        <a href="/admin/services" class="btn btn-secondary" style="background: #eee; color: var(--text-main);">
+            <i class="fas fa-arrow-right"></i> إلغاء والعودة
+        </a>
+    </div>
+
+    <form action="/admin/services/<%= service ? 'edit/' + service.id : 'add' %>" method="POST" enctype="multipart/form-data">
+        <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <!-- Main Content Column -->
+            <div class="form-main-col">
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-language"></i> البيانات باللغة العربية
+                    </h3>
+                    <div class="form-group">
+                        <label>العنوان (عربي)</label>
+                        <input type="text" name="title_ar" value="<%= service ? service.title_ar : '' %>" placeholder="مثلاً: التصميم المعماري" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الوصف (عربي)</label>
+                        <textarea name="description_ar" rows="4" placeholder="اكتب وصفاً تفصيلياً للخدمة باللغة العربية..." required><%= service ? service.description_ar : '' %></textarea>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-globe"></i> البيانات باللغة الإنجليزية
+                    </h3>
+                    <div class="form-group">
+                        <label>العنوان (English)</label>
+                        <input type="text" name="title_en" value="<%= service ? service.title_en : '' %>" style="direction: ltr;" placeholder="e.g. Architectural Design" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الوصف (English)</label>
+                        <textarea name="description_en" rows="4" style="direction: ltr;" placeholder="Write a detailed description in English..." required><%= service ? service.description_en : '' %></textarea>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-tags"></i> الكلمات الدلالية للخدمة (تظهر أسفل الكرت)
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label>الكلمات بالعربية</label>
+                            <div class="form-group">
+                                <input type="text" name="tag1_ar" value="<%= service ? service.tag1_ar : 'استراتيجية' %>" placeholder="الكلمة الأولى">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="tag2_ar" value="<%= service ? service.tag2_ar : 'تصميم' %>" placeholder="الكلمة الثانية">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="tag3_ar" value="<%= service ? service.tag3_ar : 'تنفيذ' %>" placeholder="الكلمة الثالثة">
+                            </div>
+                        </div>
+                        <div>
+                            <label>الكلمات بالإنجليزية</label>
+                            <div class="form-group">
+                                <input type="text" name="tag1_en" value="<%= service ? service.tag1_en : 'Strategy' %>" placeholder="First Tag" style="direction: ltr;">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="tag2_en" value="<%= service ? service.tag2_en : 'Design' %>" placeholder="Second Tag" style="direction: ltr;">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="tag3_en" value="<%= service ? service.tag3_en : 'Execution' %>" placeholder="Third Tag" style="direction: ltr;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO Section -->
+                <div class="admin-card" style="border-right: 4px solid #00b894;">
+                    <h3 style="margin-bottom: 1.5rem; color: #00b894;">
+                        <i class="fas fa-search"></i> تحسين محركات البحث (SEO)
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label>عنوان السيو (Meta Title)</label>
+                        <input type="text" name="seoTitle" value="<%= service ? service.seoTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان الخدمة">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>وصف السيو (Meta Description)</label>
+                        <textarea name="seoDescription" rows="3" placeholder="وصف مختصر لمحركات البحث..."><%= service ? service.seoDescription : '' %></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>الكلمات المفتاحية (Keywords)</label>
+                        <input type="text" name="seoKeywords" value="<%= service ? service.seoKeywords : '' %>" placeholder="كلمة1, كلمة2, ...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="form-side-col">
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-cog"></i> الإعدادات
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-sort-numeric-down"></i> ترتيب العرض</label>
+                        <input type="number" name="display_order" value="<%= service ? service.display_order : 0 %>">
+                    </div>
+
+                    <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="is_active" style="width: 20px; height: 20px;" <%= (!service || service.is_active) ? 'checked' : '' %>>
+                            <span>تفعيل الخدمة (ظهور في الموقع)</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; padding: 1rem; margin-top: 1rem;">
+                        <i class="fas fa-save"></i> <%= service ? 'حفظ التعديلات' : 'إضافة الخدمة' %>
+                    </button>
+                </div>
+
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-image"></i> صورة الخدمة
+                    </h3>
+                    
+                    <% if (service && service.image) { %>
+                        <div class="current-image" style="margin-bottom: 1rem; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+                            <img src="<%= service.image %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
+                        </div>
+                    <% } else { %>
+                        <div class="no-image" style="background: #f8f9fa; height: 150px; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; border-radius: 8px; margin-bottom: 1rem; color: var(--text-muted);">
+                            <i class="fas fa-concierge-bell fa-3x"></i>
+                        </div>
+                    <% } %>
+
+                    <div class="file-upload-wrapper" style="position: relative;">
+                        <input type="file" name="image" id="service-image" accept="image/*" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;" onchange="updateFileName(this)">
+                        <div class="btn btn-outline" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center;">
+                            <i class="fas fa-cloud-upload-alt"></i> اختر صورة
+                        </div>
+                        <div id="file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
+                    </div>
+                    <small style="display: block; margin-top: 10px; color: var(--text-muted); text-align: center;">يفضل استخدام صور عالية الجودة بنسبة 4:3</small>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function updateFileName(input) {
+    const fileName = input.files[0]?.name;
+    document.getElementById('file-name').textContent = fileName ? `المجلد المختار: ${fileName}` : '';
+}
+</script>
+
+<style>
+@media (max-width: 992px) {
+    .form-layout {
+        grid-template-columns: 1fr !important;
+    }
+    .form-side-col {
+        order: -1;
+    }
+}
+</style>
+
+<%- include('layout-footer') %>

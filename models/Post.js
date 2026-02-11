@@ -35,6 +35,10 @@ const Post = sequelize.define('Post', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
     // Stats
     views: {
         type: DataTypes.INTEGER,

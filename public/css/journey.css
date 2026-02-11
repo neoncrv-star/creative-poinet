@@ -1,0 +1,97 @@
+/* Journey Section Styles */
+.journey-scroll-section {
+    background-color: var(--bg-color, #050505); /* Support variable background */
+    background-image: radial-gradient(circle at 50% 50%, #1a0505 0%, #050505 60%); /* Subtle red/dark glow */
+    padding: 150px 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="light"] .journey-scroll-section {
+    background-color: #fff;
+    background-image: none; /* Remove dark gradient in light mode */
+}
+
+.journey-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 40px;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+}
+
+.journey-eyebrow {
+    font-size: 1rem;
+    color: var(--primary-color, #e44b30); /* Use primary color variable */
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 3rem;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.journey-text-content {
+    font-size: clamp(1.8rem, 4vw, 3.5rem); /* Responsive large text */
+    font-weight: 900; /* Thicker font weight */
+    line-height: 1.2; /* Reduced line height */
+    color: var(--text-color, #fff);
+    display: block; /* Changed from flex to block for paragraph flow */
+    text-align: center; /* Keep centered or change to justify if requested */
+    max-width: 90%; /* Ensure it doesn't touch edges too much */
+    margin: 0 auto;
+}
+
+[data-theme="light"] .journey-text-content {
+    color: #000;
+}
+
+.journey-line {
+    display: inline; /* Make it flow like a paragraph */
+    opacity: 0.1; /* Inactive state */
+    color: currentColor; /* Use text color */
+    /* transform removed for inline display compatibility */
+    will-change: opacity, filter, color;
+    filter: blur(3px); /* Cinematic blur for inactive */
+    margin: 0; /* Natural spacing from HTML newlines */
+    padding: 2px 0; /* Slight padding */
+    box-decoration-break: clone; /* Ensures styles apply correctly across line breaks */
+    -webkit-box-decoration-break: clone;
+}
+
+[data-theme="light"] .journey-line {
+    opacity: 0.15; /* Slightly more visible in light mode when inactive */
+}
+
+/* Active class used by JS */
+.journey-line.is-active {
+    opacity: 1;
+    color: currentColor;
+    filter: blur(0);
+}
+
+/* RTL Adjustments */
+html[dir="rtl"] .journey-eyebrow {
+    letter-spacing: 0;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .journey-scroll-section {
+        padding: 100px 0;
+    }
+    
+    .journey-text-content {
+        font-size: 1.8rem;
+        gap: 20px;
+    }
+    
+    .journey-line {
+        opacity: 0.15;
+    }
+}

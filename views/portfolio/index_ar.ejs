@@ -1,0 +1,160 @@
+<%- include('../partials/header') %>
+
+<!-- Page Specific CSS -->
+<link rel="stylesheet" href="/css/portfolio-page.css">
+
+<main class="portfolio-page-body">
+    <!-- Portfolio Hero Section -->
+    <section class="portfolio-hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="eyebrow" data-gsap="fade-up">معرض الإبداع</span>
+                <h1 class="page-title" data-gsap="fade-up">مشاريع تجسد<br>رؤيتنا</h1>
+                <p class="page-desc" data-gsap="fade-up">
+                    نحن لا نصمم مجرد صور، بل نبني هويات وتجارب تترك أثراً حقيقياً. 
+                    اكتشف كيف حولنا الأفكار إلى واقع ملموس.
+                </p>
+            </div>
+        </div>
+        <div class="hero-bg-accent"></div>
+    </section>
+
+    <!-- Portfolio Main Content Wrapper -->
+    <div class="portfolio-main-content">
+        <!-- Category Tabs -->
+        <section class="portfolio-tabs-section">
+            <div class="container">
+                <div class="tabs-container" data-gsap="fade-up">
+                    <button class="tab-btn active" data-filter="all">الكل</button>
+                    <% categories.forEach(cat => { %>
+                        <button class="tab-btn" data-filter="<%= cat.slug %>"><%= cat.name %></button>
+                    <% }) %>
+                    <% if (projects.some(p => p.category === 'other' || !p.CategoryId)) { %>
+                        <button class="tab-btn" data-filter="other">أخرى</button>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Grid -->
+        <section class="portfolio-grid-section">
+            <div class="container">
+                <div class="portfolio-grid">
+                    <% if (projects && projects.length > 0) { %>
+                        <% projects.forEach((project, index) => { %>
+                            <div class="portfolio-item" data-category="<%= project.Category ? project.Category.slug : (project.category || 'other') %>" data-gsap="fade-up">
+                                <a href="/portfolio/<%= project.id %>" class="item-link">
+                                    <div class="item-image-wrapper">
+                                        <% if (project.image) { %>
+                                            <img src="<%= project.image %>" alt="<%= project.title %>">
+                                        <% } else { %>
+                                            <div class="no-image">🖼️</div>
+                                        <% } %>
+                                        <div class="item-overlay">
+                                            <span class="view-btn">عرض المشروع <i class="ri-arrow-left-up-line"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-text">
+                                            <span class="item-category">
+                                                <%= project.Category ? project.Category.name : (project.category === 'other' ? 'إبداع' : project.category) %>
+                                            </span>
+                                            <h3 class="item-title"><%= project.title %></h3>
+                                        </div>
+                                        <div class="item-arrow">
+                                            <i class="ri-arrow-left-up-line"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="no-projects">
+                            <p>لا توجد مشاريع مضافة حالياً. كن أول من يرى إبداعنا قريباً!</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </div><!-- End portfolio-main-content -->
+
+    <!-- Contact Section (Copied from home) -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info" data-gsap="fade-left">
+                    <h2 class="contact-title">لنبدأ رحلة<br>إبداعية جديدة</h2>
+                    <p class="contact-subtitle">نحن هنا لنسمع أفكارك ونحولها إلى استراتيجية بصرية مؤثرة. تواصل معنا اليوم.</p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="ri-phone-line"></i>
+                            <div>
+                                <span>اتصل بنا</span>
+                                <p dir="ltr">+966 56 839 49 45</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-mail-line"></i>
+                            <div>
+                                <span>البريد الإلكتروني</span>
+                                <p>info@cpoint-sa.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-map-pin-line"></i>
+                            <div>
+                                <span>الموقع</span>
+                                <p>المملكة العربية السعودية، الرياض</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="#"><i class="ri-instagram-line"></i></a>
+                        <a href="#"><i class="ri-twitter-x-line"></i></a>
+                        <a href="#"><i class="ri-linkedin-line"></i></a>
+                        <a href="#"><i class="ri-whatsapp-line"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper" data-gsap="fade-right">
+                    <form action="/contact" method="POST" class="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="الاسم الكامل" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="phone" placeholder="رقم الجوال">
+                        </div>
+                        <div class="form-group">
+                            <select name="service">
+                                <option value="" disabled selected>نوع الخدمة المطلوبة</option>
+                                <option value="branding">الهوية البصرية</option>
+                                <option value="marketing">التسويق الرقمي</option>
+                                <option value="web">تطوير المواقع</option>
+                                <option value="other">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" rows="5" placeholder="تفاصيل المشروع" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span>إرسال الطلب</span>
+                            <i class="ri-send-plane-fill"></i>
+                        </button>
+                    </form>
+                    
+                    <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
+                        <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-left: 10px;"></i>
+                        تم إرسال طلبك بنجاح! سنتواصل معك قريباً.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+    <%- include('../partials/footer') %>

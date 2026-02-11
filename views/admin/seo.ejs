@@ -1,44 +1,224 @@
 <%- include('layout-header') %>
 
-<div class="seo-container">
-    <div class="card">
-        <h3>إعدادات السيو العامة</h3>
-        <form action="/admin/seo" method="POST">
-            <div class="form-group">
-                <label>عنوان الموقع (Site Title)</label>
-                <input type="text" name="siteTitle" value="<%= seo ? seo.siteTitle : 'نقطة إبداعية' %>" required>
-            </div>
-            <div class="form-group">
-                <label>رابط الموقع (Site URL)</label>
-                <input type="url" name="siteUrl" value="<%= seo ? seo.siteUrl : 'https://deepskyblue-ibis-975175.hostingersite.com' %>" required>
-            </div>
-            <div class="form-group">
-                <label>فاصل العنوان (Separator)</label>
-                <input type="text" name="titleSeparator" value="<%= seo ? seo.titleSeparator : '|' %>" placeholder="|">
-            </div>
-            <div class="form-group">
-                <label>الوصف الافتراضي (Default Description)</label>
-                <textarea name="defaultDescription" rows="3"><%= seo ? seo.defaultDescription : '' %></textarea>
-            </div>
-            <div class="form-group">
-                <label>الكلمات المفتاحية الافتراضية</label>
-                <input type="text" name="defaultKeywords" value="<%= seo ? seo.defaultKeywords : '' %>">
-            </div>
-
-            <hr>
-            <h4>الصفحة الرئيسية</h4>
-            <div class="form-group">
-                <label>عنوان الرئيسية (Home Title)</label>
-                <input type="text" name="homeTitle" value="<%= seo ? seo.homeTitle : '' %>" placeholder="اتركه فارغاً لاستخدام الافتراضي">
-            </div>
-            <div class="form-group">
-                <label>وصف الرئيسية (Home Description)</label>
-                <textarea name="homeDescription" rows="3"><%= seo ? seo.homeDescription : '' %></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary">حفظ الإعدادات</button>
-        </form>
+<div class="admin-content-inner">
+    <div class="admin-topbar-actions" style="margin-bottom: 2rem;">
+        <h2 style="font-weight: 700; color: var(--secondary-color);"><i class="fas fa-search"></i> إعدادات السيو والوسائط</h2>
+        <p style="color: var(--text-muted); margin-top: 5px;">تحكم في كيفية ظهور موقعك في محركات البحث وإعدادات الفيديو الرئيسية.</p>
     </div>
+
+    <form action="/admin/seo" method="POST" enctype="multipart/form-data">
+        <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <!-- Main Settings Column -->
+            <div class="form-main-col">
+                <!-- General SEO Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-globe-americas"></i> إعدادات السيو العامة
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label>عنوان الموقع (Site Title)</label>
+                        <input type="text" name="siteTitle" value="<%= seo ? seo.siteTitle : 'نقطة إبداعية' %>" required placeholder="نقطة إبداعية | Creative Point">
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>رابط الموقع (Site URL)</label>
+                            <input type="url" name="siteUrl" value="<%= seo ? seo.siteUrl : 'https://deepskyblue-ibis-975175.hostingersite.com' %>" required placeholder="https://yourdomain.com">
+                        </div>
+                        <div class="form-group">
+                            <label>فاصل العنوان (Separator)</label>
+                            <input type="text" name="titleSeparator" value="<%= seo ? seo.titleSeparator : '|' %>" placeholder="|">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الوصف الافتراضي (Default Description)</label>
+                        <textarea name="defaultDescription" rows="3" placeholder="وصف عام للموقع يظهر في حال عدم وجود وصف مخصص..."><%= seo ? seo.defaultDescription : '' %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الكلمات المفتاحية الافتراضية</label>
+                        <input type="text" name="defaultKeywords" value="<%= seo ? seo.defaultKeywords : '' %>" placeholder="كلمة1, كلمة2, كلمة3...">
+                    </div>
+                </div>
+
+                <!-- Homepage Specific Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-home"></i> إعدادات الصفحة الرئيسية
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label>عنوان الرئيسية (Home Title)</label>
+                        <input type="text" name="homeTitle" value="<%= seo ? seo.homeTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان الموقع">
+                    </div>
+
+                    <div class="form-group">
+                        <label>وصف الرئيسية (Home Description)</label>
+                        <textarea name="homeDescription" rows="3" placeholder="وصف مخصص للصفحة الرئيسية..."><%= seo ? seo.homeDescription : '' %></textarea>
+                    </div>
+                </div>
+
+                <!-- Portfolio & Blog Pages Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-file-alt"></i> إعدادات صفحات القوائم (أعمالنا والمدونة)
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">صفحة أعمالنا</h4>
+                            <div class="form-group">
+                                <label>عنوان الصفحة</label>
+                                <input type="text" name="portfolioTitle" value="<%= seo ? seo.portfolioTitle : '' %>" placeholder="أعمالنا | مشاريعنا المميزة">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الصفحة</label>
+                                <textarea name="portfolioDescription" rows="3" placeholder="تصفح معرض أعمالنا ومشاريعنا..."><%= seo ? seo.portfolioDescription : '' %></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">صفحة المدونة</h4>
+                            <div class="form-group">
+                                <label>عنوان الصفحة</label>
+                                <input type="text" name="blogTitle" value="<%= seo ? seo.blogTitle : '' %>" placeholder="المدونة | آخر الأخبار والمقالات">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الصفحة</label>
+                                <textarea name="blogDescription" rows="3" placeholder="تابع آخر التطورات والمقالات التقنية..."><%= seo ? seo.blogDescription : '' %></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structured Data Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-project-diagram"></i> البيانات المهيكلة (Schema.org)
+                    </h3>
+                    <div class="form-group">
+                        <label>كود JSON-LD للشركة (Organization Schema)</label>
+                        <textarea name="organizationSchema" rows="8" placeholder='{"@context": "https://schema.org", "@type": "Organization", ...}' style="direction: ltr; font-family: monospace; font-size: 0.85rem;"><%= seo ? seo.organizationSchema : "" %></textarea>
+                        <small style="color: var(--text-muted);">اتركه فارغاً ليتم توليده تلقائياً من بيانات الاتصال أدناه.</small>
+                    </div>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>البريد الإلكتروني للاتصال</label>
+                            <input type="email" name="contactEmail" value="<%= seo ? seo.contactEmail : '' %>" placeholder="info@creativepoint.sa">
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الهاتف للاتصال</label>
+                            <input type="text" name="contactPhone" value="<%= seo ? seo.contactPhone : '' %>" placeholder="+966 5XX XXX XXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان الفعلي (Address)</label>
+                        <textarea name="address" rows="2" placeholder="الرياض، المملكة العربية السعودية..."><%= seo ? seo.address : "" %></textarea>
+                    </div>
+                </div>
+
+                <!-- Advanced Scripts Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-code"></i> أكواد مخصصة (Custom Scripts)
+                    </h3>
+                    <div class="form-group">
+                        <label>أكواد الهيدر (Header Scripts - &lt;head&gt;)</label>
+                        <textarea name="customScriptsHeader" rows="5" placeholder="Google Analytics, Tag Manager, Facebook Pixel..." style="direction: ltr; font-family: monospace; font-size: 0.85rem;"><%= seo ? seo.customScriptsHeader : "" %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>أكواد الفوتر (Footer Scripts - before &lt;/body&gt;)</label>
+                        <textarea name="customScriptsFooter" rows="5" placeholder="Chat widgets, Tracking pixels..." style="direction: ltr; font-family: monospace; font-size: 0.85rem;"><%= seo ? seo.customScriptsFooter : "" %></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="form-side-col">
+                <!-- Save Card -->
+                <div class="admin-card" style="position: sticky; top: 90px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-save"></i> حفظ الإعدادات
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">تأكد من مراجعة التغييرات قبل الحفظ، حيث تؤثر هذه الإعدادات على أرشفة الموقع.</p>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; padding: 1rem;">
+                        <i class="fas fa-check-circle"></i> حفظ كافة الإعدادات
+                    </button>
+                </div>
+
+                <!-- Identity Assets Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-fingerprint"></i> أصول الهوية (Identity)
+                    </h3>
+                    <div class="form-group">
+                        <label>أيقونة الموقع (Favicon)</label>
+                        <% if (seo && seo.favicon) { %>
+                            <div style="margin-bottom: 10px; text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+                                <img src="<%= seo.favicon %>" alt="Favicon" style="width: 32px; height: 32px;">
+                            </div>
+                        <% } %>
+                        <input type="file" name="favicon" accept="image/x-icon,image/png">
+                    </div>
+                    <div class="form-group">
+                        <label>صورة المشاركة الاجتماعية (OG Image)</label>
+                        <% if (seo && seo.ogImage) { %>
+                            <div style="margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #eee;">
+                                <img src="<%= seo.ogImage %>" alt="OG Image" style="width: 100%; height: auto; display: block;">
+                            </div>
+                        <% } %>
+                        <input type="file" name="ogImage" accept="image/*">
+                        <small style="color: var(--text-muted);">يفضل مقاس 1200×630 بكسل.</small>
+                    </div>
+                </div>
+
+                <!-- Tracking & Social Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-chart-line"></i> التتبع والتواصل
+                    </h3>
+                    <div class="form-group">
+                        <label>Google Analytics ID</label>
+                        <input type="text" name="googleAnalyticsId" value="<%= seo ? seo.googleAnalyticsId : '' %>" placeholder="UA-XXXXXXXXX-X or G-XXXXXXXXXX" style="direction: ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Facebook Pixel ID</label>
+                        <input type="text" name="facebookPixelId" value="<%= seo ? seo.facebookPixelId : '' %>" placeholder="XXXXXXXXXXXXXXXX" style="direction: ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>حساب تويتر (Twitter @)</label>
+                        <input type="text" name="twitterHandle" value="<%= seo ? seo.twitterHandle : '' %>" placeholder="@CreativePoint" style="direction: ltr;">
+                    </div>
+                </div>
+
+                <!-- Video Card -->
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-play-circle"></i> فيديو الهيرو (Hero Video)
+                    </h3>
+                    <div class="form-group">
+                        <label>رابط الفيديو (MP4 URL)</label>
+                        <input type="url" name="heroVideoUrl" value="<%= seo ? seo.heroVideoUrl : '' %>" placeholder="https://example.com/video.mp4" style="direction: ltr;">
+                        <small style="display: block; margin-top: 10px; color: var(--text-muted); line-height: 1.4;">
+                            <i class="fas fa-info-circle"></i> استخدم رابطاً مباشراً لملف MP4 لضمان التشغيل التلقائي.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+
+<style>
+@media (max-width: 992px) {
+    .form-layout {
+        grid-template-columns: 1fr !important;
+    }
+    .form-side-col {
+        order: -1;
+    }
+}
+</style>
 
 <%- include('layout-footer') %>

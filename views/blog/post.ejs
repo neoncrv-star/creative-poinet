@@ -1,12 +1,40 @@
 <%- include('../partials/header') %>
 
-<article class="post-detail">
-    <h2><%= post.title %></h2>
-    <small><%= post.date %></small>
-    <div class="content">
-        <p><%= post.content %></p>
+<link rel="stylesheet" href="/css/blog.css">
+
+<main class="post-detail-page">
+    <div class="container">
+        <a href="/blog" class="back-to-blog">
+            <i class="ri-arrow-<%= typeof isEn !== 'undefined' && isEn ? 'left' : 'right' %>-line"></i>
+            <%= typeof isEn !== 'undefined' && isEn ? 'Back to Blog' : 'العودة للمدونة' %>
+        </a>
+
+        <article class="post-full-content">
+            <header class="post-header" data-gsap="fade-up">
+                <h1 class="post-title"><%= post.title %></h1>
+                <div class="post-meta">
+                    <span class="post-date">
+                        <i class="ri-calendar-line"></i>
+                        <%= new Date(post.date).toLocaleDateString(typeof isEn !== 'undefined' && isEn ? 'en-US' : 'ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                    </span>
+                    <% if(post.author) { %>
+                        <span class="post-author">
+                            <i class="ri-user-line"></i>
+                            <%= post.author %>
+                        </span>
+                    <% } %>
+                </div>
+            </header>
+
+            <% if(post.image) { %>
+                <img src="<%= post.image %>" alt="<%= post.title %>" class="post-featured-image" data-gsap="fade-up">
+            <% } %>
+
+            <div class="post-content" data-gsap="fade-up">
+                <%- post.content %>
+            </div>
+        </article>
     </div>
-    <a href="/blog">عودة للمدونة</a>
-</article>
+</main>
 
 <%- include('../partials/footer') %>

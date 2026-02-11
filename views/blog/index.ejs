@@ -1,22 +1,63 @@
 <%- include('../partials/header') %>
 
-<section class="blog">
-    <div style="text-align: center; margin-bottom: 3rem;">
-        <h2>المدونة</h2>
-        <p>أفكار ورؤى في عالم التصميم والتكنولوجيا</p>
-    </div>
-    <div class="posts-list">
-        <% posts.forEach(post => { %>
-            <article class="post-summary">
-                <div style="padding: 1rem 1rem 0;">
-                    <small style="padding: 0; color: var(--primary-color); font-weight: bold;"><%= post.date %></small>
-                </div>
-                <h3><%= post.title %></h3>
-                <p><%= post.excerpt %></p>
-                <a href="/blog/<%= post.id %>">اقرأ المزيد</a>
-            </article>
-        <% }) %>
-    </div>
-</section>
+<link rel="stylesheet" href="/css/blog.css">
+
+<main class="blog-page-body">
+    <!-- Blog Hero Section -->
+    <section class="blog-hero">
+        <div class="container">
+            <div class="hero-content" data-gsap="fade-up">
+                <span class="eyebrow"><%= typeof isEn !== 'undefined' && isEn ? 'Insights & Stories' : 'رؤى وقصص' %></span>
+                <h1 class="page-title">
+                    <% if(typeof isEn !== 'undefined' && isEn) { %>
+                        Creative Point<br>Blog
+                    <% } else { %>
+                        مدونة<br>نقطة إبداعية
+                    <% } %>
+                </h1>
+                <p class="page-desc">
+                    <% if(typeof isEn !== 'undefined' && isEn) { %>
+                        Discover the latest trends in design, technology, and branding.
+                    <% } else { %>
+                        اكتشف أحدث الاتجاهات في التصميم، التكنولوجيا، وبناء العلامات التجارية.
+                    <% } %>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Grid Section -->
+    <section class="blog-grid-section">
+        <div class="container">
+            <div class="blog-grid">
+                <% if (posts && posts.length > 0) { %>
+                    <% posts.forEach((post, index) => { %>
+                        <article class="blog-card" data-gsap="fade-up">
+                            <% if(post.image) { %>
+                                <img src="<%= post.image %>" alt="<%= post.title %>" class="blog-card-image">
+                            <% } %>
+                            <div class="blog-card-content">
+                                <span class="blog-card-date">
+                                    <i class="ri-calendar-line"></i> 
+                                    <%= new Date(post.date).toLocaleDateString(typeof isEn !== 'undefined' && isEn ? 'en-US' : 'ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                                </span>
+                                <h2 class="blog-card-title"><%= post.title %></h2>
+                                <p class="blog-card-excerpt"><%= post.excerpt %></p>
+                                <a href="/blog/<%= post.id %>" class="blog-card-link">
+                                    <%= typeof isEn !== 'undefined' && isEn ? 'Read More' : 'اقرأ المزيد' %>
+                                    <i class="ri-arrow-<%= typeof isEn !== 'undefined' && isEn ? 'right' : 'left' %>-line"></i>
+                                </a>
+                            </div>
+                        </article>
+                    <% }) %>
+                <% } else { %>
+                    <div class="no-posts" style="text-align: center; grid-column: 1/-1; padding: 100px 0;">
+                        <p><%= typeof isEn !== 'undefined' && isEn ? 'No articles found.' : 'لا توجد مقالات حالياً.' %></p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+</main>
 
 <%- include('../partials/footer') %>

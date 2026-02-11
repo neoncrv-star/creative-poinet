@@ -1,155 +1,435 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/css/style.css">
-    <!-- Remix Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-</head>
-<body>
+<% const isEn = true; %>
+<%- include('partials/header', { isEn: isEn }) %>
 
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="logo">
-                <h2>CREATIVE POINT</h2>
-            </div>
-            <nav>
-                <a href="#journey">Journey</a>
-                <a href="#services">Services</a>
-                <a href="#partners">Partners</a>
-                <a href="#contact">Contact</a>
-                <a href="/" class="lang-switch">العربية</a>
-            </nav>
-        </div>
-    </header>
+<!-- Page Specific CSS -->
+<link rel="stylesheet" href="/css/hero.css">
+<link rel="stylesheet" href="/css/journey.css">
+<link rel="stylesheet" href="/css/services.css">
+<link rel="stylesheet" href="/css/portfolio-slider.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero">
-            <div class="container">
-                <h1>Every Creativity Starts <br> With a Point</h1>
-                <p>This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset at Creative Point.</p>
-                <a href="#journey" class="btn">SCROLL</a>
+<main>
+        <!-- =========================
+             Sticky Mask Hero Section
+        ========================== -->
+        <section class="hero-sticky-section">
+            <div class="hero-sticky-wrapper">
+                
+                <!-- The Mask/Reveal Container -->
+                <div class="hero-mask-container">
+                    <% if (seo && seo.heroVideoUrl && seo.heroVideoUrl.includes('youtube')) { %>
+                        <iframe class="hero-video" 
+                            src="<%= seo.heroVideoUrl %>" 
+                            title="Hero Video" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    <% } else if (seo && seo.heroVideoUrl) { %>
+                        <video class="hero-video" playsinline muted loop autoplay preload="auto">
+                            <source src="<%= seo.heroVideoUrl %>" type="video/mp4">
+                        </video>
+                    <% } else { %>
+                        <video class="hero-video" playsinline muted loop autoplay preload="auto">
+                            <source src="https://cdn.coverr.co/videos/coverr-red-smoke-5374/1080p.mp4" type="video/mp4">
+                        </video>
+                    <% } %>
+                    
+                    <!-- Content revealed inside the video -->
+                    <div class="hero-content-overlay">
+                        <h1 class="hero-title">Every Creativity Starts <br> With a Point</h1>
+                        <p class="hero-subtitle">
+                            This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset at Creative Point.
+                        </p>
+                        <a href="#journey" class="hero-btn">Explore</a>
+                    </div>
+                </div>
+
+                <!-- Initial Elements (Visible before scroll) -->
+                <div class="hero-initial-point">
+                    <div class="dots-wrapper">
+                        <div class="point-dot-white"></div>
+                        <div class="point-dot-red"></div>
+                    </div>
+                    <div class="hero-initial-text">The Point</div>
+                </div>
+
+                <div class="scroll-mouse-icon">
+                    <div class="mouse-shape">
+                        <div class="mouse-wheel"></div>
+                    </div>
+                    <span class="scroll-text">Scroll</span>
+                </div>
+                
             </div>
         </section>
 
         <!-- Journey Section -->
-        <section id="journey">
-            <div class="container">
-                <h2>Journey</h2>
-                <p class="subtitle">Creative Point Agency</p>
-                <div class="content">
-                    <p>A full-service creative and marketing agency built around one clear idea before any execution begins. In a world crowded with visual and advertising noise, we don't start with decoration; we start with a smart, unified strategic decision.</p>
-                    <p>From this point, we bring creativity back to its true essence: a solid visual identity, professional design solutions, and high-quality exhibition and conference setups.</p>
+        <section id="journey" class="journey-scroll-section">
+            <div class="journey-container">
+                <p class="journey-eyebrow">Creative Point Agency</p>
+                <div class="journey-text-content">
+                    <span class="journey-line">A full-service creative and marketing agency</span>
+                    <span class="journey-line">Built around one clear idea before any execution begins</span>
+                    <span class="journey-line">In a world crowded with visual and advertising noise</span>
+                    <span class="journey-line">We don't start with decoration</span>
+                    <span class="journey-line">We start with a smart, unified strategic decision</span>
+                    <span class="journey-line">From this point, we bring creativity back to its true essence</span>
+                    <span class="journey-line">A solid visual identity</span>
+                    <span class="journey-line">Professional design solutions</span>
+                    <span class="journey-line">And high-quality exhibition and conference setups</span>
                 </div>
             </div>
         </section>
 
-        <!-- Services Section -->
-        <section id="services">
+        <!-- =========================
+             Cinematic Horizontal Services Section
+        ========================== -->
+        <section id="services" class="services-horizontal-section">
+            <div class="services-horizontal-wrapper">
+                <div class="services-panel-container">
+                    <!-- Intro Panel -->
+                    <div class="service-panel intro-panel">
+                        <div class="panel-content">
+                            <div class="intro-text-wrap">
+                                <span class="services-counter">(0<%= services && services.length > 0 ? services.length : 3 %>)</span>
+                                <h2 class="services-section-title">Services</h2>
+                                <p class="services-desc">Integrated creative solutions starting from a single point... turning into an impactful system</p>
+                            </div>
+                            <div class="scroll-indicator">
+                                <div class="arrow-right">
+                                    <i class="ri-arrow-right-line"></i>
+                                </div>
+                                <span>Scroll to Explore</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% if (services && services.length > 0) { %>
+                        <% services.forEach((service, index) => { %>
+                            <div class="service-panel" id="service-<%= index + 1 %>">
+                                <div class="panel-bg-wrapper">
+                                    <% if (service.image) { %>
+                                        <img src="<%= service.image %>" alt="<%= service.title_en %>" class="parallax-img">
+                                    <% } else { %>
+                                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Service Placeholder" class="parallax-img">
+                                    <% } %>
+                                    <div class="panel-overlay"></div>
+                                </div>
+                                <div class="panel-content">
+                                    <div class="panel-header">
+                                        <span class="panel-number">0<%= index + 1 %></span>
+                                        <h2 class="panel-title"><%= service.title_en %></h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        <p class="panel-desc"><%= service.description_en %></p>
+                                        <div class="panel-tags">
+                                            <span class="tag"><%= service.tag1_en || 'Strategy' %></span>
+                                            <span class="tag"><%= service.tag2_en || 'Design' %></span>
+                                            <span class="tag"><%= service.tag3_en || 'Execution' %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <!-- Fallback Static Content -->
+                        <div class="service-panel" id="service-1">
+                            <div class="panel-bg-wrapper">
+                                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Visual Identity" class="parallax-img">
+                                <div class="panel-overlay"></div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="panel-header">
+                                    <span class="panel-number">01</span>
+                                    <h2 class="panel-title">Visual Identity</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <p class="panel-desc">We turn marketing messages into smart designs that achieve their purpose.</p>
+                                    <div class="panel-tags">
+                                        <span class="tag">Logo</span>
+                                        <span class="tag">Branding</span>
+                                        <span class="tag">Guidelines</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="service-panel" id="service-2">
+                            <div class="panel-bg-wrapper">
+                                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Digital Marketing" class="parallax-img">
+                                <div class="panel-overlay"></div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="panel-header">
+                                    <span class="panel-number">02</span>
+                                    <h2 class="panel-title">Digital Marketing</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <p class="panel-desc">Integrated marketing strategies to reach your target audience.</p>
+                                    <div class="panel-tags">
+                                        <span class="tag">SEO</span>
+                                        <span class="tag">Ads</span>
+                                        <span class="tag">Analytics</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="service-panel" id="service-3">
+                            <div class="panel-bg-wrapper">
+                                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Web Development" class="parallax-img">
+                                <div class="panel-overlay"></div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="panel-header">
+                                    <span class="panel-number">03</span>
+                                    <h2 class="panel-title">Web Development</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <p class="panel-desc">We design the experience before we design the interface with the latest technologies.</p>
+                                    <div class="panel-tags">
+                                        <span class="tag">UI/UX</span>
+                                        <span class="tag">Full Stack</span>
+                                        <span class="tag">Maintenance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Slider Section -->
+        <section id="portfolio" class="portfolio-section">
             <div class="container">
-                <h2>Services</h2>
-                <p class="subtitle">Integrated creative solutions that start from a single point... and evolve into an impactful system</p>
-                
-                <div class="services-list">
-                    <!-- Service 1 -->
-                    <div class="service-item">
-                        <h3>Creative Design Services</h3>
-                        <p>We turn marketing messages into smart designs that achieve their purpose without distraction.</p>
-                        <ul>
-                            <li>Professional company profiles</li>
-                            <li>Advertising campaigns</li>
-                            <li>Digital posts & print materials</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Service 2 -->
-                    <div class="service-item">
-                        <h3>Photography & Visual Production</h3>
-                        <p>We capture a single moment that expresses the entire idea.</p>
-                        <ul>
-                            <li>Professional product photography</li>
-                            <li>Promotional videos</li>
-                            <li>Aerial (drone) photography</li>
-                        </ul>
-                    </div>
+                <div class="portfolio-header" data-gsap="fade-up">
+                    <h2 class="portfolio-title">Latest Projects</h2>
+                    <p>Turning ideas into reality... Explore our work</p>
+                </div>
 
-                    <!-- Service 3 -->
-                    <div class="service-item">
-                        <h3>Websites & Programming</h3>
-                        <p>We design the experience before we design the interface.</p>
-                        <ul>
-                            <li>Professional website design</li>
-                            <li>User experience (UX) design</li>
-                            <li>Website & application development</li>
-                        </ul>
-                    </div>
+                <div class="portfolio-container" data-gsap="fade-up">
+                    <button class="portfolio-nav-btn prev-btn">
+                        <i class="ri-arrow-left-line"></i>
+                    </button>
+                    <button class="portfolio-nav-btn next-btn">
+                        <i class="ri-arrow-right-line"></i>
+                    </button>
 
-                    <!-- Service 4 -->
-                    <div class="service-item">
-                        <h3>Printing & Production</h3>
-                        <p>We turn design from an idea into a tangible reality with the same level of quality.</p>
-                        <ul>
-                            <li>Paper print materials</li>
-                            <li>Large-format printing</li>
-                            <li>Full supervision of execution</li>
-                        </ul>
-                    </div>
-
-                    <!-- Service 5 -->
-                    <div class="service-item">
-                        <h3>Exhibition & Conference Setup</h3>
-                        <p>We create an experience that starts from a single point and is lived in every detail.</p>
-                        <ul>
-                            <li>Exhibition booths design</li>
-                            <li>Conference setup</li>
-                            <li>Interactive screens</li>
-                        </ul>
+                    <div class="swiper portfolio-swiper">
+                        <div class="swiper-wrapper">
+                            <% if (projects && projects.length > 0) { %>
+                                <% projects.forEach(project => { %>
+                                    <div class="swiper-slide">
+                                        <div class="project-card">
+                                            <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
+                                                <video src="<%= project.image %>" muted loop playsinline></video>
+                                            <% } else if (project.image) { %>
+                                                <img src="<%= project.image %>" alt="<%= project.title_en || project.title %>">
+                                            <% } else { %>
+                                                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project Placeholder">
+                                            <% } %>
+                                            
+                                            <div class="project-overlay">
+                                                <div class="project-info">
+                                                    <h3><%= project.title_en || project.title %></h3>
+                                                    <p><%= project.description_en || project.description %></p>
+                                                    <a href="<%= project.externalLink || '/portfolio/' + project.id %>" class="project-link" <%= project.externalLink ? 'target="_blank"' : '' %>>
+                                                        <span>View Project</span>
+                                                        <i class="ri-arrow-right-line"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <!-- Fallback static projects -->
+                                <% for(let i=1; i<=6; i++) { %>
+                                    <div class="swiper-slide">
+                                        <div class="project-card">
+                                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project <%= i %>">
+                                            <div class="project-overlay">
+                                                <div class="project-info">
+                                                    <h3>Creative Project <%= i %></h3>
+                                                    <p>Short description of the project and how we helped the client.</p>
+                                                    <a href="#" class="project-link">
+                                                        <span>View Project</span>
+                                                        <i class="ri-arrow-right-line"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                        <!-- Add Pagination -->
+                        <div class="swiper-pagination"></div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Partners Section -->
-        <section id="partners">
+        <section id="partners" class="partners-section">
             <div class="container">
-                <h2>Partners</h2>
-                <ul class="partners-list">
-                    <li>Flyadeal</li>
-                    <li>Public Security</li>
-                    <li>Traffic Dept</li>
-                    <li>Saudi German Hospital</li>
-                    <li>Ministry of Defense</li>
-                    <li>Ministry of Health</li>
-                    <li>IMC</li>
-                    <li>KAU</li>
-                    <li>University of Jeddah</li>
-                    <li>LEXUS</li>
-                    <li>Al Majed Oud</li>
-                    <li>Jeddah Promenade</li>
-                </ul>
+                <div class="partners-header" data-gsap="fade-up">
+                    <h2 class="partners-title">We take pride in our work and are even more proud of the partnerships we've established.</h2>
+                </div>
+                <div class="partners-grid">
+                    <% if (partners && partners.length > 0) { %>
+                        <% partners.forEach(partner => { %>
+                            <div class="partner-item" data-gsap="fade-up">
+                                <img src="<%= partner.logo %>" alt="<%= partner.name %>" title="<%= partner.name %>">
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <!-- Fallback static logos if no partners in DB -->
+                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" alt="Saudi Aramco"></div>
+                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/ar/thumb/8/82/Misk_Foundation_logo.svg/1200px-Misk_Foundation_logo.svg.png" alt="Misk"></div>
+                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROSHN_Logo.svg/1200px-ROSHN_Logo.svg.png" alt="ROSHN"></div>
+                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/ar/thumb/e/e0/Diriyah_Gate_Development_Authority_logo.svg/1200px-Diriyah_Gate_Development_Authority_logo.svg.png" alt="DGDA"></div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog" class="blog-home-section">
+            <div class="container">
+                <div class="section-header" data-gsap="fade-up" style="text-align: center; margin-bottom: 3rem;">
+                    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Latest Articles</h2>
+                    <p style="color: #888; font-size: 1.1rem;">Insights and thoughts in the world of design and technology</p>
+                </div>
+                
+                <div class="blog-grid">
+                    <% if (posts && posts.length > 0) { %>
+                        <% posts.forEach(post => { %>
+                            <article class="blog-card" data-gsap="fade-up">
+                                <% if (post.image) { %>
+                                    <div class="blog-image">
+                                        <img src="<%= post.image %>" alt="<%= post.title %>">
+                                    </div>
+                                <% } %>
+                                <div class="blog-content">
+                                    <span class="blog-date"><%= post.date %></span>
+                                    <h3><%= post.title %></h3>
+                                    <p class="blog-excerpt"><%= post.excerpt %></p>
+                                    <a href="/blog/<%= post.id %>" class="read-more">
+                                        <span>Read More</span>
+                                        <i class="ri-arrow-right-line"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        <% }) %>
+                    <% } else { %>
+                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #0a0a0a; border-radius: 20px; border: 1px solid #1a1a1a;">
+                            <p style="color: #666;">No articles available at the moment.</p>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="view-all-container" data-gsap="fade-up">
+                    <a href="/blog" class="view-all-btn">View All Articles</a>
+                </div>
             </div>
         </section>
 
         <!-- Contact Section -->
-        <section id="contact">
+        <section id="contact" class="contact-section">
             <div class="container">
-                <h2>Creativity Has Not Ended</h2>
-                <p class="phone">+966 56 839 49 45</p>
-                <p class="website">WWW.CPOINT-SA.COM</p>
-                <a href="tel:+966568394945" class="btn">Discover Us</a>
+                <div class="contact-grid">
+                    <div class="contact-info" data-gsap="fade-right">
+                        <h2 class="contact-title">Start a New<br>Creative Journey</h2>
+                        <p class="contact-subtitle">We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.</p>
+                        
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <i class="ri-phone-line"></i>
+                                <div>
+                                    <span>Call Us</span>
+                                    <p dir="ltr">+966 56 839 49 45</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="ri-mail-line"></i>
+                                <div>
+                                    <span>Email</span>
+                                    <p>info@cpoint-sa.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="ri-map-pin-line"></i>
+                                <div>
+                                    <span>Location</span>
+                                    <p>Riyadh, Saudi Arabia</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="social-links">
+                            <a href="#"><i class="ri-instagram-line"></i></a>
+                            <a href="#"><i class="ri-twitter-x-line"></i></a>
+                            <a href="#"><i class="ri-linkedin-box-line"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="contact-form-wrapper" data-gsap="fade-left">
+                        <form action="/contact" method="POST" class="contact-form">
+                            <div class="form-group">
+                                <input type="text" name="name" placeholder="Full Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" placeholder="Email Address" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" name="phone" placeholder="Phone Number">
+                            </div>
+                            <div class="form-group">
+                                <select name="service">
+                                    <option value="" disabled selected>Select Service</option>
+                                    <option value="branding">Branding</option>
+                                    <option value="marketing">Digital Marketing</option>
+                                    <option value="web">Web Development</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" rows="5" placeholder="Project Details" required></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <span>Send Request</span>
+                                <i class="ri-send-plane-fill"></i>
+                            </button>
+                        </form>
+
+                        <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
+                            <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-right: 10px;"></i>
+                            Your request has been sent successfully! We will contact you soon.
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
+
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <%= new Date().getFullYear() %> Creative Point. All rights reserved.</p>
-        </div>
-    </footer>
+    <script>
+        // Check for success/error query params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            document.getElementById('contact-success').style.display = 'block';
+            const contactForm = document.querySelector('.contact-form');
+            if (contactForm) contactForm.style.display = 'none';
+        }
+    </script>
 
-</body>
-</html>
+    <!-- Page Specific Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="/js/hero-animation.js"></script>
+    <script src="/js/journey-animation.js"></script>
+    <script src="/js/services-animation.js"></script>
+
+<%- include('partials/footer', { isEn: isEn }) %>

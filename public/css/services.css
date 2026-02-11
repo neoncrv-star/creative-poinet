@@ -1,0 +1,247 @@
+/* Cinematic Services - Horizontal Scroll Showcase */
+:root {
+    --panel-width: 85vw; /* Smaller panels */
+    --panel-height: 80vh; /* Smaller panels */
+    --primary-color: #e63946;
+}
+
+.services-horizontal-section {
+    position: relative;
+    width: 100%;
+    background-color: #050505;
+    overflow: hidden;
+}
+
+.services-horizontal-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center; /* Center panels vertically */
+    overflow: hidden;
+}
+
+.services-panel-container {
+    display: flex;
+    flex-wrap: nowrap;
+    height: 100%;
+    width: fit-content;
+    will-change: transform;
+    padding: 0 7.5vw; /* Add padding to help centering first/last panels */
+}
+
+/* Individual Panel */
+.service-panel {
+    position: relative;
+    width: var(--panel-width);
+    height: var(--panel-height);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2vw; /* Space between panels */
+    border-radius: 30px; /* Rounded corners for smaller panels */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s ease;
+}
+
+.service-panel:hover {
+    border-color: var(--primary-color);
+}
+
+/* Background & Parallax */
+.panel-bg-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120%; /* Extra width for parallax */
+    height: 100%;
+    z-index: 1;
+    will-change: transform;
+}
+
+.parallax-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5) contrast(1.1);
+}
+
+.panel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 100%);
+    z-index: 2;
+}
+
+/* Content */
+.panel-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 5vw;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Intro Panel Specific */
+.intro-panel {
+    background: #050505;
+}
+
+.intro-panel .panel-content {
+    align-items: flex-start;
+}
+
+.intro-text-wrap {
+    max-width: 600px;
+}
+
+.services-counter {
+    font-size: 1.5rem;
+    font-family: 'Courier New', monospace;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.services-section-title {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.services-desc {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+.scroll-indicator {
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+.arrow-right, .arrow-left {
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); border-color: rgba(255,255,255,0.3); }
+    50% { transform: scale(1.1); border-color: var(--primary-color); }
+    100% { transform: scale(1); border-color: rgba(255,255,255,0.3); }
+}
+
+/* Service Panel Header */
+.panel-header {
+    margin-bottom: 2rem;
+}
+
+.panel-number {
+    font-size: 1.5rem;
+    font-family: 'Courier New', monospace;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.panel-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+/* Service Panel Body */
+.panel-body {
+    max-width: 500px;
+}
+
+.panel-desc {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2.5rem;
+}
+
+.panel-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.tag {
+    padding: 0.5rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 100px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.tag:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* RTL Support */
+html[dir="rtl"] .services-panel-container {
+    flex-direction: row; /* Still horizontal */
+}
+
+html[dir="rtl"] .panel-content {
+    text-align: right;
+}
+
+html[dir="rtl"] .intro-panel .panel-content {
+    align-items: flex-start; /* Correct for RTL too if content is aligned right */
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .panel-content {
+        padding: 0 8vw;
+    }
+    
+    .panel-title {
+        font-size: 2.5rem;
+    }
+    
+    .services-section-title {
+        font-size: 3rem;
+    }
+    
+    .panel-bg-wrapper {
+        width: 150%; /* More parallax space on mobile */
+    }
+}

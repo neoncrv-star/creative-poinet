@@ -6,38 +6,43 @@
     
     <% 
         // Logic to determine SEO tags
-        // Expecting 'seo' object from controller (GlobalSeo instance)
-        // Expecting 'pageSeo' object (optional) from controller (Project or Post instance or custom object)
+        // Using globalSeo from res.locals if available
+        let activeSeo = (typeof globalSeo !== 'undefined' && globalSeo) ? globalSeo : (typeof seo !== 'undefined' ? seo : null);
         
         let siteTitle = 'نقطة إبداعية';
         let siteUrl = 'https://deepskyblue-ibis-975175.hostingersite.com';
         let separator = '|';
         let description = 'وكالة إبداعية متخصصة في الحلول الرقمية';
         let keywords = 'تصميم, برمجة, تسويق';
+        let favicon = '/images/favicon.ico';
+        let defaultOgImage = null;
         
-        if (typeof seo !== 'undefined' && seo) {
-            siteTitle = seo.siteTitle || siteTitle;
-            siteUrl = seo.siteUrl || siteUrl;
-            separator = seo.titleSeparator || separator;
-            description = seo.defaultDescription || description;
-            keywords = seo.defaultKeywords || keywords;
+        if (activeSeo) {
+            siteTitle = activeSeo.siteTitle || siteTitle;
+            siteUrl = activeSeo.siteUrl || siteUrl;
+            separator = activeSeo.titleSeparator || separator;
+            description = activeSeo.defaultDescription || description;
+            keywords = activeSeo.defaultKeywords || keywords;
+            favicon = activeSeo.favicon || favicon;
+            defaultOgImage = activeSeo.ogImage;
         }
 
         // Ensure siteUrl doesn't have trailing slash for consistency
-        if (siteUrl.endsWith('/')) siteUrl = siteUrl.slice(0, -1);
+        if (siteUrl && siteUrl.endsWith('/')) siteUrl = siteUrl.slice(0, -1);
 
         // Page specific overrides
-        let pageTitle = title;
+        let pageTitle = (typeof title !== 'undefined') ? title : '';
         let pageDescription = description;
         let pageKeywords = keywords;
-        let pageImage = null;
+        let pageImage = defaultOgImage;
 
         if (typeof pageSeo !== 'undefined' && pageSeo) {
             if (pageSeo.seoTitle) pageTitle = pageSeo.seoTitle;
-            else if (pageSeo.title) pageTitle = pageSeo.title; // Fallback to item title
+            else if (pageSeo.title) pageTitle = pageSeo.title;
 
             if (pageSeo.seoDescription) pageDescription = pageSeo.seoDescription;
-            else if (pageSeo.excerpt) pageDescription = pageSeo.excerpt; // Fallback to item excerpt/desc
+            else if (pageSeo.description) pageDescription = pageSeo.description;
+            else if (pageSeo.excerpt) pageDescription = pageSeo.excerpt;
             
             if (pageSeo.seoKeywords) pageKeywords = pageSeo.seoKeywords;
 
@@ -46,8 +51,10 @@
         
         // Final Title Construction
         let finalTitle = pageTitle;
-        if (pageTitle !== siteTitle) {
+        if (pageTitle && pageTitle !== siteTitle) {
             finalTitle = `${pageTitle} ${separator} ${siteTitle}`;
+        } else if (!pageTitle) {
+            finalTitle = siteTitle;
         }
 
         // Prepare Absolute Image URL
@@ -59,9 +66,12 @@
     <title><%= finalTitle %></title>
     <meta name="description" content="<%= pageDescription %>">
     <meta name="keywords" content="<%= pageKeywords %>">
+    
+    <link rel="icon" type="image/x-icon" href="<%= favicon %>">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= siteUrl %><%= typeof path !== 'undefined' ? path : '' %>">
     <meta property="og:title" content="<%= finalTitle %>">
     <meta property="og:description" content="<%= pageDescription %>">
     <% if (pageImage) { %>
@@ -70,44 +80,134 @@
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<%= siteUrl %><%= typeof path !== 'undefined' ? path : '' %>">
     <meta property="twitter:title" content="<%= finalTitle %>">
     <meta property="twitter:description" content="<%= pageDescription %>">
     <% if (pageImage) { %>
         <meta property="twitter:image" content="<%= pageImage %>">
     <% } %>
+    <% if (activeSeo && activeSeo.twitterHandle) { %>
+        <meta name="twitter:site" content="<%= activeSeo.twitterHandle %>">
+    <% } %>
+
+    <!-- Tracking Scripts -->
+    <% if (activeSeo && activeSeo.googleAnalyticsId) { %>
+        <!-- Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=<%= activeSeo.googleAnalyticsId %>"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '<%= activeSeo.googleAnalyticsId %>');
+        </script>
+    <% } %>
+
+    <% if (activeSeo && activeSeo.facebookPixelId) { %>
+        <!-- Facebook Pixel -->
+        <script>
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '<%= activeSeo.facebookPixelId %>');
+            fbq('track', 'PageView');
+        </script>
+    <% } %>
+
+    <!-- Custom Scripts Header -->
+    <% if (activeSeo && activeSeo.customScriptsHeader) { %>
+        <%- activeSeo.customScriptsHeader %>
+    <% } %>
+
+    <!-- Structured Data (JSON-LD) -->
+    <% if (activeSeo && activeSeo.organizationSchema) { %>
+        <script type="application/ld+json">
+            <%- activeSeo.organizationSchema %>
+        </script>
+    <% } %>
+
+    <% if (typeof pageSeo !== 'undefined' && pageSeo) { %>
+        <% if (typeof post !== 'undefined' && post) { %>
+            <!-- Blog Post Schema -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              "headline": "<%= finalTitle %>",
+              "image": "<%= pageImage %>",
+              "datePublished": "<%= post.date || post.createdAt %>",
+              "author": {
+                "@type": "Organization",
+                "name": "<%= siteTitle %>"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "<%= siteTitle %>",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "<%= siteUrl %><%= favicon %>"
+                }
+              },
+              "description": "<%= pageDescription %>"
+            }
+            </script>
+        <% } else if (typeof project !== 'undefined' && project) { %>
+            <!-- Project Schema -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "CreativeWork",
+              "name": "<%= project.title %>",
+              "description": "<%= pageDescription %>",
+              "image": "<%= pageImage %>",
+              "author": {
+                "@type": "Organization",
+                "name": "<%= siteTitle %>"
+              }
+            }
+            </script>
+        <% } %>
+    <% } %>
 
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
-<body class="lang-ar"> <!-- Default to Arabic -->
+<body class="<%= typeof isEn !== 'undefined' && isEn ? 'lang-en' : 'lang-ar' %>">
     <header>
-        <div class="header-container">
+        <div class="container header-container">
             <div class="logo">
-                <a href="/">
-                    <h1>
-                        <span class="ar">نقطة <span>إبداعية</span></span>
-                        <span class="en">Creative <span>Point</span></span>
-                    </h1>
-                    <p>
-                        <span class="ar">وكالة إبداعية</span>
-                        <span class="en">Creative Agency</span>
-                    </p>
+                <a href="<%= typeof isEn !== 'undefined' && isEn ? '/en' : '/' %>" style="text-decoration: none; color: inherit;">
+                    <img src="/210.png" alt="Creative Point Logo" class="header-logo-img">
                 </a>
             </div>
-            <nav>
-                <a href="/">
-                    <span class="ar">الرئيسية</span>
-                    <span class="en">Home</span>
-                </a>
-                <a href="/portfolio">
-                    <span class="ar">أعمالنا</span>
-                    <span class="en">Portfolio</span>
-                </a>
-                <a href="/blog">
-                    <span class="ar">المدونة</span>
-                    <span class="en">Blog</span>
-                </a>
-                <!-- Admin link hidden as requested -->
-                <button id="lang-toggle" class="btn-lang">English</button>
+            
+            <!-- Toggle Button -->
+            <button class="menu-dot" aria-expanded="false" aria-label="Toggle Menu">
+                <span class="dot"></span>
+            </button>
+
+            <!-- Menu -->
+            <nav class="header-menu">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+                    <i class="ri-moon-line"></i>
+                </button>
+                <% if(typeof isEn !== 'undefined' && isEn) { %>
+                    <a href="/en#journey">Journey</a>
+                    <a href="/en#services">Services</a>
+                    <a href="/en/portfolio">Our Work</a>
+                    <a href="/en#partners">Partners</a>
+                    <a href="/en#contact">Contact</a>
+                    <a href="/" class="lang-switch">العربية</a>
+                <% } else { %>
+                    <a href="/#journey">رحلتنا</a>
+                    <a href="/#services">خدماتنا</a>
+                    <a href="/portfolio">أعمالنا</a>
+                    <a href="/#partners">شركاؤنا</a>
+                    <a href="/#contact">تواصل معنا</a>
+                    <a href="/en" class="lang-switch">English</a>
+                <% } %>
             </nav>
         </div>
     </header>

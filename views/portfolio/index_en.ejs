@@ -1,0 +1,174 @@
+<% const isEn = true; %>
+<%- include('../partials/header', { isEn: isEn }) %>
+
+<!-- Page Specific CSS -->
+<link rel="stylesheet" href="/css/portfolio-page.css">
+
+<main class="portfolio-page-body">
+    <!-- Portfolio Hero Section -->
+    <section class="portfolio-hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="eyebrow" data-gsap="fade-up">Creativity Showcase</span>
+                <h1 class="page-title" data-gsap="fade-up">Projects that Define<br>Our Vision</h1>
+                <p class="page-desc" data-gsap="fade-up">
+                    We don't just design images, we build identities and experiences that leave a real impact. 
+                    Discover how we turned ideas into tangible reality.
+                </p>
+            </div>
+        </div>
+        <div class="hero-bg-accent"></div>
+    </section>
+
+    <!-- Portfolio Main Content Wrapper -->
+    <div class="portfolio-main-content">
+        <!-- Category Tabs -->
+        <section class="portfolio-tabs-section">
+            <div class="container">
+                <div class="tabs-container" data-gsap="fade-up">
+                    <button class="tab-btn active" data-filter="all">All</button>
+                    <% categories.forEach(cat => { %>
+                        <button class="tab-btn" data-filter="<%= cat.slug %>"><%= cat.name %></button>
+                    <% }) %>
+                    <% if (projects.some(p => p.category === 'other' || !p.CategoryId)) { %>
+                        <button class="tab-btn" data-filter="other">Other</button>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Grid -->
+        <section class="portfolio-grid-section">
+            <div class="container">
+                <div class="portfolio-grid">
+                    <% if (projects && projects.length > 0) { %>
+                        <% projects.forEach((project, index) => {
+                            let projectLink = "/en/portfolio/" + project.id;
+                            %>
+                            <div class="portfolio-item" data-category="<%= project.Category ? project.Category.slug : (project.category || 'other') %>" data-gsap="fade-up">
+                                <a href="<%= projectLink %>" class="item-link">
+                                    <div class="item-image-wrapper">
+                                        <% if (project.image) { %>
+                                            <img src="<%= project.image %>" alt="<%= project.title %>">
+                                        <% } else { %>
+                                            <div class="no-image">🖼️</div>
+                                        <% } %>
+                                        <div class="item-overlay">
+                                            <span class="view-btn">View Project <i class="ri-arrow-right-up-line"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="item-info">
+                                        <div class="item-text">
+                                            <span class="item-category">
+                                                <%= project.Category ? project.Category.name : (project.category === 'other' ? 'Creative' : project.category) %>
+                                            </span>
+                                            <h3 class="item-title"><%= project.title %></h3>
+                                        </div>
+                                        <div class="item-arrow">
+                                            <i class="ri-arrow-right-up-line"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="no-projects">
+                            <p>No projects added yet. Be the first to see our creativity soon!</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </div><!-- End portfolio-main-content -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info" data-gsap="fade-right">
+                    <h2 class="contact-title">Let's Start a<br>New Creative Journey</h2>
+                    <p class="contact-subtitle">We are here to listen to your ideas and turn them into an effective visual strategy. Contact us today.</p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="ri-phone-line"></i>
+                            <div>
+                                <span>Call Us</span>
+                                <p dir="ltr">+966 56 839 49 45</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-mail-line"></i>
+                            <div>
+                                <span>Email</span>
+                                <p>info@cpoint-sa.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-map-pin-line"></i>
+                            <div>
+                                <span>Location</span>
+                                <p>Riyadh, Saudi Arabia</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="#"><i class="ri-instagram-line"></i></a>
+                        <a href="#"><i class="ri-twitter-x-line"></i></a>
+                        <a href="#"><i class="ri-linkedin-line"></i></a>
+                        <a href="#"><i class="ri-whatsapp-line"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper" data-gsap="fade-left">
+                    <form action="/contact" method="POST" class="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="phone" placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <select name="service">
+                                <option value="" disabled selected>Select Service</option>
+                                <option value="branding">Branding</option>
+                                <option value="marketing">Digital Marketing</option>
+                                <option value="web">Web Development</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" rows="5" placeholder="Project Details" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span>Send Request</span>
+                            <i class="ri-send-plane-fill"></i>
+                        </button>
+                    </form>
+
+                    <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
+                        <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-right: 10px;"></i>
+                        Your request has been sent successfully! We will contact you soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Check for success/error query params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            const successDiv = document.getElementById('contact-success');
+            if (successDiv) successDiv.style.display = 'block';
+            const contactForm = document.querySelector('.contact-form');
+            if (contactForm) contactForm.style.display = 'none';
+        }
+    </script>
+</main>
+
+<%- include('../partials/footer', { isEn: isEn }) %>

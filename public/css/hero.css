@@ -1,0 +1,321 @@
+/* Hero Sticky Section */
+.hero-sticky-section {
+    position: relative;
+    height: 100vh; /* Changed to 100vh - GSAP will handle the scroll distance */
+    width: 100%;
+    background-color: var(--bg-color, #000);
+    z-index: 10;
+    overflow: hidden; /* Ensure no scrollbars within the section */
+}
+
+/* Theme adaptation for Hero section */
+[data-theme="light"] .hero-sticky-section {
+    background-color: #fff;
+}
+
+.hero-sticky-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mask Container - Controls the Video Reveal */
+.hero-mask-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6; /* Above dots */
+    /* Initial State: Hidden completely */
+    clip-path: circle(0% at 50% 50%); 
+    will-change: clip-path;
+    background-color: #000;
+    pointer-events: none; /* Allow click-through until content is revealed */
+}
+
+[data-theme="light"] .hero-mask-container {
+    background-color: #fff; /* Match white theme background */
+}
+
+/* Video Styling */
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1; /* Changed from 0.8 to 1 for full visibility */
+    pointer-events: none;
+    z-index: 1; /* Ensure it's above the background */
+    will-change: opacity;
+}
+
+/* Specific styling for YouTube Iframe to simulate object-fit: cover */
+iframe.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw; /* 16:9 Aspect Ratio */
+    min-height: 100vh;
+    min-width: 177.77vh; /* 16:9 Aspect Ratio */
+    transform: translate(-50%, -50%) scale(1.3); /* Scale up to ensure coverage and hide controls */
+    pointer-events: none; /* Prevent interaction with video controls */
+}
+
+/* Initial Overlay Container */
+.hero-initial-point {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    color: #fff;
+    text-align: center;
+    opacity: 1;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="light"] .hero-initial-point {
+    color: #000; /* Black text in light mode */
+}
+
+/* Dot Container for overlapping dots */
+.dots-wrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-bottom: 20px;
+}
+
+/* White Dot */
+.point-dot-white {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    z-index: 1;
+    opacity: 0; /* Initially hidden for animation */
+    transform: scale(0); /* Initially hidden for animation */
+}
+
+[data-theme="light"] .point-dot-white {
+    background-color: #000; /* Become black dot in light mode */
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+/* Red Dot */
+.point-dot-red {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #ff0000; /* Red color */
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255,0,0,0.5);
+    z-index: 2;
+    transform: scale(0); /* Initially hidden */
+}
+
+/* Inspired Word */
+.hero-initial-text {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0; 
+    transform: translateY(20px);
+    transition: color 0.3s ease;
+}
+
+.hero-initial-text.red-mode {
+    color: #ff0000;
+    font-weight: 700;
+}
+
+/* Main Hero Content (Revealed inside the video) */
+.hero-content-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    padding: 20px;
+    pointer-events: auto; /* Enable interaction for buttons */
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    color: rgba(255,255,255,0.9);
+    max-width: 600px;
+}
+
+.hero-btn {
+    padding: 15px 40px;
+    background-color: #fff;
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.hero-btn:hover {
+    transform: scale(1.05);
+    background-color: #f0f0f0;
+}
+
+/* Scroll Mouse Icon */
+.scroll-mouse-icon {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.5s;
+    color: #fff;
+}
+
+[data-theme="light"] .scroll-mouse-icon {
+    color: #000; /* Black icon in light mode */
+}
+
+.mouse-shape {
+    width: 26px;
+    height: 44px;
+    border: 2px solid currentColor; /* Use current text color */
+    border-radius: 15px;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.mouse-wheel {
+    width: 2px;
+    height: 6px;
+    background-color: currentColor; /* Use current text color */
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 1px;
+    animation: mouseScroll 1.5s infinite;
+}
+
+.scroll-text {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+@keyframes mouseScroll {
+    0% { transform: translate(-50%, 0); opacity: 1; }
+    100% { transform: translate(-50%, 15px); opacity: 0; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-sticky-section {
+        height: 100vh; /* Stay at 100vh, GSAP handles the scroll distance */
+        height: 100dvh; /* Better for mobile browsers */
+    }
+
+    .hero-content-overlay {
+        padding: 80px 20px 20px 20px; /* Top padding to account for fixed header */
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+        line-height: 1.2;
+        margin-bottom: 0.8rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        padding: 0 10px;
+        line-height: 1.5;
+    }
+
+    .hero-btn {
+        padding: 12px 30px;
+        font-size: 0.9rem;
+    }
+
+    .hero-initial-text {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+
+    /* Adjust video mask expansion for mobile aspect ratios */
+    .hero-mask-container {
+        /* Ensure the clip-path works well on mobile */
+        will-change: clip-path, -webkit-clip-path;
+    }
+
+    iframe.hero-video {
+        width: 300vw; /* Increase width on mobile to cover more area if needed */
+        height: 168.75vw; /* Maintain 16:9 */
+        min-height: 100dvh;
+        min-width: 177.77dvh;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+    .scroll-mouse-icon {
+        bottom: 20px;
+        transform: translateX(-50%) scale(0.8); /* Smaller on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .hero-initial-text {
+        font-size: 1rem;
+    }
+}

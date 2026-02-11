@@ -1,7 +1,48 @@
     </main>
+
+    <section class="grand-footer">
+        <div class="marquee-wrapper">
+            <div class="marquee-content">
+                <h1 class="finale-text"><%= typeof isEn !== 'undefined' && isEn ? 'CREATIVE POINT' : 'لم ينتهي الإبداع' %></h1>
+                <h1 class="finale-text"><%= typeof isEn !== 'undefined' && isEn ? 'CREATIVE POINT' : 'لم ينتهي الإبداع' %></h1>
+                <h1 class="finale-text"><%= typeof isEn !== 'undefined' && isEn ? 'CREATIVE POINT' : 'لم ينتهي الإبداع' %></h1>
+                <h1 class="finale-text"><%= typeof isEn !== 'undefined' && isEn ? 'CREATIVE POINT' : 'لم ينتهي الإبداع' %></h1>
+            </div>
+        </div>
+        <div class="container">
+            <div class="footer-bottom">
+                <div class="footer-logo">
+                    <img src="/210.png" alt="Creative Point Logo" class="footer-logo-img">
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; <%= new Date().getFullYear() %> Creative Point. <%= typeof isEn !== 'undefined' && isEn ? 'All rights reserved.' : 'جميع الحقوق محفوظة.' %></p>
+                </div>
+                <div class="footer-links">
+                    <% if(typeof isEn !== 'undefined' && isEn) { %>
+                        <a href="/">العربية</a>
+                    <% } else { %>
+                        <a href="/en">English</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer>
-        <p>&copy; 2026 نقطة إبداعية. جميع الحقوق محفوظة.</p>
+        <div class="container">
+            <p>&copy; <%= new Date().getFullYear() %> Creative Point. <%= typeof isEn !== 'undefined' && isEn ? 'All rights reserved.' : 'جميع الحقوق محفوظة.' %></p>
+        </div>
     </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="/js/main.js"></script>
+    <script src="/js/menu.js"></script>
+    
+    <!-- Custom Scripts Footer -->
+    <% if (typeof globalSeo !== 'undefined' && globalSeo && globalSeo.customScriptsFooter) { %>
+        <%- globalSeo.customScriptsFooter %>
+    <% } %>
 </body>
 </html>

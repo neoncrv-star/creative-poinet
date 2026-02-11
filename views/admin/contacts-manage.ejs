@@ -1,0 +1,176 @@
+<%- include('layout-header') %>
+
+<div class="admin-card">
+    <div class="card-header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 1.25rem; color: var(--secondary-color);">استمارات التواصل</h2>
+    </div>
+
+    <div class="admin-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>الاسم</th>
+                    <th>البريد / الهاتف</th>
+                    <th>الخدمة المطلوبة</th>
+                    <th>الرسالة</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (contacts.length > 0) { %>
+                    <% contacts.forEach(contact => { %>
+                        <tr id="row-<%= contact.id %>">
+                            <td>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                    <%= new Date(contact.createdAt).toLocaleDateString('ar-EG') %>
+                                </span>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; color: var(--secondary-color);"><%= contact.name %></div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                    <i class="fas fa-envelope fa-fw"></i> <%= contact.email %><br>
+                                    <i class="fas fa-phone fa-fw"></i> <%= contact.phone || '-' %>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-read"><%= contact.service || '-' %></span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="viewMessage('<%= contact.id %>', '<%= contact.message.replace(/\n/g, '<br>') %>')">
+                                    <i class="fas fa-eye"></i> عرض
+                                </button>
+                            </td>
+                            <td>
+                                <select class="status-select" onchange="updateStatus('<%= contact.id %>', this.value)" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd; font-size: 0.85rem;">
+                                    <option value="new" <%= contact.status === 'new' ? 'selected' : '' %>>جديد</option>
+                                    <option value="read" <%= contact.status === 'read' ? 'selected' : '' %>>تمت القراءة</option>
+                                    <option value="archived" <%= contact.status === 'archived' ? 'selected' : '' %>>مؤرشف</option>
+                                </select>
+                            </td>
+                            <td>
+                                <a href="/admin/contacts/delete/<%= contact.id %>" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            <i class="fas fa-envelope-open-text fa-3x" style="display: block; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            لا توجد استمارات تواصل حالياً.
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for Viewing Message -->
+<div id="messageModal" class="admin-modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 style="margin-bottom: 20px; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <i class="fas fa-envelope-open"></i> محتوى الرسالة
+        </h3>
+        <div id="messageContent" class="message-box" style="background: #f8f9fa; padding: 20px; border-radius: 8px; line-height: 1.8; color: var(--text-main); white-space: pre-line; border: 1px solid #eee;"></div>
+    </div>
+</div>
+
+<style>
+    .admin-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+    }
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .close-modal {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s;
+    }
+    .close-modal:hover {
+        color: var(--primary-color);
+    }
+</style>
+    }
+    .message-box {
+        background: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 5px;
+        margin-top: 15px;
+        line-height: 1.6;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+
+<script>
+    function viewMessage(id, message) {
+        document.getElementById('messageContent').innerHTML = message;
+        document.getElementById('messageModal').style.display = 'block';
+        
+        // Optionally mark as read automatically
+        const row = document.getElementById('row-' + id);
+        const select = row.querySelector('.status-select');
+        if (select.value === 'new') {
+            select.value = 'read';
+            updateStatus(id, 'read');
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('messageModal').style.display = 'none';
+    }
+
+    function updateStatus(id, status) {
+        fetch('/admin/contacts/status/' + id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('حدث خطأ أثناء تحديث الحالة');
+            }
+        });
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('messageModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+
+<%- include('layout-footer') %>

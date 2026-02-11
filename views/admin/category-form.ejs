@@ -1,0 +1,41 @@
+<%- include('layout-header') %>
+
+<div class="admin-card" style="max-width: 800px; margin: 0 auto;">
+    <h2 style="font-size: 1.25rem; color: var(--secondary-color); margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+        <i class="fas <%= category ? 'fa-edit' : 'fa-plus-circle' %>"></i>
+        <%= category ? 'تعديل التصنيف' : 'إضافة تصنيف جديد' %>
+    </h2>
+
+    <form action="/admin/categories/<%= category ? 'edit/' + category.id : 'add' %>" method="POST">
+        <div class="form-group">
+            <label>اسم التصنيف</label>
+            <input type="text" name="name" value="<%= category ? category.name : '' %>" required placeholder="مثال: فيديو، هويات بصرية، مواقع...">
+        </div>
+
+        <div class="form-group">
+            <label>الرابط المختصر (Slug)</label>
+            <input type="text" name="slug" value="<%= category ? category.slug : '' %>" placeholder="اتركه فارغاً للتوليد التلقائي (مثال: video)">
+            <small style="color: #999;">يستخدم في روابط الموقع، يجب أن يكون باللغة الإنجليزية وبدون مسافات.</small>
+        </div>
+
+        <div class="form-group">
+            <label>وصف التصنيف (اختياري)</label>
+            <textarea name="description" rows="4" placeholder="وصف موجز لهذا التصنيف..."><%= category ? category.description : '' %></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>ترتيب العرض</label>
+            <input type="number" name="display_order" value="<%= category ? category.display_order : 0 %>">
+            <small style="color: #999;">الرقم الأصغر يظهر أولاً في الموقع.</small>
+        </div>
+
+        <div class="form-actions" style="margin-top: 2rem; display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> حفظ التصنيف
+            </button>
+            <a href="/admin/categories" class="btn btn-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>
+
+<%- include('layout-footer') %>

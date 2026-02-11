@@ -1,7 +1,11 @@
 const User = require('../models/User');
 const Project = require('../models/Project');
+const Category = require('../models/Category');
 const Post = require('../models/Post');
 const GlobalSeo = require('../models/GlobalSeo');
+const Service = require('../models/Service');
+const Partner = require('../models/Partner');
+const Contact = require('../models/Contact');
 const fs = require('fs');
 const path = require('path');
 
@@ -55,11 +59,17 @@ exports.getDashboard = async (req, res) => {
         const projectViews = await Project.sum('views') || 0;
         const postViews = await Post.sum('views') || 0;
         const totalViews = projectViews + postViews;
+        const serviceCount = await Service.count();
+        const partnerCount = await Partner.count();
+        const newContactsCount = await Contact.count({ where: { status: 'new' } });
         
         res.render('admin/dashboard', { 
             title: 'لوحة التحكم | الرئيسية',
             projectCount,
             postCount,
+            serviceCount,
+            partnerCount,
+            newContactsCount,
             visitorCount: totalViews // Using real view count now
         });
     } catch (error) {
@@ -68,6 +78,7 @@ exports.getDashboard = async (req, res) => {
             title: 'لوحة التحكم | الرئيسية',
             projectCount: 0,
             postCount: 0,
+            serviceCount: 0,
             visitorCount: 0
         });
     }
@@ -87,13 +98,124 @@ exports.getSeoSettings = async (req, res) => {
     }
 };
 
+// --- Partner Management ---
+exports.managePartners = async (req, res) => {
+    try {
+        const partners = await Partner.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/partners-manage', { 
+            title: 'لوحة التحكم | إدارة الشركاء', 
+            partners,
+            path: '/admin/partners'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getAddPartner = (req, res) => {
+    res.render('admin/partner-form', { 
+        title: 'لوحة التحكم | إضافة شريك', 
+        partner: null,
+        path: '/admin/partners'
+    });
+};
+
+exports.postAddPartner = async (req, res) => {
+    try {
+        const { name, display_order, is_active } = req.body;
+        const logo = req.file ? '/uploads/' + req.file.filename : null;
+
+        await Partner.create({
+            name,
+            logo,
+            display_order: display_order || 0,
+            is_active: is_active === 'on'
+        });
+
+        res.redirect('/admin/partners');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getEditPartner = async (req, res) => {
+    try {
+        const partner = await Partner.findByPk(req.params.id);
+        if (!partner) return res.redirect('/admin/partners');
+        res.render('admin/partner-form', { 
+            title: 'لوحة التحكم | تعديل شريك', 
+            partner,
+            path: '/admin/partners'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postEditPartner = async (req, res) => {
+    try {
+        const { name, display_order, is_active } = req.body;
+        const partner = await Partner.findByPk(req.params.id);
+        if (!partner) return res.redirect('/admin/partners');
+
+        let logo = partner.logo;
+        if (req.file) {
+            deleteFile(partner.logo);
+            logo = '/uploads/' + req.file.filename;
+        }
+
+        await partner.update({
+            name,
+            logo,
+            display_order: display_order || 0,
+            is_active: is_active === 'on'
+        });
+
+        res.redirect('/admin/partners');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.deletePartner = async (req, res) => {
+    try {
+        const partner = await Partner.findByPk(req.params.id);
+        if (partner) {
+            deleteFile(partner.logo);
+            await partner.destroy();
+        }
+        res.redirect('/admin/partners');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
 exports.postSeoSettings = async (req, res) => {
     try {
         let seo = await GlobalSeo.findOne();
+        const data = { ...req.body };
+
+        // Handle file uploads
+        if (req.files) {
+            if (req.files['favicon']) {
+                if (seo && seo.favicon) deleteFile(seo.favicon);
+                data.favicon = '/uploads/' + req.files['favicon'][0].filename;
+            }
+            if (req.files['ogImage']) {
+                if (seo && seo.ogImage) deleteFile(seo.ogImage);
+                data.ogImage = '/uploads/' + req.files['ogImage'][0].filename;
+            }
+        }
+
         if (!seo) {
-            seo = await GlobalSeo.create(req.body);
+            seo = await GlobalSeo.create(data);
         } else {
-            await seo.update(req.body);
+            await seo.update(data);
         }
         res.redirect('/admin/seo');
     } catch (error) {
@@ -113,18 +235,139 @@ exports.managePortfolio = async (req, res) => {
     }
 };
 
-exports.getAddProject = (req, res) => {
-    res.render('admin/portfolio-form', { title: 'إضافة مشروع جديد', project: null });
+exports.getAddProject = async (req, res) => {
+    try {
+        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/portfolio-form', {
+            title: 'إضافة مشروع جديد',
+            project: null,
+            categories,
+            path: '/admin/portfolio'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
 };
 
 exports.postAddProject = async (req, res) => {
     try {
-        const data = req.body;
+        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const data = {
+            title,
+            description,
+            content,
+            externalLink,
+            category,
+            display_order: display_order || 0,
+            is_active: is_active === 'on',
+            seoTitle,
+            seoDescription,
+            seoKeywords
+        };
+
         if (req.file) {
             data.image = '/uploads/' + req.file.filename;
         }
+
+        // Handle CategoryId
+        if (data.category && !isNaN(data.category)) {
+            data.CategoryId = parseInt(data.category);
+            const cat = await Category.findByPk(data.CategoryId);
+            if (cat) data.category = cat.slug;
+        }
+
         await Project.create(data);
         res.redirect('/admin/portfolio');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// --- Category Management ---
+exports.manageCategories = async (req, res) => {
+    try {
+        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/categories-manage', { 
+            title: 'لوحة التحكم | إدارة التصنيفات', 
+            categories,
+            path: '/admin/categories'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getAddCategory = (req, res) => {
+    res.render('admin/category-form', { 
+        title: 'لوحة التحكم | إضافة تصنيف', 
+        category: null,
+        path: '/admin/categories'
+    });
+};
+
+exports.postAddCategory = async (req, res) => {
+    try {
+        const { name, slug, description, display_order } = req.body;
+        await Category.create({
+            name,
+            slug: slug || name.toLowerCase().replace(/ /g, '-'),
+            description,
+            display_order: display_order || 0
+        });
+        
+        const backURL = req.header('Referer') || '/admin/portfolio';
+        res.redirect(backURL);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getEditCategory = async (req, res) => {
+    try {
+        const category = await Category.findByPk(req.params.id);
+        if (!category) return res.redirect('/admin/categories');
+        res.render('admin/category-form', { 
+            title: 'لوحة التحكم | تعديل تصنيف', 
+            category,
+            path: '/admin/categories'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postEditCategory = async (req, res) => {
+    try {
+        const { name, slug, description, display_order } = req.body;
+        const category = await Category.findByPk(req.params.id);
+        if (!category) return res.redirect('/admin/categories');
+
+        await category.update({
+            name,
+            slug: slug || name.toLowerCase().replace(/ /g, '-'),
+            description,
+            display_order: display_order || 0
+        });
+
+        res.redirect('/admin/categories');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.deleteCategory = async (req, res) => {
+    try {
+        const category = await Category.findByPk(req.params.id);
+        if (category) {
+            await category.destroy();
+        }
+        res.redirect('/admin/categories');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -134,7 +377,14 @@ exports.postAddProject = async (req, res) => {
 exports.getEditProject = async (req, res) => {
     try {
         const project = await Project.findByPk(req.params.id);
-        res.render('admin/portfolio-form', { title: 'تعديل المشروع', project });
+        if (!project) return res.redirect('/admin/portfolio');
+        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/portfolio-form', {
+            title: 'تعديل المشروع',
+            project,
+            categories,
+            path: '/admin/portfolio'
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -143,12 +393,36 @@ exports.getEditProject = async (req, res) => {
 
 exports.postEditProject = async (req, res) => {
     try {
-        const project = await Project.findByPk(req.params.id);
-        const data = req.body;
+        const { id } = req.params;
+        const project = await Project.findByPk(id);
+        if (!project) return res.redirect('/admin/portfolio');
+
+        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const data = {
+            title,
+            description,
+            content,
+            externalLink,
+            category,
+            display_order: display_order || 0,
+            is_active: is_active === 'on',
+            seoTitle,
+            seoDescription,
+            seoKeywords
+        };
+
         if (req.file) {
-            deleteFile(project.image); // Delete old image
+            deleteFile(project.image);
             data.image = '/uploads/' + req.file.filename;
         }
+
+        // Handle CategoryId
+        if (data.category && !isNaN(data.category)) {
+            data.CategoryId = parseInt(data.category);
+            const cat = await Category.findByPk(data.CategoryId);
+            if (cat) data.category = cat.slug;
+        }
+
         await project.update(data);
         res.redirect('/admin/portfolio');
     } catch (error) {
@@ -186,7 +460,17 @@ exports.getAddPost = (req, res) => {
 
 exports.postAddPost = async (req, res) => {
     try {
-        const data = req.body;
+        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const data = {
+            title,
+            excerpt,
+            content,
+            date,
+            is_active: is_active === 'on',
+            seoTitle,
+            seoDescription,
+            seoKeywords
+        };
         if (req.file) {
             data.image = '/uploads/' + req.file.filename;
         }
@@ -210,8 +494,18 @@ exports.getEditPost = async (req, res) => {
 
 exports.postEditPost = async (req, res) => {
     try {
+        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
         const post = await Post.findByPk(req.params.id);
-        const data = req.body;
+        const data = {
+            title,
+            excerpt,
+            content,
+            date,
+            is_active: is_active === 'on',
+            seoTitle,
+            seoDescription,
+            seoKeywords
+        };
         if (req.file) {
             deleteFile(post.image); // Delete old image
             data.image = '/uploads/' + req.file.filename;
@@ -230,6 +524,161 @@ exports.deletePost = async (req, res) => {
         deleteFile(post.image);
         await post.destroy();
         res.redirect('/admin/blog');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// --- Services Management ---
+exports.manageServices = async (req, res) => {
+    try {
+        const services = await Service.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/services-manage', { title: 'إدارة الخدمات', services });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getAddService = (req, res) => {
+    res.render('admin/service-form', { title: 'إضافة خدمة', service: null });
+};
+
+exports.postAddService = async (req, res) => {
+    try {
+        const { 
+            title_ar, title_en, description_ar, description_en, 
+            display_order, is_active, seoTitle, seoDescription, seoKeywords,
+            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en
+        } = req.body;
+        const image = req.file ? '/uploads/' + req.file.filename : null;
+
+        await Service.create({
+            title_ar,
+            title_en,
+            description_ar,
+            description_en,
+            image,
+            display_order: display_order || 0,
+            is_active: is_active === 'on',
+            tag1_ar,
+            tag2_ar,
+            tag3_ar,
+            tag1_en,
+            tag2_en,
+            tag3_en,
+            seoTitle,
+            seoDescription,
+            seoKeywords
+        });
+
+        res.redirect('/admin/services');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// --- Contact Management ---
+exports.manageContacts = async (req, res) => {
+    try {
+        const contacts = await Contact.findAll({ order: [['createdAt', 'DESC']] });
+        res.render('admin/contacts-manage', { title: 'لوحة التحكم | استمارات التواصل', contacts });
+    } catch (error) {
+        console.error(error);
+        res.render('admin/contacts-manage', { title: 'لوحة التحكم | استمارات التواصل', contacts: [] });
+    }
+};
+
+exports.deleteContact = async (req, res) => {
+    try {
+        const contact = await Contact.findByPk(req.params.id);
+        if (contact) {
+            await contact.destroy();
+        }
+        res.redirect('/admin/contacts');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.updateContactStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const contact = await Contact.findByPk(req.params.id);
+        if (contact) {
+            await contact.update({ status });
+        }
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false });
+    }
+};
+
+exports.getEditService = async (req, res) => {
+    try {
+        const service = await Service.findByPk(req.params.id);
+        if (!service) return res.status(404).send('Service not found');
+        res.render('admin/service-form', { title: 'تعديل خدمة', service });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postEditService = async (req, res) => {
+    try {
+        const { 
+            title_ar, title_en, description_ar, description_en, 
+            display_order, is_active, seoTitle, seoDescription, seoKeywords,
+            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en
+        } = req.body;
+        const service = await Service.findByPk(req.params.id);
+        if (!service) return res.redirect('/admin/services');
+
+        let image = service.image;
+        if (req.file) {
+            deleteFile(service.image);
+            image = '/uploads/' + req.file.filename;
+        }
+
+        await service.update({
+            title_ar,
+            title_en,
+            description_ar,
+            description_en,
+            image,
+            display_order: display_order || 0,
+            is_active: is_active === 'on',
+            tag1_ar,
+            tag2_ar,
+            tag3_ar,
+            tag1_en,
+            tag2_en,
+            tag3_en,
+            seoTitle,
+            seoDescription,
+            seoKeywords
+        });
+
+        res.redirect('/admin/services');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.deleteService = async (req, res) => {
+    try {
+        const service = await Service.findByPk(req.params.id);
+        if (service) {
+            deleteFile(service.image);
+            await service.destroy();
+        }
+        res.redirect('/admin/services');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');

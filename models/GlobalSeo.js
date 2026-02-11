@@ -29,6 +29,73 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     homeDescription: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    portfolioTitle: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    portfolioDescription: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    blogTitle: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    blogDescription: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    heroVideoUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
+    },
+    // Advanced SEO fields
+    favicon: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    ogImage: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    twitterHandle: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    googleAnalyticsId: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    facebookPixelId: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    customScriptsHeader: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    customScriptsFooter: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    // Structured Data (JSON-LD)
+    organizationSchema: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    contactEmail: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    contactPhone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    address: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 });
 

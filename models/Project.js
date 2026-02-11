@@ -18,6 +18,10 @@ const Project = sequelize.define('Project', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    externalLink: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     // SEO Fields
     seoTitle: {
         type: DataTypes.STRING,
@@ -31,11 +35,34 @@ const Project = sequelize.define('Project', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    // Category and Visibility
+    category: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'other' // video, websites, identities, other
+    },
+    CategoryId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
+    display_order: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
     // Stats
     views: {
         type: DataTypes.INTEGER,
         defaultValue: 0
     }
 });
+
+// Associations
+const Category = require('./Category');
+Project.belongsTo(Category);
+Category.hasMany(Project);
 
 module.exports = Project;

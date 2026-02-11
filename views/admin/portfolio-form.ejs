@@ -1,57 +1,236 @@
 <%- include('layout-header') %>
 
-<div class="form-container">
-    <form action="/admin/portfolio/<%= project ? 'edit/' + project.id : 'add' %>" method="POST" enctype="multipart/form-data">
-        <div class="row">
-            <div class="col-main">
-                <div class="card">
-                    <h3>بيانات المشروع</h3>
-                    <div class="form-group">
-                        <label>عنوان المشروع</label>
-                        <input type="text" name="title" value="<%= project ? project.title : '' %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label>وصف قصير</label>
-                        <textarea name="description" rows="3" required><%= project ? project.description : '' %></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>المحتوى الكامل</label>
-                        <textarea name="content" rows="10"><%= project ? project.content : '' %></textarea>
-                    </div>
+<form action="/admin/portfolio/<%= project ? 'edit/' + project.id : 'add' %>" method="POST" enctype="multipart/form-data">
+    <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        
+        <!-- Main Content Column -->
+        <div class="form-main-col">
+            <div class="admin-card">
+                <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <i class="fas fa-info-circle"></i> بيانات المشروع الأساسية
+                </h3>
+                
+                <div class="form-group">
+                    <label>عنوان المشروع</label>
+                    <input type="text" name="title" value="<%= project ? project.title : '' %>" required placeholder="أدخل عنوان المشروع هنا">
                 </div>
-
-                <!-- SEO Section -->
-                <div class="card seo-card">
-                    <div class="seo-header">
-                        <i class="fas fa-search"></i> تحسين محركات البحث (SEO)
-                    </div>
-                    <div class="form-group">
-                        <label>عنوان السيو (SEO Title)</label>
-                        <input type="text" name="seoTitle" value="<%= project ? project.seoTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان المشروع">
-                    </div>
-                    <div class="form-group">
-                        <label>وصف السيو (Meta Description)</label>
-                        <textarea name="seoDescription" rows="3"><%= project ? project.seoDescription : '' %></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>كلمات مفتاحية</label>
-                        <input type="text" name="seoKeywords" value="<%= project ? project.seoKeywords : '' %>">
+                
+                <div class="form-group">
+                    <label>وصف قصير (يظهر في القائمة)</label>
+                    <textarea name="description" rows="3" required placeholder="وصف موجز للمشروع..."><%= project ? project.description : '' %></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>المحتوى التفصيلي</label>
+                    <textarea name="content" rows="10" placeholder="اكتب تفاصيل المشروع هنا..."><%= project ? project.content : '' %></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>رابط خارجي للمشروع (اختياري)</label>
+                    <div class="input-wrapper" style="position: relative;">
+                        <i class="fas fa-link" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #ccc;"></i>
+                        <input type="url" name="externalLink" value="<%= project ? project.externalLink : '' %>" placeholder="https://example.com" style="padding-right: 45px;">
                     </div>
                 </div>
             </div>
 
-            <div class="col-side">
-                <div class="card">
-                    <h3>الصورة البارزة</h3>
-                    <% if (project && project.image) { %>
-                        <img src="<%= project.image %>" alt="Current Image" class="preview-img">
-                    <% } %>
-                    <input type="file" name="image" accept="image/*">
+            <!-- SEO Section -->
+            <div class="admin-card" style="border-right: 4px solid #00b894;">
+                <h3 style="margin-bottom: 1.5rem; color: #00b894;">
+                    <i class="fas fa-search"></i> تحسين محركات البحث (SEO)
+                </h3>
+                
+                <div class="form-group">
+                    <label>عنوان السيو (Meta Title)</label>
+                    <input type="text" name="seoTitle" value="<%= project ? project.seoTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان المشروع">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block"><%= project ? 'تحديث' : 'نشر' %></button>
+                
+                <div class="form-group">
+                    <label>وصف السيو (Meta Description)</label>
+                    <textarea name="seoDescription" rows="3" placeholder="وصف مختصر لمحركات البحث..."><%= project ? project.seoDescription : '' %></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>الكلمات المفتاحية (Keywords)</label>
+                    <input type="text" name="seoKeywords" value="<%= project ? project.seoKeywords : '' %>" placeholder="كلمة1, كلمة2, ...">
+                </div>
             </div>
         </div>
-    </form>
-</div>
+
+        <!-- Sidebar Column -->
+        <div class="form-side-col">
+            <div class="admin-card">
+                <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color);">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </h3>
+                
+                <div class="form-group">
+                    <label>التصنيف</label>
+                    <select name="category" required>
+                        <option value="">اختر تصنيفاً...</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat.id %>" <%= (project && project.CategoryId === cat.id) ? 'selected' : '' %>>
+                                <%= cat.name %>
+                            </option>
+                        <% }) %>
+                        <option value="other" <%= project && project.category === 'other' ? 'selected' : '' %>>أخرى</option>
+                    </select>
+                    <div style="margin-top: 5px;">
+                        <button type="button" onclick="openCategoryModal()" style="background: none; border: none; font-size: 0.8rem; color: var(--primary-color); cursor: pointer; padding: 0;">
+                            <i class="fas fa-plus-circle"></i> إضافة تصنيف جديد
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>ترتيب العرض</label>
+                    <input type="number" name="display_order" value="<%= project ? project.display_order : 0 %>">
+                    <small style="color: #999;">الرقم الأصغر يظهر أولاً</small>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1rem; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                        <input type="checkbox" name="is_active" <%= !project || project.is_active ? 'checked' : '' %> style="width: auto;">
+                        <span>نشط (يظهر في الموقع)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color);">
+                    <i class="fas fa-image"></i> الصورة البارزة
+                </h3>
+                
+                <% if (project && project.image) { %>
+                    <div style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+                        <img src="<%= project.image %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
+                    </div>
+                <% } %>
+                
+                <div class="form-group">
+                    <label class="btn btn-info btn-block" style="justify-content: center; cursor: pointer;">
+                        <i class="fas fa-upload"></i> اختر صورة جديدة
+                        <input type="file" name="image" accept="image/*" style="display: none;" onchange="updateFileName(this)">
+                    </label>
+                    <div id="file-name" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; text-align: center;"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="padding: 1rem; font-size: 1.1rem; justify-content: center; box-shadow: 0 4px 12px rgba(208, 0, 0, 0.2);">
+                <i class="fas fa-save"></i> <%= project ? 'حفظ التعديلات' : 'نشر المشروع' %>
+            </button>
+            
+            <a href="/admin/portfolio" class="btn btn-block" style="justify-content: center; margin-top: 10px; color: var(--text-muted);">إلغاء والعودة</a>
+        </div>
+    </div>
+</form>
+
+<script>
+function updateFileName(input) {
+    const fileName = input.files[0]?.name;
+    document.getElementById('file-name').textContent = fileName ? `الملف المختار: ${fileName}` : '';
+}
+</script>
+
+<style>
+    .btn-block {
+        width: 100%;
+        display: flex;
+    }
+    @media (max-width: 992px) {
+        .form-layout {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 
 <%- include('layout-footer') %>
+
+<!-- Modal for Adding Category -->
+<div id="categoryModal" class="admin-modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeCategoryModal()">&times;</span>
+        <h3 style="margin-bottom: 20px; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <i class="fas fa-plus-circle"></i> إضافة تصنيف جديد
+        </h3>
+        
+        <form action="/admin/categories/add" method="POST">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">اسم التصنيف</label>
+                <input type="text" name="name" required placeholder="مثال: فيديو، هويات بصرية..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">الرابط المختصر (Slug)</label>
+                <input type="text" name="slug" placeholder="اتركه فارغاً للتوليد التلقائي" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                <small style="color: #999; font-size: 0.8rem;">يجب أن يكون باللغة الإنجليزية وبدون مسافات.</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">ترتيب العرض</label>
+                <input type="number" name="display_order" value="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+
+            <div class="form-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary">حفظ التصنيف</button>
+                <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .admin-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+    }
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        text-align: right;
+    }
+    .close-modal {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s;
+    }
+    .close-modal:hover {
+        color: var(--primary-color);
+    }
+    .btn-secondary { background: #eee; color: #333; }
+</style>
+
+<script>
+    function openCategoryModal() {
+        document.getElementById('categoryModal').style.display = 'block';
+    }
+
+    function closeCategoryModal() {
+        document.getElementById('categoryModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('categoryModal');
+        if (event.target == modal) {
+            closeCategoryModal();
+        }
+    }
+</script>

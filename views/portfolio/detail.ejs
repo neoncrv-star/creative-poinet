@@ -1,13 +1,207 @@
 <%- include('../partials/header') %>
 
-<section class="project-detail">
-    <h2><%= project.title %></h2>
-    <div class="content">
-        <p><%= project.description %></p>
-        <hr>
-        <p><%= project.content %></p>
-    </div>
-    <a href="/portfolio">عودة للمعرض</a>
-</section>
+<!-- Link to Portfolio CSS -->
+<link rel="stylesheet" href="/css/portfolio-page.css">
+
+<main class="project-detail-page <%= isEn ? 'lang-en' : 'lang-ar' %>">
+    
+    <!-- Project Hero Section -->
+    <section class="project-hero">
+        <div class="container">
+            <div class="project-hero-content" data-gsap="fade-up">
+                <span class="project-category">
+                    <% if(isEn) { %>
+                        <%= project.Category ? project.Category.name : (project.category || 'Creative') %>
+                    <% } else { %>
+                        <%= project.Category ? project.Category.name : (project.category === 'video' ? 'فيديو' : project.category === 'websites' ? 'مواقع إلكترونية' : project.category === 'identities' ? 'هويات بصرية' : 'إبداع') %>
+                    <% } %>
+                </span>
+                <h1 class="project-title"><%= project.title %></h1>
+                
+                <% if(project.image) { %>
+                    <div class="project-featured-wrapper">
+                        <% if (project.image.endsWith('.mp4') || project.image.endsWith('.webm')) { %>
+                            <video src="<%= project.image %>" class="project-featured-image" muted loop playsinline autoplay></video>
+                        <% } else { %>
+                            <img src="<%= project.image %>" alt="<%= project.title %>" class="project-featured-image">
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="hero-bg-accent"></div>
+    </section>
+
+    <!-- Project Body Section -->
+    <section class="project-body">
+        <div class="project-container">
+            <div class="project-meta" data-gsap="fade-up">
+                <div class="meta-item">
+                    <label><%= isEn ? 'Category' : 'التصنيف' %></label>
+                    <span>
+                        <%= project.Category ? project.Category.name : (isEn ? 'Creative' : 'إبداع') %>
+                    </span>
+                </div>
+                <div class="meta-item">
+                    <label><%= isEn ? 'Date' : 'التاريخ' %></label>
+                    <span><%= new Date(project.createdAt).toLocaleDateString(isEn ? 'en-US' : 'ar-EG', { year: 'numeric', month: 'long' }) %></span>
+                </div>
+                <% if(project.externalLink) { %>
+                <div class="meta-item">
+                    <label><%= isEn ? 'Link' : 'الرابط' %></label>
+                    <span><a href="<%= project.externalLink %>" target="_blank" class="project-external-link"><%= isEn ? 'Visit Project' : 'زيارة المشروع' %> <i class="ri-external-link-line"></i></a></span>
+                </div>
+                <% } %>
+            </div>
+
+            <div class="project-description" data-gsap="fade-up">
+                <%= project.description %>
+            </div>
+
+            <div class="project-content" data-gsap="fade-up">
+                <%- project.content %>
+            </div>
+
+            <div class="project-navigation" data-gsap="fade-up">
+                <a href="<%= isEn ? '/en/portfolio' : '/portfolio' %>" class="back-to-portfolio">
+                    <i class="ri-arrow-right-line"></i>
+                    <span><%= isEn ? 'Back to Portfolio' : 'العودة للمعرض' %></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section (Standardized with platform spirit) -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info" data-gsap="fade-left">
+                    <h2 class="contact-title">
+                        <% if(isEn) { %>
+                            Let's Start a<br>New Journey
+                        <% } else { %>
+                            لنبدأ رحلة<br>إبداعية جديدة
+                        <% } %>
+                    </h2>
+                    <p class="contact-subtitle">
+                        <% if(isEn) { %>
+                            We are here to hear your ideas and turn them into an impactful visual strategy. Contact us today.
+                        <% } else { %>
+                            نحن هنا لنسمع أفكارك ونحولها إلى استراتيجية بصرية مؤثرة. تواصل معنا اليوم.
+                        <% } %>
+                    </p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="ri-phone-line"></i>
+                            <div>
+                                <span><%= isEn ? 'Call Us' : 'اتصل بنا' %></span>
+                                <p dir="ltr">+966 56 839 49 45</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-mail-line"></i>
+                            <div>
+                                <span><%= isEn ? 'Email' : 'البريد الإلكتروني' %></span>
+                                <p>info@cpoint-sa.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-map-pin-line"></i>
+                            <div>
+                                <span><%= isEn ? 'Location' : 'الموقع' %></span>
+                                <p><%= isEn ? 'Saudi Arabia, Riyadh' : 'المملكة العربية السعودية، الرياض' %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="#"><i class="ri-instagram-line"></i></a>
+                        <a href="#"><i class="ri-twitter-x-line"></i></a>
+                        <a href="#"><i class="ri-linkedin-line"></i></a>
+                        <a href="#"><i class="ri-whatsapp-line"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper" data-gsap="fade-right">
+                    <form action="/contact" method="POST" class="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="<%= isEn ? 'Full Name' : 'الاسم الكامل' %>" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="<%= isEn ? 'Email Address' : 'البريد الإلكتروني' %>" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="phone" placeholder="<%= isEn ? 'Phone Number' : 'رقم الجوال' %>">
+                        </div>
+                        <div class="form-group">
+                            <select name="service">
+                                <option value="" disabled selected><%= isEn ? 'Type of service required' : 'نوع الخدمة المطلوبة' %></option>
+                                <option value="branding"><%= isEn ? 'Visual Identity' : 'الهوية البصرية' %></option>
+                                <option value="marketing"><%= isEn ? 'Digital Marketing' : 'التسويق الرقمي' %></option>
+                                <option value="web"><%= isEn ? 'Web Development' : 'تطوير المواقع' %></option>
+                                <option value="other"><%= isEn ? 'Other' : 'أخرى' %></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" rows="5" placeholder="<%= isEn ? 'Project Details' : 'تفاصيل المشروع' %>" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span><%= isEn ? 'Send Request' : 'إرسال الطلب' %></span>
+                            <i class="ri-send-plane-fill"></i>
+                        </button>
+                    </form>
+                    
+                    <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
+                        <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; <%= isEn ? 'margin-right: 10px;' : 'margin-left: 10px;' %>"></i>
+                        <%= isEn ? 'Your request has been sent successfully! We will contact you soon.' : 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.' %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Page Specific Animations -->
+<script>
+    // Animations
+    if (typeof gsap !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        
+        document.querySelectorAll('[data-gsap]').forEach(el => {
+            const effect = el.getAttribute('data-gsap');
+            const config = {
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                },
+                duration: 1,
+                ease: 'power3.out'
+            };
+
+            if (effect === 'fade-up') {
+                gsap.from(el, { ...config, y: 50, opacity: 0 });
+            } else if (effect === 'fade-left') {
+                gsap.from(el, { ...config, x: -50, opacity: 0 });
+            } else if (effect === 'fade-right') {
+                gsap.from(el, { ...config, x: 50, opacity: 0 });
+            }
+        });
+    }
+
+    // Success Message Handling
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('success')) {
+        const successDiv = document.getElementById('contact-success');
+        if (successDiv) {
+            successDiv.style.display = 'block';
+            const contactForm = document.querySelector('.contact-form');
+            if (contactForm) contactForm.style.display = 'none';
+            successDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+</script>
 
 <%- include('../partials/footer') %>

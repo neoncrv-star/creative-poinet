@@ -9,27 +9,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="admin-container">
+    <div class="admin-wrapper">
+        <!-- Sidebar Toggle for Mobile -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <!-- Sidebar -->
-        <aside class="admin-sidebar">
+        <aside class="admin-sidebar" id="adminSidebar">
             <div class="admin-logo">
+                <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none'">
                 <h2>نقطة إبداعية</h2>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <nav class="admin-nav">
-                <a href="/admin" class="<%= path === '/admin' ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
-                <a href="/admin/portfolio" class="<%= path.includes('/portfolio') ? 'active' : '' %>"><i class="fas fa-briefcase"></i> إدارة الأعمال</a>
-                <a href="/admin/blog" class="<%= path.includes('/blog') ? 'active' : '' %>"><i class="fas fa-pen-nib"></i> إدارة المدونة</a>
-                <a href="/admin/seo" class="<%= path.includes('/seo') ? 'active' : '' %>"><i class="fas fa-search"></i> إعدادات SEO</a>
-                <a href="/admin/logout" class="logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+                <a href="/admin" class="<%= path === '/admin' ? 'active' : '' %>">
+                    <i class="fas fa-chart-line"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+                <a href="/admin/portfolio" class="<%= path.includes('/portfolio') ? 'active' : '' %>">
+                    <i class="fas fa-tasks"></i>
+                    <span>إدارة الأعمال</span>
+                </a>
+                <a href="/admin/services" class="<%= path.includes('/services') ? 'active' : '' %>">
+                    <i class="fas fa-layer-group"></i>
+                    <span>إدارة الخدمات</span>
+                </a>
+                <a href="/admin/partners" class="<%= path.includes('/partners') ? 'active' : '' %>">
+                    <i class="fas fa-users"></i>
+                    <span>إدارة الشركاء</span>
+                </a>
+                <a href="/admin/contacts" class="<%= path.includes('/contacts') ? 'active' : '' %>">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>استمارات التواصل</span>
+                </a>
+                <a href="/admin/blog" class="<%= path.includes('/blog') ? 'active' : '' %>">
+                    <i class="fas fa-newspaper"></i>
+                    <span>إدارة المدونة</span>
+                </a>
+                <a href="/admin/seo" class="<%= path.includes('/seo') ? 'active' : '' %>">
+                    <i class="fas fa-globe-americas"></i>
+                    <span>إعدادات SEO</span>
+                </a>
+                <div class="nav-divider"></div>
+                <a href="/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>زيارة الموقع</span>
+                </a>
+                <a href="/admin/logout" class="logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
             </nav>
         </aside>
 
+        <!-- Overlay for mobile sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Main Content -->
-        <main class="admin-content">
-            <header class="admin-header">
-                <h1><%= title %></h1>
-                <div class="admin-user">
-                    <span>مرحباً، أدمن</span>
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <h1><%= title %></h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="admin-profile">
+                        <div class="profile-info">
+                            <span class="profile-name">المدير العام</span>
+                            <span class="profile-role">Admin</span>
+                        </div>
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
                 </div>
             </header>
-            <div class="admin-body">
+            <div class="admin-content-inner">

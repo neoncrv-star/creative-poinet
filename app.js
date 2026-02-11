@@ -20,6 +20,27 @@ app.use(session({
 const mainRoutes = require('./routes/index');
 const adminRoutes = require('./routes/admin');
 
+// Global Data Middleware
+const GlobalSeo = require('./models/GlobalSeo');
+const Category = require('./models/Category');
+
+app.use(async (req, res, next) => {
+    try {
+        const seo = await GlobalSeo.findOne();
+        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
+        res.locals.globalSeo = seo;
+        res.locals.globalCategories = categories;
+        res.locals.path = req.path;
+        next();
+    } catch (error) {
+        console.error('Global Data Middleware Error:', error);
+        res.locals.globalSeo = null;
+        res.locals.globalCategories = [];
+        res.locals.path = req.path;
+        next();
+    }
+});
+
 // Set view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

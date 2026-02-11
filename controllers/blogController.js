@@ -3,14 +3,17 @@ const GlobalSeo = require('../models/GlobalSeo');
 
 exports.getBlog = async (req, res) => {
     try {
-        const posts = await Post.findAll();
+        const posts = await Post.findAll({ where: { is_active: true } });
         const seo = await GlobalSeo.findOne();
         
         res.render('blog/index', { 
-            title: 'المدونة', 
+            title: seo && seo.blogTitle ? seo.blogTitle : 'المدونة', 
             posts, 
             seo,
-            pageSeo: { title: 'المدونة' }
+            pageSeo: { 
+                seoTitle: seo?.blogTitle,
+                seoDescription: seo?.blogDescription
+            }
         });
     } catch (error) {
         console.error(error);
