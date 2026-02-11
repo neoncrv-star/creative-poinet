@@ -1,6 +1,6 @@
 require('dotenv').config();
-const sequelize = require('./config/database');
-const User = require('./models/User');
+const sequelize = require('../config/database');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
 async function run() {
