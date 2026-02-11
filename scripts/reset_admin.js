@@ -10,18 +10,17 @@ async function run() {
         
         const username = 'admin';
         const newPassword = 'admin123';
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
         
         const [user, created] = await User.findOrCreate({
             where: { username },
             defaults: {
-                password: hashedPassword,
+                password: newPassword,
                 role: 'super_admin'
             }
         });
         
         if (!created) {
-            user.password = hashedPassword;
+            user.password = newPassword;
             await user.save();
             console.log(`Password for user "${username}" has been reset to "${newPassword}"`);
         } else {

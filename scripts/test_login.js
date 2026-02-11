@@ -17,7 +17,7 @@ async function run() {
             return;
         }
         
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await user.validPassword(password);
         console.log(`Password match for "admin123": ${isMatch}`);
         
     } catch (e) {
