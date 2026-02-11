@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const path = require('path');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const sequelize = require('./config/database');
 
 const app = express();
@@ -10,13 +11,17 @@ const port = process.env.PORT || 3000;
 // Session Config
 app.set('trust proxy', 1); // trust first proxy
 app.use(session({
+    store: new FileStore({
+        path: './sessions',
+        retries: 0
+    }),
     secret: process.env.SESSION_SECRET || 'creative_point_secret_key',
     resave: false,
     saveUninitialized: false,
     name: 'creative_point_session',
     cookie: { 
-        maxAge: 3600000, // 1 hour
-        secure: false, // Set to false if not using HTTPS, but true is better for production
+        maxAge: 3600000 * 24, // 24 hours
+        secure: false, // Set to false if not using HTTPS
         httpOnly: true,
         sameSite: 'lax'
     }
