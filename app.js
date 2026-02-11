@@ -145,17 +145,30 @@ const syncOptions = {
 
 sequelize.sync(syncOptions)
     .then(async () => {
-        console.log(`Database synced successfully (${isSQLite ? 'SQLite' : 'MySQL'})`);
+        const msg = `Database synced successfully (${isSQLite ? 'SQLite' : 'MySQL'})`;
+        debugLog(msg);
+        console.log(msg);
         app.listen(port, () => {
-            console.log(`Server is running at http://localhost:${port}`);
+            const startMsg = `Server is running at http://localhost:${port}`;
+            debugLog(startMsg);
+            console.log(startMsg);
         });
     })
     .catch(err => {
-        console.error('Database sync error (trying fallback):', err);
+        const errMsg = `Database sync error (trying fallback): ${err.message}`;
+        debugLog(errMsg);
+        console.error(errMsg, err);
         // Fallback sync for constraint issues
         sequelize.sync().then(() => {
+            const fallbackMsg = `Server is running at http://localhost:${port} (Fallback Sync)`;
+            debugLog(fallbackMsg);
+            console.log(fallbackMsg);
             app.listen(port, () => {
-                console.log(`Server is running at http://localhost:${port} (Fallback Sync)`);
+                console.log(fallbackMsg);
             });
-        }).catch(finalErr => console.error('Critical Database error:', finalErr));
+        }).catch(finalErr => {
+            const critMsg = `Critical Database error: ${finalErr.message}`;
+            debugLog(critMsg);
+            console.error(critMsg, finalErr);
+        });
     });
