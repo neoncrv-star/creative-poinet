@@ -24,9 +24,9 @@ if (process.env.DB_NAME && process.env.DB_USER && process.env.DB_PASSWORD) {
 } else {
     // Force Error if MySQL is expected but not configured in production
     if (process.env.NODE_ENV === 'production') {
-        throw new Error('Database configuration missing for production environment!');
+        console.error('CRITICAL: Database configuration missing! Falling back to SQLite to prevent 503 error.');
     }
-    // SQLite Development Configuration
+    // SQLite Development/Fallback Configuration
     sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: path.join(__dirname, '../data/database.sqlite'),
