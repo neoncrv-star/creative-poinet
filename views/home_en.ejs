@@ -49,21 +49,33 @@
                 
                 <!-- The Mask/Reveal Container -->
                 <div class="hero-mask-container">
-                    <% if (seo && seo.heroVideoUrl && seo.heroVideoUrl.includes('youtube')) { %>
+                    <% 
+                    let heroVideoSrc = seo && seo.heroVideoUrl ? seo.heroVideoUrl : 'https://cdn.coverr.co/videos/coverr-red-smoke-5374/1080p.mp4';
+                    let isYoutube = heroVideoSrc.includes('youtube.com') || heroVideoSrc.includes('youtu.be');
+                    if (isYoutube) {
+                        let videoId = '';
+                        if (heroVideoSrc.includes('youtu.be/')) {
+                            videoId = heroVideoSrc.split('youtu.be/')[1].split('?')[0];
+                        } else if (heroVideoSrc.includes('v=')) {
+                            videoId = heroVideoSrc.split('v=')[1].split('&')[0];
+                        } else if (heroVideoSrc.includes('embed/')) {
+                            videoId = heroVideoSrc.split('embed/')[1].split('?')[0];
+                        }
+                        heroVideoSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&enablejsapi=1&modestbranding=1&iv_load_policy=3`;
+                    }
+                    %>
+                    
+                    <% if (isYoutube) { %>
                         <iframe class="hero-video" 
-                            src="<%= seo.heroVideoUrl %>" 
+                            src="<%= heroVideoSrc %>" 
                             title="Hero Video" 
                             frameborder="0" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen>
+                            style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
                         </iframe>
-                    <% } else if (seo && seo.heroVideoUrl) { %>
-                        <video class="hero-video" playsinline muted loop autoplay preload="auto">
-                            <source src="<%= seo.heroVideoUrl %>" type="video/mp4">
-                        </video>
                     <% } else { %>
                         <video class="hero-video" playsinline muted loop autoplay preload="auto">
-                            <source src="https://cdn.coverr.co/videos/coverr-red-smoke-5374/1080p.mp4" type="video/mp4">
+                            <source src="<%= heroVideoSrc %>" type="video/mp4">
                         </video>
                     <% } %>
                     
