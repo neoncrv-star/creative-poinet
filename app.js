@@ -73,6 +73,7 @@ app.use('/uploads', (req, res, next) => {
             return res.sendFile(filePath);
         }
         // Fallback to a local placeholder (use existing logo to avoid extra assets)
+        debugLog(`UPLOADS FALLBACK: missing ${reqPath}`);
         res.setHeader('Cache-Control', 'public, max-age=300');
         return res.sendFile(path.join(__dirname, 'public', '210.png'));
     } catch (e) {
