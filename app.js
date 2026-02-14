@@ -166,6 +166,24 @@ app.use('/uploads', (req, res, next) => {
     }
 });
 
+// Serve hashed-name assets from /uploads even if path misses the prefix
+app.use((req, res, next) => {
+    try {
+        const p = req.path || '';
+        const m = p.match(/^\/([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
+        if (!m) return next();
+        const uploadsDir = path.join(__dirname, 'public', 'uploads');
+        const filePath = path.join(uploadsDir, `${m[1]}.${m[2].toLowerCase()}`);
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            return res.sendFile(filePath);
+        }
+        return next();
+    } catch {
+        return next();
+    }
+});
+
 // Serve static files FIRST to avoid running middleware for assets (after uploads fallback)
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '30d',
@@ -249,6 +267,7 @@ const adminRoutes = require('./routes/admin');
 // Global Data Middleware with Simple Cache
 const GlobalSeo = require('./models/GlobalSeo');
 const Category = require('./models/Category');
+const Service = require('./models/Service');
 
 let globalDataCache = {
     seo: null,
@@ -376,6 +395,27 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Asset path helper for views
+app.use((req, res, next) => {
+    res.locals.assetPath = (value) => {
+        try {
+            if (!value) return value;
+            const v = String(value).trim();
+            if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) return v;
+            const fixed = v.replace(/\/{2,}/g, '/');
+            if (fixed.startsWith('/uploads/')) return fixed;
+            if (fixed.startsWith('uploads/')) return '/' + fixed;
+            const m = fixed.match(/^([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
+            if (m) return `/uploads/${m[1]}.${m[2].toLowerCase()}`;
+            if (!fixed.startsWith('/')) return '/' + fixed;
+            return fixed;
+        } catch {
+            return value;
+        }
+    };
+    next();
+});
+
 // Minimal security headers (no extra deps)
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -485,6 +525,32 @@ sequelize.sync(syncOptions)
             } catch (e) {
                 debugLog('prewarm error: ' + (e && e.message));
             }
+            setTimeout(async () => {
+                try {
+                    const rows = await Service.findAll();
+                    let c = 0;
+                    for (const s of rows) {
+                        const v = s.image;
+                        if (!v) continue;
+                        if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) continue;
+                        let vv = String(v).trim().replace(/\/{2,}/g, '/');
+                        if (!vv.startsWith('/uploads/')) {
+                            if (vv.startsWith('uploads/')) vv = '/' + vv;
+                            else {
+                                const m = vv.match(/^([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
+                                vv = m ? `/uploads/${m[1]}.${m[2].toLowerCase()}` : `/uploads/${vv.replace(/^\//,'')}`;
+                            }
+                        }
+                        if (vv !== v) {
+                            await s.update({ image: vv });
+                            c++;
+                        }
+                    }
+                    if (c > 0) debugLog(`normalized Service.image ${c}`);
+                } catch (e) {
+                    debugLog('service normalize error: ' + (e && e.message));
+                }
+            }, 1200);
         });
         // Tune server timeouts and keep-alive to avoid ghost Pending while preventing hangs
         try {
