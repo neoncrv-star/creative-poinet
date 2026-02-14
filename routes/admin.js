@@ -35,6 +35,9 @@ router.get('/logs', adminController.getLogs);
 
 // (Assets audit removed by policy; Services/Projects images are the single source of truth)
 
+// Health
+router.get('/health', adminController.getSiteHealth);
+
 // SEO Routes
 router.get('/seo', adminController.getSeoSettings);
 router.post('/seo', upload.fields([

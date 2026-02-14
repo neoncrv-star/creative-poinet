@@ -236,6 +236,61 @@ exports.getLogs = async (req, res) => {
     }
 };
 
+// --- Site Health ---
+exports.getSiteHealth = async (req, res) => {
+    try {
+        const childProcess = require('child_process');
+        let version = process.env.APP_VERSION || '';
+        if (!version) {
+            try { version = childProcess.execSync('git rev-parse --short HEAD').toString().trim(); } catch {}
+        }
+        const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
+        const [svcCount, prjCount, prtCount, postCount] = await Promise.all([
+            require('../models/Service').count(),
+            require('../models/Project').count(),
+            require('../models/Partner').count(),
+            require('../models/Post').count()
+        ]);
+        // Optional external ping using siteUrl from SEO
+        let siteUrl = 'https://cpoint-sa.com';
+        try {
+            const GlobalSeo = require('../models/GlobalSeo');
+            const seo = await GlobalSeo.findOne();
+            if (seo && seo.siteUrl) siteUrl = seo.siteUrl.replace(/\/+$/, '');
+        } catch {}
+        const https = require('https');
+        const tryHead = (url) => new Promise(resolve => {
+            const t0 = Date.now();
+            try {
+                const reqH = https.request(url, { method: 'HEAD', timeout: 5000 }, (resp) => {
+                    resolve({ url, status: resp.statusCode, ms: Date.now() - t0 });
+                });
+                reqH.on('timeout', () => { reqH.destroy(); resolve({ url, status: 0, ms: Date.now() - t0 }); });
+                reqH.on('error', () => resolve({ url, status: 0, ms: Date.now() - t0 }));
+                reqH.end();
+            } catch {
+                resolve({ url, status: 0, ms: Date.now() - t0 });
+            }
+        });
+        const probes = await Promise.all([
+            tryHead(siteUrl + '/'),
+            tryHead(siteUrl + '/en'),
+            tryHead(siteUrl + '/portfolio')
+        ]);
+        res.render('admin/health', {
+            title: 'فحص صحة الموقع والأداء',
+            path: '/admin/health',
+            version,
+            dialect,
+            counts: { services: svcCount, projects: prjCount, partners: prtCount, posts: postCount },
+            probes
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
+
 // --- Assets Audit & Sync ---
 const collectAssetRefs = async () => {
     const refs = [];

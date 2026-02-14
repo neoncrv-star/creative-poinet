@@ -1,0 +1,38 @@
+<%- include('layout-header') %>
+<div class="admin-card" style="max-width:1100px;margin:0 auto;">
+  <div class="card-header">
+    <h2>فحص صحة الموقع والأداء</h2>
+    <p>هذه الصفحة تعطي لمحة فورية عن النسخة، القاعدة، وعدد الكيانات الأساسية مع قياس استجابة الصفحات الرئيسية.</p>
+  </div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+      <div class="stat-tile"><strong>النسخة</strong><div><code><%= version %></code></div></div>
+      <div class="stat-tile"><strong>قاعدة البيانات</strong><div><%= dialect %></div></div>
+      <div class="stat-tile"><strong>الخدمات</strong><div><%= counts.services %></div></div>
+      <div class="stat-tile"><strong>الأعمال</strong><div><%= counts.projects %></div></div>
+      <div class="stat-tile"><strong>الشركاء</strong><div><%= counts.partners %></div></div>
+      <div class="stat-tile"><strong>المقالات</strong><div><%= counts.posts %></div></div>
+    </div>
+    <hr>
+    <h3>قياس الاستجابة</h3>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="border-bottom:1px solid #222;">
+          <th style="text-align:right;padding:8px;">الرابط</th>
+          <th style="text-align:right;padding:8px;">الحالة</th>
+          <th style="text-align:right;padding:8px;">ms</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% probes.forEach(p => { %>
+          <tr style="border-bottom:1px solid #111;">
+            <td style="padding:8px;direction:ltr;"><%= p.url %></td>
+            <td style="padding:8px;color:<%= p.status && p.status < 400 ? '#27ae60' : '#ff5555' %>"><%= p.status %></td>
+            <td style="padding:8px;"><%= p.ms %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('layout-footer') %>

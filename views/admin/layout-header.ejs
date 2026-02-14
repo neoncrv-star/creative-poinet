@@ -61,6 +61,10 @@
                     <i class="fas fa-terminal"></i>
                     <span>سجلات النظام</span>
                 </a>
+                <a href="/admin/health" class="<%= path.includes('/health') ? 'active' : '' %>">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>فحص الموقع</span>
+                </a>
                 <a href="/admin/account/password" class="<%= path.includes('/account/password') ? 'active' : '' %>">
                     <i class="fas fa-key"></i>
                     <span>تغيير كلمة المرور</span>
