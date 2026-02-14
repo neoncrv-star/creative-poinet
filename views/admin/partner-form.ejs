@@ -62,12 +62,12 @@
                         </div>
                     <% } %>
 
-                    <div class="file-upload-wrapper" style="position: relative; display:flex; flex-direction: column; gap: 8px;">
-                        <input type="file" name="logo" id="partner-logo" accept="image/*" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;" onchange="updateFileName(this)" <%= partner ? '' : 'required' %>>
-                        <div class="btn btn-outline" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center;">
+                    <div class="file-upload-wrapper" style="display:flex; flex-direction: column; gap: 8px;">
+                        <label class="btn btn-outline" for="partner-logo" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center; cursor: pointer;">
                             <i class="fas fa-cloud-upload-alt"></i> اختر من جهازك
-                        </div>
-                        <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('partner')">
+                            <input type="file" name="logo" id="partner-logo" accept="image/*" style="display:none" onchange="updateFileName(this)" <%= partner ? '' : 'required' %>>
+                        </label>
+                        <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('partner')" id="open-server-logo-btn">
                             <i class="fas fa-folder-open"></i> اختيار من الخادم
                         </button>
                         <input type="hidden" name="existingLogo" id="existingLogoPartner">

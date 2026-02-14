@@ -87,12 +87,12 @@
                         </div>
                     <% } %>
 
-                    <div class="file-upload-wrapper" style="position: relative; display:flex; flex-direction: column; gap: 8px;">
-                        <input type="file" name="image" id="blog-image" accept="image/*" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;" onchange="updateFileName(this)">
-                        <div class="btn btn-outline" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center;">
+                    <div class="file-upload-wrapper" style="display:flex; flex-direction: column; gap: 8px;">
+                        <label class="btn btn-outline" for="blog-image" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center; cursor: pointer;">
                             <i class="fas fa-cloud-upload-alt"></i> اختر من جهازك
-                        </div>
-                        <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('blog')">
+                            <input type="file" name="image" id="blog-image" accept="image/*" style="display:none" onchange="updateFileName(this)">
+                        </label>
+                        <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('blog')" id="open-server-blog-btn">
                             <i class="fas fa-folder-open"></i> اختيار من الخادم
                         </button>
                         <input type="hidden" name="existingImage" id="existingImageBlog">
