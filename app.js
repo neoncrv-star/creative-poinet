@@ -193,6 +193,16 @@ let globalDataCache = {
 };
 const CACHE_TTL = 60 * 5 * 1000; // 5 minutes cache
 
+app.use((req, res, next) => {
+    // Guard against long-hanging responses (defensive)
+    res.setTimeout(Number(process.env.REQ_TIMEOUT_MS || 15000), () => {
+        try {
+            res.status(504).send('Request timeout');
+        } catch {}
+    });
+    next();
+});
+
 app.use(async (req, res, next) => {
     // Skip for static-like paths just in case (though static middleware is now above)
     if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
@@ -201,16 +211,17 @@ app.use(async (req, res, next) => {
 
     try {
         const now = Date.now();
-        if (!globalDataCache.seo || (now - globalDataCache.lastFetch) > CACHE_TTL) {
-            const [seo, categories] = await Promise.all([
+        const needRefresh = !globalDataCache.seo || (now - globalDataCache.lastFetch) > CACHE_TTL;
+        if (needRefresh) {
+            const timeoutMs = Number(process.env.GLOBAL_DATA_TIMEOUT_MS || 1500);
+            const fetchPromise = Promise.all([
                 GlobalSeo.findOne(),
                 Category.findAll({ order: [['display_order', 'ASC']] })
-            ]);
-            globalDataCache = {
-                seo,
-                categories,
-                lastFetch: now
-            };
+            ]).then(([seo, categories]) => {
+                globalDataCache = { seo, categories, lastFetch: Date.now() };
+            });
+            const timeoutPromise = new Promise((resolve) => setTimeout(resolve, timeoutMs));
+            await Promise.race([fetchPromise, timeoutPromise]);
         }
         
         res.locals.globalSeo = globalDataCache.seo;

@@ -68,8 +68,14 @@ if (!isProd && (preferSqlite || missingMySqlCreds)) {
             pool: {
                 max: Number(process.env.DB_POOL_MAX || 5),
                 min: Number(process.env.DB_POOL_MIN || 0),
-                acquire: Number(process.env.DB_POOL_ACQUIRE || 30000),
-                idle: Number(process.env.DB_POOL_IDLE || 10000)
+                acquire: Number(process.env.DB_POOL_ACQUIRE || 8000),
+                idle: Number(process.env.DB_POOL_IDLE || 8000)
+            },
+            dialectOptions: {
+                connectTimeout: Number(process.env.DB_CONNECT_TIMEOUT || 5000)
+            },
+            retry: {
+                max: Number(process.env.DB_RETRY_MAX || 1)
             }
         }
     );
