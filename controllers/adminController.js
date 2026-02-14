@@ -204,6 +204,72 @@ exports.getLogs = async (req, res) => {
     }
 };
 
+// --- Assets Audit & Sync ---
+const collectAssetRefs = async () => {
+    const refs = [];
+    const pushRef = (type, id, field, value, title) => {
+        if (!value) return;
+        const isExternal = /^https?:\/\//i.test(value);
+        let rel = value;
+        if (!isExternal && value.startsWith('/uploads/')) {
+            rel = value.replace(/^\/+/, '');
+        }
+        let exists = true;
+        let fileSize = 0;
+        if (!isExternal && rel.startsWith('uploads/')) {
+            const abs = path.join(__dirname, '../public', rel);
+            exists = fs.existsSync(abs);
+            if (exists) {
+                try { fileSize = fs.statSync(abs).size; } catch {}
+            }
+        }
+        refs.push({ type, id, field, value, isExternal, exists, fileSize, title: title || '' });
+    };
+
+    const [services, partners, projects, posts] = await Promise.all([
+        require('../models/Service').findAll(),
+        require('../models/Partner').findAll(),
+        require('../models/Project').findAll(),
+        require('../models/Post').findAll()
+    ]);
+    services.forEach(s => pushRef('Service', s.id, 'image', s.image, s.title_ar || s.title_en));
+    partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
+    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title));
+    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title));
+    return refs;
+};
+
+exports.getAssetsAudit = async (req, res) => {
+    try {
+        const refs = await collectAssetRefs();
+        const total = refs.length;
+        const missing = refs.filter(r => !r.isExternal && !r.exists);
+        res.render('admin/assets-audit', {
+            title: 'لوحة التحكم | تدقيق الأصول ومزامنتها',
+            path: '/admin/assets/audit',
+            refs,
+            stats: { total, missing: missing.length }
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postAssetsUpload = async (req, res) => {
+    try {
+        const filename = (req.params.filename || '').replace(/[^a-zA-Z0-9._-]/g, '');
+        if (!filename || !req.file) {
+            return res.status(400).send('Bad Request');
+        }
+        debugLog(`ASSET UPLOAD: ${filename} -> OK`);
+        res.redirect('/admin/assets/audit');
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
+
 // --- SEO Settings ---
 exports.getSeoSettings = async (req, res) => {
     try {

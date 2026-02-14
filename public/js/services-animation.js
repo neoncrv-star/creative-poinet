@@ -38,8 +38,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. Horizontal Scroll Logic ---
     let mainTween;
+    const cleanup = () => {
+        try {
+            if (mainTween) {
+                mainTween.kill();
+                mainTween = null;
+            }
+            ScrollTrigger.getAll().forEach(st => {
+                const trg = st.vars && st.vars.trigger;
+                if (trg && servicesSection && servicesSection.contains(trg)) {
+                    st.kill();
+                }
+                if (st.vars && st.vars.id && ('' + st.vars.id).startsWith('service-')) {
+                    st.kill();
+                }
+                if (st.vars && st.vars.id === 'servicesScroll') {
+                    st.kill();
+                }
+            });
+            gsap.set([servicesSection, panelContainer], { clearProps: 'all' });
+        } catch (e) {
+            console.debug('Services Animation: cleanup error', e);
+        }
+    };
 
     const updateScroll = () => {
+        cleanup();
         console.debug('Services Animation: updateScroll()', {
             panelCount: panels.length,
             containerWidth: panelContainer.offsetWidth,
@@ -49,15 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let scrollAmount = totalWidth - window.innerWidth;
         const xValue = isRTL ? scrollAmount : -scrollAmount;
 
-        // Kill existing animations if any (for resize)
-        if (mainTween) {
-            mainTween.kill();
-            ScrollTrigger.getAll().forEach(st => {
-                if (st.vars.id && st.vars.id.startsWith("service-")) st.kill();
-            });
-            ScrollTrigger.getById("servicesScroll")?.kill();
-        }
-
         mainTween = gsap.to(panelContainer, {
             x: xValue,
             ease: "none",
@@ -65,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: "servicesScroll",
                 trigger: servicesSection,
                 pin: true,
+                pinSpacing: true,
                 start: "top top",
                 end: () => `+=${scrollAmount}`,
                 scrub: 1,
@@ -115,10 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
             }
         });
+        // Defer refresh to next tick to avoid pin swap conflicts
+        setTimeout(() => ScrollTrigger.refresh(), 0);
     };
 
     // Initialize after a short delay to ensure layout is ready
-    setTimeout(updateScroll, 100);
+    setTimeout(() => requestAnimationFrame(updateScroll), 100);
 
     // Refresh everything on window resize
     let resizeTimeout;
@@ -126,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
             console.debug('Services Animation: resize -> refresh');
-            updateScroll();
-            ScrollTrigger.refresh();
+            requestAnimationFrame(updateScroll);
         }, 250);
     });
 });

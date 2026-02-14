@@ -33,6 +33,19 @@ router.post('/account/password', adminController.postChangePassword);
 // Logs (protected)
 router.get('/logs', adminController.getLogs);
 
+// Assets Audit & Sync
+router.get('/assets/audit', adminController.getAssetsAudit);
+// Custom storage to upload to an exact filename under /public/uploads
+const assetsStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'public/uploads'),
+    filename: (req, file, cb) => {
+        const target = (req.params.filename || '').replace(/[^a-zA-Z0-9._-]/g, '');
+        cb(null, target || (Date.now() + path.extname(file.originalname)));
+    }
+});
+const assetsUpload = multer({ storage: assetsStorage });
+router.post('/assets/upload/:filename', assetsUpload.single('file'), adminController.postAssetsUpload);
+
 // SEO Routes
 router.get('/seo', adminController.getSeoSettings);
 router.post('/seo', upload.fields([
