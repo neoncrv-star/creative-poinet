@@ -4,13 +4,24 @@ const Service = require('../models/Service');
 const Partner = require('../models/Partner');
 const Contact = require('../models/Contact');
 const Post = require('../models/Post');
+const fs = require('fs');
+const path = require('path');
+const logFile = path.join(__dirname, '..', 'debug.log');
+const debugLog = (msg) => {
+    try {
+        fs.appendFileSync(logFile, `[${new Date().toISOString()}] FRONT: ${msg}\n`);
+    } catch {}
+};
 
 exports.getHome = async (req, res) => {
     try {
+        const t0 = Date.now();
         const projects = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
         const services = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
         const partners = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
         const posts = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
+        const dt = Date.now() - t0;
+        debugLog(`Home data fetched in ${dt}ms -> projects=${projects.length}, services=${services.length}, partners=${partners.length}, posts=${posts.length}`);
         let seo = await GlobalSeo.findOne();
         
         // Temporary override for video URL - using a direct MP4 link for reliability
@@ -46,16 +57,20 @@ exports.getHome = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        debugLog(`Home data error: ${error.message}`);
         res.render('home_ar', { title: 'الرئيسية', projects: [], services: [], partners: [], posts: [], seo: null, lang: 'ar' });
     }
 };
 
 exports.getHomeEn = async (req, res) => {
     try {
+        const t0 = Date.now();
         const projects = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
         const services = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
         const partners = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
         const posts = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
+        const dt = Date.now() - t0;
+        debugLog(`Home(EN) data fetched in ${dt}ms -> projects=${projects.length}, services=${services.length}, partners=${partners.length}, posts=${posts.length}`);
         let seo = await GlobalSeo.findOne();
         
         // Temporary override for video URL - using a direct MP4 link for reliability
@@ -91,6 +106,7 @@ exports.getHomeEn = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        debugLog(`Home(EN) data error: ${error.message}`);
         res.render('home_en', { title: 'Home', projects: [], services: [], partners: [], posts: [], seo: null, lang: 'en' });
     }
 };

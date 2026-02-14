@@ -50,6 +50,12 @@ const APP_VERSION = process.env.APP_VERSION || '1.0.4';
 app.locals.assetVersion = APP_VERSION.replace(/\s+/g, '');
 console.log(`App version: ${APP_VERSION} - Performance Optimized`);
 
+// Version header for deployment traceability
+app.use((req, res, next) => {
+    res.setHeader('X-App-Version', app.locals.assetVersion || 'unknown');
+    next();
+});
+
 // Serve static files FIRST to avoid running middleware for assets
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '1d', // Cache static assets for 1 day
