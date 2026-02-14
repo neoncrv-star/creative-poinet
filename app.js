@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const childProcess = require('child_process');
 const logFile = path.join(__dirname, 'debug.log');
 const debugLog = (msg) => {
     try {
@@ -46,9 +47,16 @@ const sequelize = require('./config/database');
 
 const app = express();
 app.use(compression()); // Compress all responses
-const APP_VERSION = process.env.APP_VERSION || '1.0.4';
-app.locals.assetVersion = APP_VERSION.replace(/\s+/g, '');
-console.log(`App version: ${APP_VERSION} - Performance Optimized`);
+let computedVersion = process.env.APP_VERSION;
+if (!computedVersion) {
+    try {
+        computedVersion = childProcess.execSync('git rev-parse --short HEAD').toString().trim();
+    } catch (e) {
+        computedVersion = String(Date.now());
+    }
+}
+app.locals.assetVersion = computedVersion.replace(/\s+/g, '');
+console.log(`App version: ${app.locals.assetVersion} - Performance Optimized`);
 
 // Version header for deployment traceability
 app.use((req, res, next) => {
@@ -56,7 +64,23 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static files FIRST to avoid running middleware for assets
+// Robust uploads serving with fallback (before static)
+app.use('/uploads', (req, res, next) => {
+    try {
+        const reqPath = decodeURIComponent(req.path || '');
+        const filePath = path.join(__dirname, 'public', 'uploads', reqPath);
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+            return res.sendFile(filePath);
+        }
+        // Fallback to a local placeholder (use existing logo to avoid extra assets)
+        res.setHeader('Cache-Control', 'public, max-age=300');
+        return res.sendFile(path.join(__dirname, 'public', '210.png'));
+    } catch (e) {
+        return next();
+    }
+});
+
+// Serve static files FIRST to avoid running middleware for assets (after uploads fallback)
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '1d', // Cache static assets for 1 day
     etag: true
