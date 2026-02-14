@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const logFile = path.join(__dirname, '../debug.log');
+const pageCache = require('../utils/pageCache');
 const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
 
 // Helper to delete file
@@ -465,6 +466,7 @@ exports.postAddPartner = async (req, res) => {
             display_order: display_order || 0,
             is_active: is_active === 'on'
         });
+        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
 
         res.redirect('/admin/partners');
     } catch (error) {
@@ -507,6 +509,7 @@ exports.postEditPartner = async (req, res) => {
             display_order: display_order || 0,
             is_active: is_active === 'on'
         });
+        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
 
         res.redirect('/admin/partners');
     } catch (error) {
@@ -612,6 +615,7 @@ exports.postAddProject = async (req, res) => {
         }
 
         await Project.create(data);
+        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
         res.redirect('/admin/portfolio');
     } catch (error) {
         console.error(error);
@@ -759,6 +763,7 @@ exports.postEditProject = async (req, res) => {
         }
 
         await project.update(data);
+        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
         res.redirect('/admin/portfolio');
     } catch (error) {
         console.error(error);
@@ -812,6 +817,7 @@ exports.postAddPost = async (req, res) => {
             data.image = await toHashedAsset(req.file);
         }
         await Post.create(data);
+        pageCache.invalidateRoutes(['/','/en','/blog']);
         res.redirect('/admin/blog');
     } catch (error) {
         console.error(error);
@@ -849,6 +855,7 @@ exports.postEditPost = async (req, res) => {
             data.image = await toHashedAsset(req.file);
         }
         await post.update(data);
+        pageCache.invalidateRoutes(['/','/en','/blog']);
         res.redirect('/admin/blog');
     } catch (error) {
         console.error(error);
@@ -914,6 +921,7 @@ exports.postAddService = async (req, res) => {
             seoKeywords
         });
 
+        pageCache.invalidateRoutes(['/','/en']);
         res.redirect('/admin/services');
     } catch (error) {
         console.error(error);
@@ -1007,6 +1015,7 @@ exports.postEditService = async (req, res) => {
             seoKeywords
         });
 
+        pageCache.invalidateRoutes(['/','/en']);
         res.redirect('/admin/services');
     } catch (error) {
         console.error(error);
@@ -1021,6 +1030,7 @@ exports.deleteService = async (req, res) => {
             deleteFile(service.image);
             await service.destroy();
         }
+        pageCache.invalidateRoutes(['/','/en']);
         res.redirect('/admin/services');
     } catch (error) {
         console.error(error);
