@@ -11,12 +11,21 @@ const debugLog = (msg) => {
 };
 
 const loadEnv = () => {
-    const envFiles = [
-        '/home/u494530316/domains/cpoint-sa.com/public_html/.env',
+    const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
+    const candidates = isProd
+        ? [
+            path.join(__dirname, '.env.prod'),
+            path.join(__dirname, '.env')
+        ]
+        : [
+            path.join(__dirname, '.env'),
+            path.join(__dirname, '.env.prod')
+        ];
+    const legacy = [
         '/home/u494530316/domains/cpoint-sa.com/public_html/.env.prod',
-        path.join(__dirname, '.env'),
-        path.join(__dirname, '.env.prod')
+        '/home/u494530316/domains/cpoint-sa.com/public_html/.env'
     ];
+    const envFiles = [...candidates, ...legacy];
 
     for (const file of envFiles) {
         if (fs.existsSync(file)) {
@@ -55,25 +64,39 @@ app.use(express.static(path.join(__dirname, 'public'), {
 const port = process.env.PORT || 3000;
 
 // Session Config
-app.set('trust proxy', 1); // trust first proxy
+const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
+const trustProxy = Number(process.env.TRUST_PROXY || 1);
+app.set('trust proxy', trustProxy);
+
+const sessionDir = path.join(__dirname, 'sessions');
+const cookieSecureEnv = (process.env.COOKIE_SECURE || '').toLowerCase();
+const cookieSecure = cookieSecureEnv ? cookieSecureEnv === 'true' : isProd;
+const sameSiteEnv = (process.env.SAME_SITE || '').toLowerCase();
+const sameSite = sameSiteEnv || 'lax';
+
+const cookieOptions = {
+    maxAge: 3600000 * 24 * 7,
+    secure: cookieSecure,
+    httpOnly: true,
+    sameSite
+};
+if (process.env.COOKIE_DOMAIN) {
+    cookieOptions.domain = process.env.COOKIE_DOMAIN;
+}
+
 app.use(session({
     store: new FileStore({
-        path: './sessions',
-        retries: 5, // Increase retries for reliability
+        path: sessionDir,
+        retries: 5,
         fileExtension: '.json',
-        ttl: 86400 * 7, // Session persists for 7 days
-        reapInterval: 3600 // Clean up expired sessions every hour
+        ttl: 86400 * 7,
+        reapInterval: 3600
     }),
     secret: process.env.SESSION_SECRET || 'creative_point_secret_key',
-    resave: true, // Force session to be saved back to the session store
+    resave: true,
     saveUninitialized: false,
-    name: 'creative_point_session',
-    cookie: { 
-        maxAge: 3600000 * 24 * 7, // 7 days
-        secure: false, // Set to false if not using HTTPS
-        httpOnly: true,
-        sameSite: 'lax'
-    }
+    name: process.env.SESSION_NAME || 'creative_point_session',
+    cookie: cookieOptions
 }));
 
 // Import Routes
@@ -137,9 +160,9 @@ app.use('/admin', adminRoutes);
 app.use('/', mainRoutes);
 
 // Sync Database & Start server
-const syncOptions = { 
-    alter: process.env.NODE_ENV === 'development',
-    force: false 
+const syncOptions = {
+    alter: (process.env.DB_SYNC_ALTER || '').toLowerCase() === 'true' || process.env.NODE_ENV === 'development',
+    force: (process.env.DB_SYNC_FORCE || 'false').toLowerCase() === 'true'
 };
 
 sequelize.sync(syncOptions)
