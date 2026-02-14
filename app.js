@@ -46,7 +46,9 @@ const compression = require('compression');
 const sequelize = require('./config/database');
 
 const app = express();
-app.use(compression()); // Compress all responses
+app.disable('x-powered-by');
+app.set('etag', 'strong');
+app.use(compression({ level: 6, threshold: 1024 })); // Compress responses efficiently
 let computedVersion = process.env.APP_VERSION;
 if (!computedVersion) {
     try {

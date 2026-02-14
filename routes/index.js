@@ -12,11 +12,11 @@ router.post('/contact', pageController.postContact);
 // Portfolio Routes
 router.get('/portfolio', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getPortfolioPage);
 router.get('/en/portfolio', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getPortfolioPage);
-router.get('/portfolio/:id', portfolioController.getProject);
-router.get('/en/portfolio/:id', portfolioController.getProject);
+router.get('/portfolio/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
+router.get('/en/portfolio/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
 
 // Blog Routes
-router.get('/blog', blogController.getBlog);
-router.get('/blog/:id', blogController.getPost);
+router.get('/blog', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getBlog);
+router.get('/blog/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getPost);
 
 module.exports = router;
