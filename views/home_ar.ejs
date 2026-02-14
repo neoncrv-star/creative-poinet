@@ -167,10 +167,10 @@
                             <div class="panel-content">
                                 <div class="panel-header">
                                     <span class="panel-number">0<%= index + 1 %></span>
-                                    <h2 class="panel-title"><%= service.title_ar %></h2>
+                                    <h2 class="panel-title"><%= service.title_ar || service.title_en || service.title || 'خدمة' %></h2>
                                 </div>
                                 <div class="panel-body">
-                                    <p class="panel-desc"><%= service.description_ar %></p>
+                                    <p class="panel-desc"><%= service.description_ar || service.description_en || '' %></p>
                                     <div class="panel-tags">
                                         <span class="tag"><%= service.tag1_ar || 'استراتيجية' %></span>
                                         <span class="tag"><%= service.tag2_ar || 'تصميم' %></span>

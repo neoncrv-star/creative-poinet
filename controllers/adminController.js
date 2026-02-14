@@ -291,6 +291,31 @@ exports.getSiteHealth = async (req, res) => {
     }
 };
 
+// --- Uploads Browser ---
+exports.listUploads = async (req, res) => {
+    try {
+        const dir = path.join(__dirname, '../public/uploads');
+        if (!fs.existsSync(dir)) return res.json({ files: [] });
+        const allowed = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.avif', '.jfif']);
+        const entries = fs.readdirSync(dir).filter(f => allowed.has(path.extname(f).toLowerCase()));
+        const files = entries.map(name => {
+            const p = path.join(dir, name);
+            let stat = { size: 0, mtimeMs: 0 };
+            try { stat = fs.statSync(p); } catch {}
+            return {
+                name,
+                url: '/uploads/' + name,
+                bytes: stat.size,
+                mtimeMs: stat.mtimeMs
+            };
+        }).sort((a, b) => b.mtimeMs - a.mtimeMs);
+        res.json({ files });
+    } catch (e) {
+        console.error(e);
+        res.json({ files: [] });
+    }
+};
+
 // --- Assets Audit & Sync ---
 const collectAssetRefs = async () => {
     const refs = [];
@@ -429,8 +454,10 @@ exports.getAddPartner = (req, res) => {
 
 exports.postAddPartner = async (req, res) => {
     try {
-        const { name, display_order, is_active } = req.body;
-        const logo = req.file ? await toHashedAsset(req.file) : null;
+        const { name, display_order, is_active, existingLogo } = req.body;
+        let logo = null;
+        if (existingLogo) logo = existingLogo;
+        else if (req.file) logo = await toHashedAsset(req.file);
 
         await Partner.create({
             name,
@@ -463,12 +490,14 @@ exports.getEditPartner = async (req, res) => {
 
 exports.postEditPartner = async (req, res) => {
     try {
-        const { name, display_order, is_active } = req.body;
+        const { name, display_order, is_active, existingLogo } = req.body;
         const partner = await Partner.findByPk(req.params.id);
         if (!partner) return res.redirect('/admin/partners');
 
         let logo = partner.logo;
-        if (req.file) {
+        if (existingLogo) {
+            logo = existingLogo;
+        } else if (req.file) {
             logo = await toHashedAsset(req.file);
         }
 
@@ -555,7 +584,7 @@ exports.getAddProject = async (req, res) => {
 
 exports.postAddProject = async (req, res) => {
     try {
-        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
         const data = {
             title,
             description,
@@ -569,7 +598,9 @@ exports.postAddProject = async (req, res) => {
             seoKeywords
         };
 
-        if (req.file) {
+        if (existingImage) {
+            data.image = existingImage;
+        } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
 
@@ -700,7 +731,7 @@ exports.postEditProject = async (req, res) => {
         const project = await Project.findByPk(id);
         if (!project) return res.redirect('/admin/portfolio');
 
-        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
         const data = {
             title,
             description,
@@ -714,7 +745,9 @@ exports.postEditProject = async (req, res) => {
             seoKeywords
         };
 
-        if (req.file) {
+        if (existingImage) {
+            data.image = existingImage;
+        } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
 
@@ -762,7 +795,7 @@ exports.getAddPost = (req, res) => {
 
 exports.postAddPost = async (req, res) => {
     try {
-        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
         const data = {
             title,
             excerpt,
@@ -773,7 +806,9 @@ exports.postAddPost = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-        if (req.file) {
+        if (existingImage) {
+            data.image = existingImage;
+        } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
         await Post.create(data);
@@ -796,7 +831,7 @@ exports.getEditPost = async (req, res) => {
 
 exports.postEditPost = async (req, res) => {
     try {
-        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords } = req.body;
+        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
         const post = await Post.findByPk(req.params.id);
         const data = {
             title,
@@ -808,7 +843,9 @@ exports.postEditPost = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-        if (req.file) {
+        if (existingImage) {
+            data.image = existingImage;
+        } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
         await post.update(data);
@@ -851,9 +888,12 @@ exports.postAddService = async (req, res) => {
         const { 
             title_ar, title_en, description_ar, description_en, 
             display_order, is_active, seoTitle, seoDescription, seoKeywords,
-            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en
+            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en,
+            existingImage
         } = req.body;
-        const image = req.file ? await toHashedAsset(req.file) : null;
+        let image = null;
+        if (existingImage) image = existingImage;
+        else if (req.file) image = await toHashedAsset(req.file);
 
         await Service.create({
             title_ar,
@@ -935,13 +975,16 @@ exports.postEditService = async (req, res) => {
         const { 
             title_ar, title_en, description_ar, description_en, 
             display_order, is_active, seoTitle, seoDescription, seoKeywords,
-            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en
+            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en,
+            existingImage
         } = req.body;
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
 
         let image = service.image;
-        if (req.file) {
+        if (existingImage) {
+            image = existingImage;
+        } else if (req.file) {
             image = await toHashedAsset(req.file);
         }
 

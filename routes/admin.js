@@ -38,6 +38,9 @@ router.get('/logs', adminController.getLogs);
 // Health
 router.get('/health', adminController.getSiteHealth);
 
+// Uploads browser (JSON)
+router.get('/uploads/list', adminController.listUploads);
+
 // SEO Routes
 router.get('/seo', adminController.getSeoSettings);
 router.post('/seo', upload.fields([

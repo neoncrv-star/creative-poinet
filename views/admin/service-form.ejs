@@ -134,11 +134,15 @@
                         </div>
                     <% } %>
 
-                    <div class="file-upload-wrapper" style="position: relative;">
+                    <div class="file-upload-wrapper" style="position: relative; display:flex; flex-direction: column; gap: 8px;">
                         <input type="file" name="image" id="service-image" accept="image/*" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;" onchange="updateFileName(this)">
                         <div class="btn btn-outline" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center;">
-                            <i class="fas fa-cloud-upload-alt"></i> اختر صورة
+                            <i class="fas fa-cloud-upload-alt"></i> اختر صورة من جهازك
                         </div>
+                        <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('service')">
+                            <i class="fas fa-folder-open"></i> اختيار من الخادم
+                        </button>
+                        <input type="hidden" name="existingImage" id="existingImageService">
                         <div id="file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
                     </div>
                     <small style="display: block; margin-top: 10px; color: var(--text-muted); text-align: center;">يفضل استخدام صور عالية الجودة بنسبة 4:3</small>
@@ -148,10 +152,62 @@
     </form>
 </div>
 
+<!-- Uploads Browser Modal -->
+<div id="uploadsBrowserModal" class="admin-modal">
+  <div class="modal-content" style="max-width:800px;">
+    <span class="close-modal" onclick="closeUploadsBrowser()">&times;</span>
+    <h3 style="margin-bottom:10px;color:var(--secondary-color)"><i class="fas fa-folder-open"></i> استعراض الصور على الخادم</h3>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+        <input id="uploadsSearch" type="text" placeholder="ابحث بالاسم..." style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;">
+        <button class="btn" onclick="refreshUploads()">تحديث</button>
+    </div>
+    <div id="uploadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:60vh;overflow:auto;"></div>
+  </div>
+  <style>
+    #uploadsGrid img{width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid #eee}
+    .upload-tile{cursor:pointer;position:relative}
+    .upload-tile span{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:.75rem;padding:2px 4px;border-radius:0 0 8px 8px;direction:ltr}
+  </style>
+</div>
+
 <script>
 function updateFileName(input) {
     const fileName = input.files[0]?.name;
     document.getElementById('file-name').textContent = fileName ? `المجلد المختار: ${fileName}` : '';
+}
+
+let uploadsTarget = null;
+async function openUploadsBrowser(target){
+    uploadsTarget = target;
+    document.getElementById('uploadsBrowserModal').style.display='block';
+    await refreshUploads();
+}
+function closeUploadsBrowser(){
+    document.getElementById('uploadsBrowserModal').style.display='none';
+}
+async function refreshUploads(){
+    const q = document.getElementById('uploadsSearch').value?.trim().toLowerCase();
+    const res = await fetch('/admin/uploads/list');
+    const json = await res.json();
+    const grid = document.getElementById('uploadsGrid');
+    grid.innerHTML='';
+    (json.files||[])
+      .filter(f => !q || f.name.toLowerCase().includes(q))
+      .forEach(f=>{
+        const div = document.createElement('div');
+        div.className='upload-tile';
+        div.onclick = ()=> selectExistingImage(f.url);
+        div.innerHTML = `<img src="${f.url}" alt="${f.name}"><span>${f.name}</span>`;
+        grid.appendChild(div);
+      });
+}
+function selectExistingImage(url){
+    if(uploadsTarget==='service'){
+        document.getElementById('existingImageService').value = url;
+        // clear file input selection display
+        document.getElementById('file-name').textContent = `المحدد: ${url.split('/').pop()}`;
+    }
+    closeUploadsBrowser();
 }
 </script>
 
