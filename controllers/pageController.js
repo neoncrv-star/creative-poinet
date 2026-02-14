@@ -13,16 +13,25 @@ const debugLog = (msg) => {
     } catch {}
 };
 
+const withTimeout = (p, ms, fallback) => Promise.race([
+    p,
+    new Promise(resolve => setTimeout(() => resolve(fallback), ms))
+]);
+
 exports.getHome = async (req, res) => {
     try {
         const t0 = Date.now();
-        const projects = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
-        const services = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const partners = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const posts = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
+        const cap = Number(process.env.HOME_QUERY_TIMEOUT_MS || 800);
+        const [projects, services, partners, posts, seo] = await Promise.all([
+            withTimeout(Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }), cap, []),
+            withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
+            withTimeout(Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
+            withTimeout(Post.findAll({ limit: 3, order: [['date', 'DESC']] }), cap, []),
+            withTimeout(GlobalSeo.findOne(), cap, null)
+        ]);
         const dt = Date.now() - t0;
         debugLog(`Home data fetched in ${dt}ms -> projects=${projects.length}, services=${services.length}, partners=${partners.length}, posts=${posts.length}`);
-        let seo = await GlobalSeo.findOne();
+        
         
         // Temporary override for video URL - using a direct MP4 link for reliability
         // Using a highly reliable test video first to ensure player works, then we can switch to a themed one
@@ -65,13 +74,17 @@ exports.getHome = async (req, res) => {
 exports.getHomeEn = async (req, res) => {
     try {
         const t0 = Date.now();
-        const projects = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
-        const services = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const partners = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const posts = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
+        const cap = Number(process.env.HOME_QUERY_TIMEOUT_MS || 800);
+        const [projects, services, partners, posts, seo] = await Promise.all([
+            withTimeout(Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }), cap, []),
+            withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
+            withTimeout(Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
+            withTimeout(Post.findAll({ limit: 3, order: [['date', 'DESC']] }), cap, []),
+            withTimeout(GlobalSeo.findOne(), cap, null)
+        ]);
         const dt = Date.now() - t0;
         debugLog(`Home(EN) data fetched in ${dt}ms -> projects=${projects.length}, services=${services.length}, partners=${partners.length}, posts=${posts.length}`);
-        let seo = await GlobalSeo.findOne();
+        
         
         // Temporary override for video URL - using a direct MP4 link for reliability
         // Using a highly reliable test video first to ensure player works
