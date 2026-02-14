@@ -181,9 +181,6 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-    <link rel="preconnect" href="https://interactive-examples.mdn.mozilla.net" crossorigin>
-    <link rel="preconnect" href="https://cdn.coverr.co" crossorigin>
     <link rel="preconnect" href="https://www.youtube.com" crossorigin>
     <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
     <link rel="preload" href="/fonts/TheSansArabic-Plain.otf" as="font" type="font/otf" crossorigin>
@@ -199,7 +196,7 @@
         <div class="container header-container">
             <div class="logo">
                 <a href="<%= typeof isEn !== 'undefined' && isEn ? '/en' : '/' %>" style="text-decoration: none; color: inherit;">
-                    <img src="/210.png" alt="Creative Point Logo" class="header-logo-img">
+                    <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="64" height="64" decoding="async" fetchpriority="high">
                 </a>
             </div>
             
