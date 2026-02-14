@@ -279,6 +279,21 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Slow request logger
+app.use((req, res, next) => {
+    const start = process.hrtime.bigint();
+    const slowMs = Number(process.env.SLOW_REQ_MS || 1000);
+    res.on('finish', () => {
+        try {
+            const durMs = Number((process.hrtime.bigint() - start) / 1000000n);
+            if (durMs >= slowMs) {
+                debugLog(`SLOW ${req.method} ${req.originalUrl} ${res.statusCode} ${durMs}ms`);
+            }
+        } catch {}
+    });
+    next();
+});
+
 // Use Routes
 app.use('/admin', adminRoutes);
 app.use('/', mainRoutes);
@@ -294,20 +309,31 @@ sequelize.sync(syncOptions)
         const msg = `Database synced successfully (MySQL)`;
         debugLog(msg);
         console.log(msg);
-        app.listen(port, () => {
+        const server = app.listen(port, () => {
             const startMsg = `Server is running at http://localhost:${port}`;
             debugLog(startMsg);
             console.log(startMsg);
         });
+        // Tune server timeouts and keep-alive to avoid ghost Pending while preventing hangs
+        try {
+            server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
+            server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
+            server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
+        } catch {}
     })
     .catch(err => {
         const errMsg = `Database sync error (degraded mode): ${err.message}`;
         debugLog(errMsg);
         console.error(errMsg, err);
         // Start server in degraded mode to avoid downtime; pages will fallback where possible
-        app.listen(port, () => {
+        const server = app.listen(port, () => {
             const startMsg = `Server (degraded) running at http://localhost:${port}`;
             debugLog(startMsg);
             console.log(startMsg);
         });
+        try {
+            server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
+            server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
+            server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
+        } catch {}
     });
