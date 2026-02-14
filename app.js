@@ -46,7 +46,9 @@ const sequelize = require('./config/database');
 
 const app = express();
 app.use(compression()); // Compress all responses
-console.log('App version: 1.0.3 - Performance Optimized');
+const APP_VERSION = process.env.APP_VERSION || '1.0.4';
+app.locals.assetVersion = APP_VERSION.replace(/\s+/g, '');
+console.log(`App version: ${APP_VERSION} - Performance Optimized`);
 
 // Serve static files FIRST to avoid running middleware for assets
 app.use(express.static(path.join(__dirname, 'public'), {

@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Cinematic Services Animation Initializing...");
+    console.log("Services Animation: init");
+    if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') {
+        console.warn('Services Animation: GSAP/ScrollTrigger unavailable at init');
+        return;
+    }
     gsap.registerPlugin(ScrollTrigger);
 
     const servicesSection = document.querySelector('.services-horizontal-section');
@@ -8,7 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const panels = gsap.utils.toArray('.service-panel');
     const isRTL = document.documentElement.getAttribute('dir') === 'rtl';
 
-    if (!servicesSection || !panelContainer || panels.length === 0) return;
+    if (!servicesSection || !panelContainer || panels.length === 0) {
+        console.warn('Services Animation: Required elements missing', { servicesSection: !!servicesSection, panelContainer: !!panelContainer, panels: panels.length });
+        return;
+    }
+    const imgs = document.querySelectorAll('.parallax-img');
+    imgs.forEach((img) => {
+        const src = img.getAttribute('src');
+        img.addEventListener('load', () => console.debug('Service image loaded:', src));
+        img.addEventListener('error', () => console.warn('Service image failed:', src));
+    });
 
     // --- 1. Intro Panel Entrance Animation ---
     const introTl = gsap.timeline({
@@ -27,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let mainTween;
 
     const updateScroll = () => {
+        console.debug('Services Animation: updateScroll()', {
+            panelCount: panels.length,
+            containerWidth: panelContainer.offsetWidth,
+            viewport: { w: window.innerWidth, h: window.innerHeight }
+        });
         let totalWidth = panelContainer.offsetWidth;
         let scrollAmount = totalWidth - window.innerWidth;
         const xValue = isRTL ? scrollAmount : -scrollAmount;
@@ -107,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
+            console.debug('Services Animation: resize -> refresh');
             updateScroll();
             ScrollTrigger.refresh();
         }, 250);
