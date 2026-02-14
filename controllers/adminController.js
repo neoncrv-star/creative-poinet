@@ -181,6 +181,29 @@ exports.getDashboard = async (req, res) => {
     }
 };
 
+exports.getLogs = async (req, res) => {
+    try {
+        const filePath = path.join(__dirname, '../debug.log');
+        let content = '';
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            const lines = data.trim().split('\n');
+            content = lines.slice(-200).join('\n');
+        }
+        res.render('admin/logs', { 
+            title: 'لوحة التحكم | سجلات النظام',
+            path: '/admin/logs',
+            logs: content 
+        });
+    } catch (e) {
+        res.render('admin/logs', { 
+            title: 'لوحة التحكم | سجلات النظام',
+            path: '/admin/logs',
+            logs: 'تعذر قراءة السجلات' 
+        });
+    }
+};
+
 // --- SEO Settings ---
 exports.getSeoSettings = async (req, res) => {
     try {

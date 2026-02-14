@@ -30,6 +30,9 @@ router.get('/', adminController.getDashboard);
 router.get('/account/password', adminController.getChangePassword);
 router.post('/account/password', adminController.postChangePassword);
 
+// Logs (protected)
+router.get('/logs', adminController.getLogs);
+
 // SEO Routes
 router.get('/seo', adminController.getSeoSettings);
 router.post('/seo', upload.fields([

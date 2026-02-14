@@ -1,0 +1,16 @@
+<%- include('layout-header') %>
+
+<div class="admin-card" style="max-width: 100%; margin: 0 auto;">
+    <div class="card-header">
+        <h2>سجلات النظام</h2>
+        <p>آخر 200 سطر من ملف السجلات لتتبع النشر والتشغيل.</p>
+    </div>
+    <div class="card-body">
+        <pre style="background:#0b0b0b; color:#ccc; padding:16px; border:1px solid #222; border-radius:10px; white-space: pre-wrap; direction:ltr; max-height:70vh; overflow:auto;"><%= logs %></pre>
+    </div>
+    <div class="card-footer" style="display:flex; gap:10px;">
+        <a href="/admin" class="btn">عودة للوحة التحكم</a>
+    </div>
+</div>
+
+<%- include('layout-footer') %>
