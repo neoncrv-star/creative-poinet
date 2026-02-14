@@ -57,6 +57,21 @@ if (!isProd && (preferSqlite || missingMySqlCreds)) {
     });
 } else {
     console.log('Using MySQL Database Configuration');
+    // custom logger to capture slow queries
+    const SLOW_DB_MS = Number(process.env.SLOW_DB_MS || 300);
+    const dbLogger = (msg, time) => {
+        try {
+            if (typeof time === 'number' && time >= SLOW_DB_MS) {
+                const fs = require('fs');
+                const path = require('path');
+                const logFile = path.join(__dirname, '..', 'debug.log');
+                fs.appendFileSync(logFile, `[${new Date().toISOString()}] SLOW-DB ${time}ms ${msg}\n`);
+            }
+        } catch {}
+        if ((process.env.DB_LOGGING || 'false').toLowerCase() === 'true') {
+            console.log(msg, typeof time === 'number' ? `${time}ms` : '');
+        }
+    };
     sequelize = new Sequelize(
         process.env.DB_NAME,
         process.env.DB_USER,
@@ -64,7 +79,8 @@ if (!isProd && (preferSqlite || missingMySqlCreds)) {
         {
             host: process.env.DB_HOST || '127.0.0.1',
             dialect: 'mysql',
-            logging: (process.env.DB_LOGGING || 'false').toLowerCase() === 'true',
+            logging: dbLogger,
+            benchmark: true,
             pool: {
                 max: Number(process.env.DB_POOL_MAX || 5),
                 min: Number(process.env.DB_POOL_MIN || 0),

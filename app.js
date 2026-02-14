@@ -279,6 +279,43 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Minimal security headers (no extra deps)
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
+    next();
+});
+
+// Lightweight in-memory rate limiting per IP (sliding window)
+const ipHits = new Map(); // ip -> array of timestamps(ms)
+const RATE_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || 60_000);
+const RATE_MAX = Number(process.env.RATE_LIMIT_MAX || 240); // 240req/دقيقة/IP
+const limitPaths = [/^\/admin\b/, /^\/contact\b/, /^\/api\b/, /^\/blog\b/, /^\/portfolio\b/, /^\/en\/(blog|portfolio)\b/];
+app.use((req, res, next) => {
+    try {
+        const p = req.path || '/';
+        if (!limitPaths.some(rx => rx.test(p))) return next();
+        const now = Date.now();
+        const ip = (req.ip || req.connection?.remoteAddress || 'unknown').slice(0, 64);
+        const arr = ipHits.get(ip) || [];
+        const cutoff = now - RATE_WINDOW_MS;
+        let i = 0;
+        while (i < arr.length && arr[i] < cutoff) i++;
+        if (i > 0) arr.splice(0, i);
+        arr.push(now);
+        ipHits.set(ip, arr);
+        if (arr.length > RATE_MAX) {
+            res.setHeader('Retry-After', String(Math.ceil(RATE_WINDOW_MS / 1000)));
+            return res.status(429).send('Too Many Requests');
+        }
+        next();
+    } catch {
+        next();
+    }
+});
+
 // Slow request logger
 app.use((req, res, next) => {
     const start = process.hrtime.bigint();
