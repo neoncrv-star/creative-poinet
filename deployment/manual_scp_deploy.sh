@@ -1,29 +1,20 @@
 #!/bin/bash
-# Deployment script for Creative Poinet (Bash)
-
-REMOTE_USER="u494530316"
-REMOTE_HOST="82.198.227.148"
-REMOTE_PORT="65002"
-REMOTE_PATH="domains/cpoint-sa.com/public_html"
-
-echo "Starting deployment..."
-
-# Folders to upload
+set -e
+REMOTE_USER="${REMOTE_USER:-}"
+REMOTE_HOST="${REMOTE_HOST:-}"
+REMOTE_PORT="${SSH_PORT:-22}"
+REMOTE_PATH="${TARGET_DIR:-}"
+if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_HOST" ] || [ -z "$REMOTE_PATH" ]; then
+  echo "Set REMOTE_USER, REMOTE_HOST, TARGET_DIR"
+  exit 1
+fi
 FOLDERS=("config" "controllers" "middleware" "models" "public" "routes" "views")
-# Individual files
 FILES=("app.js" "package.json")
-
 for folder in "${FOLDERS[@]}"; do
-    echo "Uploading folder: $folder..."
-    scp -P $REMOTE_PORT -r "$folder" $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/
+  scp -P "$REMOTE_PORT" -r "$folder" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
 done
-
 for file in "${FILES[@]}"; do
-    echo "Uploading file: $file..."
-    scp -P $REMOTE_PORT "$file" $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/
+  scp -P "$REMOTE_PORT" "$file" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
 done
-
-echo "Restarting application..."
-ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST "touch $REMOTE_PATH/tmp/restart.txt"
-
-echo "Deployment completed successfully!"
+ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "mkdir -p $REMOTE_PATH/tmp ; touch $REMOTE_PATH/tmp/restart.txt"
+echo "Done"
