@@ -244,8 +244,13 @@ sequelize.sync(syncOptions)
         });
     })
     .catch(err => {
-        const errMsg = `Critical Database sync error: ${err.message}`;
+        const errMsg = `Database sync error (degraded mode): ${err.message}`;
         debugLog(errMsg);
         console.error(errMsg, err);
-        process.exit(1); // Exit if database connection fails in mandatory MySQL mode
+        // Start server in degraded mode to avoid downtime; pages will fallback where possible
+        app.listen(port, () => {
+            const startMsg = `Server (degraded) running at http://localhost:${port}`;
+            debugLog(startMsg);
+            console.log(startMsg);
+        });
     });
