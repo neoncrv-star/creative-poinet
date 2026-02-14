@@ -75,8 +75,12 @@ app.use('/uploads', (req, res, next) => {
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
             return res.sendFile(filePath);
         }
-        debugLog(`UPLOADS MISSING: ${reqPath}`);
-        return res.status(404).end();
+        // Fallback: return a tiny transparent PNG to avoid blocking/spinners when legacy paths requested
+        debugLog(`UPLOADS MISSING: ${reqPath} -> serving tiny placeholder`);
+        const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=', 'base64');
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
+        return res.end(transparentPng);
     } catch (e) {
         return next();
     }
