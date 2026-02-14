@@ -67,9 +67,9 @@
                     %>
                     
                     <% if (isYoutube) { %>
-                        <div class="yt-lite" data-id="<%= videoId %>" style="position:relative;display:block;cursor:pointer;">
+                        <div class="yt-lite" data-id="<%= (typeof videoId !== 'undefined' && videoId) ? videoId : '' %>" style="position:relative;display:block;cursor:pointer;">
                             <div class="lty-playbtn" style="width:68px;height:48px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);border-radius:14%;"></div>
-                            <img src="https://i.ytimg.com/vi/<%= videoId %>/hqdefault.jpg" alt="Hero Video" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
+                            <img src="https://i.ytimg.com/vi/<%= (typeof videoId !== 'undefined' && videoId) ? videoId : '' %>/hqdefault.jpg" alt="Hero Video" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
                         </div>
                     <% } else { %>
                         <video class="hero-video" playsinline muted loop autoplay preload="metadata" poster="/210.png">
