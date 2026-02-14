@@ -42,5 +42,70 @@
     <% if (typeof globalSeo !== 'undefined' && globalSeo && globalSeo.customScriptsFooter) { %>
         <%- globalSeo.customScriptsFooter %>
     <% } %>
+    <script>
+    (function () {
+      var THRESHOLD = 3000;
+      function onLoad(fn){ if(document.readyState==='complete'){fn();} else {window.addEventListener('load', fn, {once:true});}}
+      function ms(n){ return Math.round(n || 0); }
+      onLoad(function(){
+        try{
+          var nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || null;
+          var total,dns,connect,tls,ttfb,download,dom,render;
+          if(nav){
+            total = nav.loadEventEnd - nav.startTime;
+            dns = nav.domainLookupEnd - nav.domainLookupStart;
+            connect = nav.connectEnd - nav.connectStart;
+            tls = nav.secureConnectionStart>0 ? (nav.connectEnd - nav.secureConnectionStart) : 0;
+            ttfb = nav.responseStart - nav.requestStart;
+            download = nav.responseEnd - nav.responseStart;
+            dom = (nav.domContentLoadedEventEnd || nav.domComplete) - nav.responseEnd;
+            render = nav.loadEventEnd - (nav.domContentLoadedEventEnd || nav.domComplete);
+          } else if (performance.timing) {
+            var t = performance.timing;
+            total = t.loadEventEnd - t.navigationStart;
+            dns = t.domainLookupEnd - t.domainLookupStart;
+            connect = t.connectEnd - t.connectStart;
+            tls = t.secureConnectionStart ? (t.connectEnd - t.secureConnectionStart) : 0;
+            ttfb = t.responseStart - t.requestStart;
+            download = t.responseEnd - t.responseStart;
+            dom = (t.domContentLoadedEventEnd || t.domComplete) - t.responseEnd;
+            render = t.loadEventEnd - (t.domContentLoadedEventEnd || t.domComplete);
+          }
+          var resources = (performance.getEntriesByType && performance.getEntriesByType('resource')) || [];
+          var topSlow = resources.filter(function(e){return e.duration>300;}).sort(function(a,b){return b.duration-a.duration;}).slice(0,5).map(function(e){return {type:e.initiatorType,name:e.name,dur:ms(e.duration)};});
+          if(total > THRESHOLD){
+            var origin = location.origin;
+            var third = resources.filter(function(e){return e.duration>500 && e.name.indexOf(origin)!==0;}).sort(function(a,b){return b.duration-a.duration;})[0];
+            var imgBig = resources.filter(function(e){return e.initiatorType==='img';}).sort(function(a,b){return b.duration-a.duration;})[0];
+            var scriptBig = resources.filter(function(e){return e.initiatorType==='script';}).sort(function(a,b){return b.duration-a.duration;})[0];
+            console.group('%cSlow navigation '+ms(total)+'ms '+location.pathname,'color:#d00;font-weight:bold');
+            console.table([
+              {metric:'DNS',ms:ms(dns)},
+              {metric:'Connect',ms:ms(connect)},
+              {metric:'TLS',ms:ms(tls)},
+              {metric:'TTFB',ms:ms(ttfb)},
+              {metric:'Download',ms:ms(download)},
+              {metric:'DOM',ms:ms(dom)},
+              {metric:'Render',ms:ms(render)}
+            ]);
+            if(topSlow.length) console.log('Top slow resources (>=300ms):', topSlow);
+            if(third) console.warn('3rd-party slow', third);
+            if(imgBig) console.warn('Slow image', imgBig);
+            if(scriptBig) console.warn('Slow script', scriptBig);
+            var hints=[];
+            if(ttfb>1000) hints.push('TTFB مرتفع: راجع قاعدة البيانات والميكروكاش');
+            if(dom>1200) hints.push('DOM ثقيل: خفّض JS/DOM');
+            if(download>1200) hints.push('تحميل ثقيل: قلل حجم HTML/الصور');
+            if(imgBig && imgBig.dur>800) hints.push('الصورة بطيئة: ضغط/أبعاد/lazy');
+            if(third && third.dur>800) hints.push('طرف ثالث بطيء: حمّل defer أو قلل الاعتماد');
+            console.info('Hints:', hints.join(' | ') || 'لا مؤشرات خطيرة');
+            console.groupEnd();
+          } else {
+            console.debug('Navigation '+location.pathname+' total '+ms(total)+'ms');
+          }
+        }catch(e){ console.debug('perf monitor error', e); }
+      });
+    })();
+    </script>
 </body>
 </html>
