@@ -26,6 +26,10 @@ router.use(auth); // Apply auth middleware to all routes below
 
 router.get('/', adminController.getDashboard);
 
+// Account - Change Password
+router.get('/account/password', adminController.getChangePassword);
+router.post('/account/password', adminController.postChangePassword);
+
 // SEO Routes
 router.get('/seo', adminController.getSeoSettings);
 router.post('/seo', upload.fields([

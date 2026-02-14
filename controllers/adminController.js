@@ -63,6 +63,91 @@ exports.logout = (req, res) => {
     });
 };
 
+// --- Account: Change Password ---
+exports.getChangePassword = async (req, res) => {
+    res.render('admin/change-password', {
+        title: 'لوحة التحكم | تغيير كلمة المرور',
+        path: '/admin/account/password',
+        error: null,
+        success: null
+    });
+};
+
+exports.postChangePassword = async (req, res) => {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    try {
+        const userId = req.session.userId;
+        if (!userId) {
+            return res.redirect('/admin/login');
+        }
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.render('admin/change-password', {
+                title: 'لوحة التحكم | تغيير كلمة المرور',
+                path: '/admin/account/password',
+                error: 'المستخدم غير موجود',
+                success: null
+            });
+        }
+
+        // Validate current password
+        const isMatch = await user.validPassword(currentPassword || '');
+        if (!isMatch) {
+            return res.render('admin/change-password', {
+                title: 'لوحة التحكم | تغيير كلمة المرور',
+                path: '/admin/account/password',
+                error: 'كلمة المرور الحالية غير صحيحة',
+                success: null
+            });
+        }
+
+        // Validate new password
+        if (!newPassword || newPassword.length < 8) {
+            return res.render('admin/change-password', {
+                title: 'لوحة التحكم | تغيير كلمة المرور',
+                path: '/admin/account/password',
+                error: 'يجب أن تكون كلمة المرور الجديدة 8 أحرف على الأقل',
+                success: null
+            });
+        }
+        if (newPassword !== confirmPassword) {
+            return res.render('admin/change-password', {
+                title: 'لوحة التحكم | تغيير كلمة المرور',
+                path: '/admin/account/password',
+                error: 'تأكيد كلمة المرور غير متطابق',
+                success: null
+            });
+        }
+        if (newPassword === currentPassword) {
+            return res.render('admin/change-password', {
+                title: 'لوحة التحكم | تغيير كلمة المرور',
+                path: '/admin/account/password',
+                error: 'كلمة المرور الجديدة لا يجب أن تطابق الحالية',
+                success: null
+            });
+        }
+
+        // Update and save (hashing handled by model hook)
+        user.password = newPassword;
+        await user.save();
+
+        return res.render('admin/change-password', {
+            title: 'لوحة التحكم | تغيير كلمة المرور',
+            path: '/admin/account/password',
+            error: null,
+            success: 'تم تغيير كلمة المرور بنجاح'
+        });
+    } catch (error) {
+        console.error('Change password error:', error);
+        return res.render('admin/change-password', {
+            title: 'لوحة التحكم | تغيير كلمة المرور',
+            path: '/admin/account/password',
+            error: 'حدث خطأ غير متوقع',
+            success: null
+        });
+    }
+};
+
 exports.getDashboard = async (req, res) => {
     try {
         const projectCount = await Project.count();
