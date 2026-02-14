@@ -63,10 +63,22 @@ if (!computedVersion) {
 }
 app.locals.assetVersion = computedVersion.replace(/\s+/g, '');
 console.log(`App version: ${app.locals.assetVersion} - Performance Optimized`);
+app.locals.bootTime = Date.now();
 
 // Version header for deployment traceability
 app.use((req, res, next) => {
     res.setHeader('X-App-Version', app.locals.assetVersion || 'unknown');
+    const accept = (req.headers.accept || '').toLowerCase();
+    if (accept.includes('text/html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        const windowMs = Number(process.env.CLEAR_SITE_DATA_WINDOW_MS || 3 * 60 * 1000);
+        if (Date.now() - (app.locals.bootTime || 0) < windowMs) {
+            // In the first minutes after deploy, ask browsers to clear cached resources
+            res.setHeader('Clear-Site-Data', '"cache"');
+        }
+    }
     next();
 });
 
