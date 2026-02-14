@@ -313,6 +313,14 @@ sequelize.sync(syncOptions)
             const startMsg = `Server is running at http://localhost:${port}`;
             debugLog(startMsg);
             console.log(startMsg);
+            // Prewarm critical pages cache to minimize first-hit latency
+            try {
+                const http = require('http');
+                const opts = { host: '127.0.0.1', port, timeout: 2000 };
+                http.get({ ...opts, path: '/' }).on('error', ()=>{});
+                http.get({ ...opts, path: '/en' }).on('error', ()=>{});
+                http.get({ ...opts, path: '/healthz' }).on('error', ()=>{});
+            } catch {}
         });
         // Tune server timeouts and keep-alive to avoid ghost Pending while preventing hangs
         try {
