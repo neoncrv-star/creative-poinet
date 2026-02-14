@@ -19,6 +19,23 @@ const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString(
 // Files are content-addressed and never removed to avoid accidental loss.
 const deleteFile = (_filePath) => {};
 
+// Normalize stored asset paths to absolute '/uploads/...' to avoid relative resolution issues
+const normalizeAsset = (value) => {
+    if (!value) return value;
+    let v = value.trim();
+    // If full URL or data URI, keep as is
+    if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) return v;
+    // Collapse multiple slashes
+    v = v.replace(/\/{2,}/g, '/');
+    // If begins with 'uploads/', prefix with '/'
+    if (/^uploads\//i.test(v)) v = '/' + v;
+    // Ensure '/uploads/<name>' structure when pointing to uploads root
+    if (/^\/?uploads\/[^/]+$/i.test(v)) {
+        if (!v.startsWith('/')) v = '/' + v;
+    }
+    return v;
+};
+
 // Content-addressed storage: move uploaded file to <sha256>.<ext> and return '/uploads/<name>'
 const toHashedAsset = async (file) => {
     if (!file) return null;
@@ -457,7 +474,7 @@ exports.postAddPartner = async (req, res) => {
     try {
         const { name, display_order, is_active, existingLogo } = req.body;
         let logo = null;
-        if (existingLogo) logo = existingLogo;
+        if (existingLogo) logo = normalizeAsset(existingLogo);
         else if (req.file) logo = await toHashedAsset(req.file);
 
         await Partner.create({
@@ -496,9 +513,9 @@ exports.postEditPartner = async (req, res) => {
         const partner = await Partner.findByPk(req.params.id);
         if (!partner) return res.redirect('/admin/partners');
 
-        let logo = partner.logo;
+        let logo = normalizeAsset(partner.logo);
         if (existingLogo) {
-            logo = existingLogo;
+            logo = normalizeAsset(existingLogo);
         } else if (req.file) {
             logo = await toHashedAsset(req.file);
         }
@@ -546,6 +563,9 @@ exports.postSeoSettings = async (req, res) => {
                 data.ogImage = await toHashedAsset(req.files['ogImage'][0]);
             }
         }
+        // Normalize existing absolute/relative values coming from form
+        if (data.favicon) data.favicon = normalizeAsset(data.favicon);
+        if (data.ogImage) data.ogImage = normalizeAsset(data.ogImage);
 
         if (!seo) {
             seo = await GlobalSeo.create(data);
@@ -899,7 +919,7 @@ exports.postAddService = async (req, res) => {
             existingImage
         } = req.body;
         let image = null;
-        if (existingImage) image = existingImage;
+        if (existingImage) image = normalizeAsset(existingImage);
         else if (req.file) image = await toHashedAsset(req.file);
 
         await Service.create({
@@ -989,9 +1009,9 @@ exports.postEditService = async (req, res) => {
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
 
-        let image = service.image;
+        let image = normalizeAsset(service.image);
         if (existingImage) {
-            image = existingImage;
+            image = normalizeAsset(existingImage);
         } else if (req.file) {
             image = await toHashedAsset(req.file);
         }
