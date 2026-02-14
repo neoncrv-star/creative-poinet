@@ -53,8 +53,8 @@
                         <% 
                         let heroVideoSrc = seo && seo.heroVideoUrl ? seo.heroVideoUrl : 'https://cdn.coverr.co/videos/coverr-red-smoke-5374/1080p.mp4';
                         let isYoutube = heroVideoSrc.includes('youtube.com') || heroVideoSrc.includes('youtu.be');
+                        let videoId = '';
                         if (isYoutube) {
-                            let videoId = '';
                             if (heroVideoSrc.includes('youtu.be/')) {
                                 videoId = heroVideoSrc.split('youtu.be/')[1].split('?')[0];
                             } else if (heroVideoSrc.includes('v=')) {
