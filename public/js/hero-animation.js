@@ -24,17 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Use a longer end value to create virtual scroll space
         // --- Force Video Playback Logic ---
         const video = document.querySelector('.hero-video');
-        if (video) {
-            // Force play immediately
-            video.play().catch(e => console.log("Autoplay blocked initially:", e));
-            
-            // Ensure it's playing even if paused
-            if (video.paused) {
-                video.setAttribute('autoplay', 'true');
-                video.setAttribute('muted', 'true');
-                video.setAttribute('playsinline', 'true');
-                video.play().catch(e => console.log("Retry play failed:", e));
+        if (video && typeof video.play === 'function') {
+            try {
+                video.play().catch(e => console.debug("Hero video autoplay blocked:", e));
+                if (video.paused) {
+                    video.setAttribute('autoplay', 'true');
+                    video.setAttribute('muted', 'true');
+                    video.setAttribute('playsinline', 'true');
+                    video.play().catch(e => console.debug("Hero video retry failed:", e));
+                }
+            } catch (e) {
+                console.debug('Hero video play not supported on this element.');
             }
+        } else {
+            console.debug('Hero media is not an HTMLVideoElement; skipping play().');
         }
 
         const scrollTl = gsap.timeline({

@@ -157,9 +157,9 @@
                             <div class="service-panel" id="service-<%= index + 1 %>">
                                 <div class="panel-bg-wrapper">
                                     <% if (service.image) { %>
-                                        <img src="<%= service.image %>" alt="<%= service.title_en %>" class="parallax-img" loading="lazy" decoding="async">
+                                        <img src="<%= service.image %>" alt="<%= service.title_en %>" class="parallax-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
                                     <% } else { %>
-                                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Service Placeholder" class="parallax-img" loading="lazy" decoding="async">
+                                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Service Placeholder" class="parallax-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
                                     <% } %>
                                     <div class="panel-overlay"></div>
                                 </div>
