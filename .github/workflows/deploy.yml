@@ -1,0 +1,67 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (CI)
+        run: npm ci --omit=optional
+
+      - name: Show app version
+        run: |
+          echo "App version: $(git rev-parse --short HEAD)"
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TARGET_DIR: ${{ secrets.TARGET_DIR }}
+          REPO_URL: ${{ secrets.REPO_URL }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          script_stop: true
+          envs: TARGET_DIR,REPO_URL
+          script: |
+            set -e
+            mkdir -p "$TARGET_DIR"
+            if [ -d "$TARGET_DIR/.git" ]; then
+              cd "$TARGET_DIR"
+              git fetch --all --prune
+              git reset --hard origin/main
+            else
+              git clone "$REPO_URL" "$TARGET_DIR"
+              cd "$TARGET_DIR"
+              git checkout main
+            fi
+            npm ci --omit=optional
+            export NODE_ENV=production
+            mkdir -p public/uploads sessions tmp
+            if command -v pm2 >/dev/null 2>&1; then
+              pm2 describe creative-point >/dev/null 2>&1 && pm2 reload creative-point || pm2 start app.js --name creative-point
+              pm2 save || true
+            else
+              touch tmp/restart.txt || true
+              (pkill -f "node app.js" || true)
+              nohup node app.js >/dev/null 2>&1 &
+            fi
+
+      - name: Health check
+        run: |
+          curl -fsS https://cpoint-sa.com/healthz || (echo "Health check failed" && exit 1)

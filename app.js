@@ -13,28 +13,32 @@ const debugLog = (msg) => {
 
 const loadEnv = () => {
     const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
-    const candidates = isProd
-        ? [
-            path.join(__dirname, '.env.prod'),
-            path.join(__dirname, '.env')
-        ]
-        : [
-            path.join(__dirname, '.env'),
-            path.join(__dirname, '.env.prod')
-        ];
+    const envProd = path.join(__dirname, '.env.prod');
+    const envDev = path.join(__dirname, '.env');
     const legacy = [
         '/home/u494530316/domains/cpoint-sa.com/public_html/.env.prod',
         '/home/u494530316/domains/cpoint-sa.com/public_html/.env'
     ];
-    const envFiles = [...candidates, ...legacy];
-
-    for (const file of envFiles) {
-        if (fs.existsSync(file)) {
-            require('dotenv').config({ path: file });
-            debugLog(`Loaded environment from: ${file}`);
-            console.log(`Loaded environment from: ${file}`);
-            break;
-        }
+    const ordered = [];
+    if (isProd) {
+        if (fs.existsSync(envProd)) ordered.push(envProd);
+        if (fs.existsSync(envDev)) ordered.push(envDev);
+    } else {
+        if (fs.existsSync(envDev)) ordered.push(envDev);
+        // If no .env exists locally but .env.prod is present (e.g., misconfigured prod), load it
+        if (!fs.existsSync(envDev) && fs.existsSync(envProd)) ordered.push(envProd);
+    }
+    legacy.forEach(f => ordered.push(f));
+    for (const file of ordered) {
+        try {
+            if (fs.existsSync(file)) {
+                require('dotenv').config({ path: file, override: true });
+                debugLog(`Loaded environment from: ${file}`);
+                console.log(`Loaded environment from: ${file}`);
+                // Stop after first real file in project root
+                if (file === envProd || file === envDev) break;
+            }
+        } catch {}
     }
 };
 

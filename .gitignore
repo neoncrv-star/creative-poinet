@@ -5,7 +5,8 @@ node_modules/
 .env
 
 # Database
-data/database.sqlite
+data/
+data/*.sqlite
 
 # OS generated files
 .DS_Store
