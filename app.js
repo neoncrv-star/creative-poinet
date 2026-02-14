@@ -86,6 +86,24 @@ app.use(express.static(path.join(__dirname, 'public'), {
     etag: true
 }));
 
+// Simple health endpoint to verify deployed version and dialect
+app.get('/healthz', (req, res) => {
+    try {
+        const info = {
+            status: 'ok',
+            version: app.locals.assetVersion || 'unknown',
+            dialect: (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown',
+            time: new Date().toISOString()
+        };
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-App-Version', info.version);
+        res.setHeader('X-Robots-Tag', 'noindex');
+        res.end(JSON.stringify(info));
+    } catch (e) {
+        res.status(500).json({ status: 'error' });
+    }
+});
+
 // Ensure necessary directories exist
 ['public/uploads', 'sessions'].forEach(dir => {
     const fullPath = path.join(__dirname, dir);
