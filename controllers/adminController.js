@@ -19,7 +19,7 @@ const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString(
 const deleteFile = (_filePath) => {};
 
 // Content-addressed storage: move uploaded file to <sha256>.<ext> and return '/uploads/<name>'
-const toHashedAsset = (file) => {
+const toHashedAsset = async (file) => {
     if (!file) return null;
     const tmpPath = file.path; // absolute or relative from process cwd
     const absTmp = path.isAbsolute(tmpPath) ? tmpPath : path.join(process.cwd(), tmpPath);
@@ -30,13 +30,28 @@ const toHashedAsset = (file) => {
     const uploadsDir = path.join(__dirname, '../public/uploads');
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
     const finalAbs = path.join(uploadsDir, finalName);
-    if (fs.existsSync(finalAbs)) {
-        // Remove temp and reuse existing immutable asset
-        try { fs.unlinkSync(absTmp); } catch {}
-    } else {
-        fs.renameSync(absTmp, finalAbs);
+    // Write original hashed if not exists
+    if (!fs.existsSync(finalAbs)) fs.renameSync(absTmp, finalAbs);
+    else { try { fs.unlinkSync(absTmp); } catch {} }
+    // Try to produce WebP variant
+    try {
+        // Lazy require to tolerate environments without sharp
+        // If sharp is missing or fails, we fallback to original path
+        const sharp = require('sharp');
+        const webpName = `${sha}.webp`;
+        const finalWebpAbs = path.join(uploadsDir, webpName);
+        if (!fs.existsSync(finalWebpAbs)) {
+            try {
+                await sharp(finalAbs).webp({ effort: 4, quality: 82 }).toFile(finalWebpAbs);
+                debugLog(`ASSET WEBP: ${webpName} created`);
+            } catch (e) {
+                return '/uploads/' + finalName;
+            }
+        }
+        return '/uploads/' + webpName;
+    } catch (e) {
+        return '/uploads/' + finalName;
     }
-    return '/uploads/' + finalName;
 };
 
 exports.getLogin = (req, res) => {
@@ -360,7 +375,7 @@ exports.getAddPartner = (req, res) => {
 exports.postAddPartner = async (req, res) => {
     try {
         const { name, display_order, is_active } = req.body;
-        const logo = req.file ? toHashedAsset(req.file) : null;
+        const logo = req.file ? await toHashedAsset(req.file) : null;
 
         await Partner.create({
             name,
@@ -399,7 +414,7 @@ exports.postEditPartner = async (req, res) => {
 
         let logo = partner.logo;
         if (req.file) {
-            logo = toHashedAsset(req.file);
+            logo = await toHashedAsset(req.file);
         }
 
         await partner.update({
@@ -438,10 +453,10 @@ exports.postSeoSettings = async (req, res) => {
         // Handle file uploads
         if (req.files) {
             if (req.files['favicon']) {
-                data.favicon = toHashedAsset(req.files['favicon'][0]);
+                data.favicon = await toHashedAsset(req.files['favicon'][0]);
             }
             if (req.files['ogImage']) {
-                data.ogImage = toHashedAsset(req.files['ogImage'][0]);
+                data.ogImage = await toHashedAsset(req.files['ogImage'][0]);
             }
         }
 
@@ -500,7 +515,7 @@ exports.postAddProject = async (req, res) => {
         };
 
         if (req.file) {
-            data.image = toHashedAsset(req.file);
+            data.image = await toHashedAsset(req.file);
         }
 
         // Handle CategoryId
@@ -645,7 +660,7 @@ exports.postEditProject = async (req, res) => {
         };
 
         if (req.file) {
-            data.image = toHashedAsset(req.file);
+            data.image = await toHashedAsset(req.file);
         }
 
         // Handle CategoryId
@@ -704,7 +719,7 @@ exports.postAddPost = async (req, res) => {
             seoKeywords
         };
         if (req.file) {
-            data.image = toHashedAsset(req.file);
+            data.image = await toHashedAsset(req.file);
         }
         await Post.create(data);
         res.redirect('/admin/blog');
@@ -739,7 +754,7 @@ exports.postEditPost = async (req, res) => {
             seoKeywords
         };
         if (req.file) {
-            data.image = toHashedAsset(req.file);
+            data.image = await toHashedAsset(req.file);
         }
         await post.update(data);
         res.redirect('/admin/blog');
@@ -783,7 +798,7 @@ exports.postAddService = async (req, res) => {
             display_order, is_active, seoTitle, seoDescription, seoKeywords,
             tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en
         } = req.body;
-        const image = req.file ? toHashedAsset(req.file) : null;
+        const image = req.file ? await toHashedAsset(req.file) : null;
 
         await Service.create({
             title_ar,
@@ -872,7 +887,7 @@ exports.postEditService = async (req, res) => {
 
         let image = service.image;
         if (req.file) {
-            image = toHashedAsset(req.file);
+            image = await toHashedAsset(req.file);
         }
 
         await service.update({

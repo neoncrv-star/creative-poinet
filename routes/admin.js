@@ -33,26 +33,7 @@ router.post('/account/password', adminController.postChangePassword);
 // Logs (protected)
 router.get('/logs', adminController.getLogs);
 
-// Assets Audit & Sync
-router.get('/assets/audit', adminController.getAssetsAudit);
-// Custom storage to upload to an exact filename under /public/uploads
-const assetsStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/uploads'),
-    filename: (req, file, cb) => {
-        const target = (req.params.filename || '').replace(/[^a-zA-Z0-9._-]/g, '');
-        const chosen = target || (Date.now() + path.extname(file.originalname));
-        try {
-            const fs = require('fs');
-            const p = path.join(process.cwd(), 'public', 'uploads', chosen);
-            if (fs.existsSync(p)) {
-                return cb(new Error('EEXIST: Asset name already exists, immutable policy prevents overwrite'), undefined);
-            }
-        } catch {}
-        cb(null, chosen);
-    }
-});
-const assetsUpload = multer({ storage: assetsStorage });
-router.post('/assets/upload/:filename', assetsUpload.single('file'), adminController.postAssetsUpload);
+// (Assets audit removed by policy; Services/Projects images are the single source of truth)
 
 // SEO Routes
 router.get('/seo', adminController.getSeoSettings);
