@@ -82,8 +82,15 @@ app.use('/uploads', (req, res, next) => {
 
 // Serve static files FIRST to avoid running middleware for assets (after uploads fallback)
 app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: '1d', // Cache static assets for 1 day
-    etag: true
+    maxAge: '30d',
+    etag: true,
+    setHeaders: (res, filePath) => {
+        const ext = path.extname(filePath).toLowerCase();
+        const longCache = ['.js', '.css', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico', '.woff', '.woff2', '.ttf', '.otf', '.mp4', '.webm'];
+        if (longCache.includes(ext)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+    }
 }));
 
 // Simple health endpoint to verify deployed version and dialect
