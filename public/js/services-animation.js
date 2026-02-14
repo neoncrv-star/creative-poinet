@@ -38,8 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. Horizontal Scroll Logic ---
     let mainTween;
+    let building = false;
+    let ctx = null;
     const cleanup = () => {
         try {
+            building = false;
+            if (ctx) {
+                ctx.revert();
+                ctx = null;
+            }
             if (mainTween) {
                 mainTween.kill();
                 mainTween = null;
@@ -63,80 +70,87 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateScroll = () => {
+        if (building) return;
+        building = true;
         cleanup();
-        console.debug('Services Animation: updateScroll()', {
-            panelCount: panels.length,
-            containerWidth: panelContainer.offsetWidth,
-            viewport: { w: window.innerWidth, h: window.innerHeight }
-        });
-        let totalWidth = panelContainer.offsetWidth;
-        let scrollAmount = totalWidth - window.innerWidth;
-        const xValue = isRTL ? scrollAmount : -scrollAmount;
+        requestAnimationFrame(() => {
+            console.debug('Services Animation: updateScroll()', {
+                panelCount: panels.length,
+                containerWidth: panelContainer.offsetWidth,
+                viewport: { w: window.innerWidth, h: window.innerHeight }
+            });
+            let totalWidth = panelContainer.offsetWidth;
+            let scrollAmount = Math.max(0, totalWidth - window.innerWidth);
+            const xValue = isRTL ? scrollAmount : -scrollAmount;
 
-        mainTween = gsap.to(panelContainer, {
-            x: xValue,
-            ease: "none",
-            scrollTrigger: {
-                id: "servicesScroll",
-                trigger: servicesSection,
-                pin: true,
-                pinSpacing: true,
-                start: "top top",
-                end: () => `+=${scrollAmount}`,
-                scrub: 1,
-                invalidateOnRefresh: true,
-                anticipatePin: 1,
-            }
-        });
-
-        // Update Parallax & Reveal with the new mainTween
-        panels.forEach((panel, i) => {
-            const img = panel.querySelector('.parallax-img');
-            const bgWrapper = panel.querySelector('.panel-bg-wrapper');
-            const content = panel.querySelector('.panel-content');
-            
-            if (img && bgWrapper) {
-                gsap.fromTo(bgWrapper, 
-                    { x: isRTL ? "-15%" : "15%" }, 
-                    { 
-                        x: isRTL ? "15%" : "-15%",
-                        ease: "none",
-                        scrollTrigger: {
-                            id: `service-parallax-${i}`,
-                            trigger: panel,
-                            containerAnimation: mainTween,
-                            start: isRTL ? "right left" : "left right",
-                            end: isRTL ? "left right" : "right left",
-                            scrub: true
-                        }
+            ctx = gsap.context(() => {
+                mainTween = gsap.to(panelContainer, {
+                    x: xValue,
+                    ease: "none",
+                    scrollTrigger: {
+                        id: "servicesScroll",
+                        trigger: servicesSection,
+                        pin: true,
+                        pinSpacing: true,
+                        start: "top top",
+                        end: () => `+=${scrollAmount}`,
+                        scrub: 1,
+                        invalidateOnRefresh: true,
+                        anticipatePin: 1
                     }
-                );
-            }
+                });
 
-            if (content && !panel.classList.contains('intro-panel')) {
-                gsap.fromTo(content, 
-                    { opacity: 0, y: 50, x: isRTL ? -30 : 30 },
-                    {
-                        opacity: 1, y: 0, x: 0,
-                        duration: 1,
-                        ease: "power2.out",
-                        scrollTrigger: {
-                            id: `service-reveal-${i}`,
-                            trigger: panel,
-                            containerAnimation: mainTween,
-                            start: isRTL ? "right 85%" : "left 85%",
-                            toggleActions: "play none none reverse"
-                        }
+                panels.forEach((panel, i) => {
+                    const bgWrapper = panel.querySelector('.panel-bg-wrapper');
+                    const content = panel.querySelector('.panel-content');
+                    
+                    if (bgWrapper) {
+                        gsap.fromTo(bgWrapper, 
+                            { x: isRTL ? "-15%" : "15%" }, 
+                            { 
+                                x: isRTL ? "15%" : "-15%",
+                                ease: "none",
+                                scrollTrigger: {
+                                    id: `service-parallax-${i}`,
+                                    trigger: panel,
+                                    containerAnimation: mainTween,
+                                    start: isRTL ? "right left" : "left right",
+                                    end: isRTL ? "left right" : "right left",
+                                    scrub: true
+                                }
+                            }
+                        );
                     }
-                );
-            }
+
+                    if (content && !panel.classList.contains('intro-panel')) {
+                        gsap.fromTo(content, 
+                            { opacity: 0, y: 50, x: isRTL ? -30 : 30 },
+                            {
+                                opacity: 1, y: 0, x: 0,
+                                duration: 1,
+                                ease: "power2.out",
+                                scrollTrigger: {
+                                    id: `service-reveal-${i}`,
+                                    trigger: panel,
+                                    containerAnimation: mainTween,
+                                    start: isRTL ? "right 85%" : "left 85%",
+                                    toggleActions: "play none none reverse"
+                                }
+                            }
+                        );
+                    }
+                });
+            }, servicesSection);
+
+            // Defer refresh to next tick to avoid pin swap conflicts
+            setTimeout(() => {
+                try { ScrollTrigger.refresh(); } finally { building = false; }
+            }, 0);
         });
-        // Defer refresh to next tick to avoid pin swap conflicts
-        setTimeout(() => ScrollTrigger.refresh(), 0);
     };
 
     // Initialize after a short delay to ensure layout is ready
-    setTimeout(() => requestAnimationFrame(updateScroll), 100);
+    setTimeout(() => requestAnimationFrame(updateScroll), 150);
 
     // Refresh everything on window resize
     let resizeTimeout;
@@ -147,4 +161,4 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(updateScroll);
         }, 250);
     });
-});
+}); 
