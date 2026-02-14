@@ -9,17 +9,34 @@ const Contact = require('../models/Contact');
 const sequelize = require('../config/database');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const logFile = path.join(__dirname, '../debug.log');
 const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
 
 // Helper to delete file
-const deleteFile = (filePath) => {
-    if (filePath) {
-        const fullPath = path.join(__dirname, '../public', filePath);
-        if (fs.existsSync(fullPath)) {
-            fs.unlinkSync(fullPath);
-        }
+// NOTE: Intentionally disabled physical deletion to keep assets immutable.
+// Files are content-addressed and never removed to avoid accidental loss.
+const deleteFile = (_filePath) => {};
+
+// Content-addressed storage: move uploaded file to <sha256>.<ext> and return '/uploads/<name>'
+const toHashedAsset = (file) => {
+    if (!file) return null;
+    const tmpPath = file.path; // absolute or relative from process cwd
+    const absTmp = path.isAbsolute(tmpPath) ? tmpPath : path.join(process.cwd(), tmpPath);
+    const buf = fs.readFileSync(absTmp);
+    const sha = crypto.createHash('sha256').update(buf).digest('hex').slice(0, 32);
+    const ext = (path.extname(file.originalname) || path.extname(file.filename) || '').toLowerCase() || '.bin';
+    const finalName = `${sha}${ext}`;
+    const uploadsDir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+    const finalAbs = path.join(uploadsDir, finalName);
+    if (fs.existsSync(finalAbs)) {
+        // Remove temp and reuse existing immutable asset
+        try { fs.unlinkSync(absTmp); } catch {}
+    } else {
+        fs.renameSync(absTmp, finalAbs);
     }
+    return '/uploads/' + finalName;
 };
 
 exports.getLogin = (req, res) => {
@@ -343,7 +360,7 @@ exports.getAddPartner = (req, res) => {
 exports.postAddPartner = async (req, res) => {
     try {
         const { name, display_order, is_active } = req.body;
-        const logo = req.file ? '/uploads/' + req.file.filename : null;
+        const logo = req.file ? toHashedAsset(req.file) : null;
 
         await Partner.create({
             name,
@@ -382,8 +399,7 @@ exports.postEditPartner = async (req, res) => {
 
         let logo = partner.logo;
         if (req.file) {
-            deleteFile(partner.logo);
-            logo = '/uploads/' + req.file.filename;
+            logo = toHashedAsset(req.file);
         }
 
         await partner.update({
@@ -422,12 +438,10 @@ exports.postSeoSettings = async (req, res) => {
         // Handle file uploads
         if (req.files) {
             if (req.files['favicon']) {
-                if (seo && seo.favicon) deleteFile(seo.favicon);
-                data.favicon = '/uploads/' + req.files['favicon'][0].filename;
+                data.favicon = toHashedAsset(req.files['favicon'][0]);
             }
             if (req.files['ogImage']) {
-                if (seo && seo.ogImage) deleteFile(seo.ogImage);
-                data.ogImage = '/uploads/' + req.files['ogImage'][0].filename;
+                data.ogImage = toHashedAsset(req.files['ogImage'][0]);
             }
         }
 
@@ -486,7 +500,7 @@ exports.postAddProject = async (req, res) => {
         };
 
         if (req.file) {
-            data.image = '/uploads/' + req.file.filename;
+            data.image = toHashedAsset(req.file);
         }
 
         // Handle CategoryId
@@ -631,8 +645,7 @@ exports.postEditProject = async (req, res) => {
         };
 
         if (req.file) {
-            deleteFile(project.image);
-            data.image = '/uploads/' + req.file.filename;
+            data.image = toHashedAsset(req.file);
         }
 
         // Handle CategoryId
@@ -691,7 +704,7 @@ exports.postAddPost = async (req, res) => {
             seoKeywords
         };
         if (req.file) {
-            data.image = '/uploads/' + req.file.filename;
+            data.image = toHashedAsset(req.file);
         }
         await Post.create(data);
         res.redirect('/admin/blog');
@@ -726,8 +739,7 @@ exports.postEditPost = async (req, res) => {
             seoKeywords
         };
         if (req.file) {
-            deleteFile(post.image); // Delete old image
-            data.image = '/uploads/' + req.file.filename;
+            data.image = toHashedAsset(req.file);
         }
         await post.update(data);
         res.redirect('/admin/blog');
@@ -771,7 +783,7 @@ exports.postAddService = async (req, res) => {
             display_order, is_active, seoTitle, seoDescription, seoKeywords,
             tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en
         } = req.body;
-        const image = req.file ? '/uploads/' + req.file.filename : null;
+        const image = req.file ? toHashedAsset(req.file) : null;
 
         await Service.create({
             title_ar,
@@ -860,8 +872,7 @@ exports.postEditService = async (req, res) => {
 
         let image = service.image;
         if (req.file) {
-            deleteFile(service.image);
-            image = '/uploads/' + req.file.filename;
+            image = toHashedAsset(req.file);
         }
 
         await service.update({

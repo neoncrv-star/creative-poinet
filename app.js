@@ -70,12 +70,11 @@ app.use('/uploads', (req, res, next) => {
         const reqPath = decodeURIComponent(req.path || '');
         const filePath = path.join(__dirname, 'public', 'uploads', reqPath);
         if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
             return res.sendFile(filePath);
         }
-        // Fallback to a local placeholder (use existing logo to avoid extra assets)
-        debugLog(`UPLOADS FALLBACK: missing ${reqPath}`);
-        res.setHeader('Cache-Control', 'public, max-age=300');
-        return res.sendFile(path.join(__dirname, 'public', '210.png'));
+        debugLog(`UPLOADS MISSING: ${reqPath}`);
+        return res.status(404).end();
     } catch (e) {
         return next();
     }
