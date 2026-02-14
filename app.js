@@ -2,12 +2,40 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
+const os = require('os');
+const { monitorEventLoopDelay } = require('perf_hooks');
+
 const logFile = path.join(__dirname, 'debug.log');
 const debugLog = (msg) => {
     try {
         fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
     } catch (e) {
+        // best-effort logging
         console.error('Logging error:', e);
+    }
+};
+
+// Event loop delay monitor (useful to diagnose event-loop stalls)
+let evLoopMonitor;
+try {
+    evLoopMonitor = monitorEventLoopDelay({ resolution: 20 });
+    evLoopMonitor.enable();
+    debugLog('EventLoopDelay monitor enabled');
+} catch (e) {
+    evLoopMonitor = null;
+    debugLog(`EventLoopDelay monitor not available: ${e.message}`);
+}
+
+// Small helper to tail the debug.log (best-effort)
+const tailDebugLog = (lines = 30) => {
+    try {
+        if (!fs.existsSync(logFile)) return '';
+        const content = fs.readFileSync(logFile, 'utf8');
+        const arr = content.trim().split(/\r?\n/);
+        const start = Math.max(0, arr.length - lines);
+        return arr.slice(start).join('\n');
+    } catch (e) {
+        return `tail error: ${e.message}`;
     }
 };
 
@@ -38,7 +66,9 @@ const loadEnv = () => {
                 // Stop after first real file in project root
                 if (file === envProd || file === envDev) break;
             }
-        } catch {}
+        } catch (e) {
+            debugLog(`env load error for ${file}: ${e && e.message}`);
+        }
     }
 };
 
@@ -237,6 +267,71 @@ app.use((req, res, next) => {
     next();
 });
 
+
+// Helper to gather runtime diagnostics (best-effort)
+const gatherDiagnostics = (req, durMs) => {
+    try {
+        const mem = process.memoryUsage();
+        const load = os.loadavg();
+        const uptime = process.uptime();
+        const activeHandles = (() => {
+            try { return process._getActiveHandles ? process._getActiveHandles().length : 'n/a'; } catch (e) { return 'err'; }
+        })();
+        const activeRequests = (() => {
+            try { return process._getActiveRequests ? process._getActiveRequests().length : 'n/a'; } catch (e) { return 'err'; }
+        })();
+        const ev = evLoopMonitor ? {
+            minMs: Number(evLoopMonitor.min) / 1e6,
+            maxMs: Number(evLoopMonitor.max) / 1e6,
+            meanMs: Number(evLoopMonitor.mean) / 1e6,
+            stddevMs: Number(evLoopMonitor.stddev) / 1e6,
+            percentiles: {
+                p50: Number(evLoopMonitor.percentile(50)) / 1e6,
+                p75: Number(evLoopMonitor.percentile(75)) / 1e6,
+                p95: Number(evLoopMonitor.percentile(95)) / 1e6,
+                p99: Number(evLoopMonitor.percentile(99)) / 1e6
+            }
+        } : null;
+
+        // Try to extract pool info from sequelize (best-effort)
+        let dbPoolInfo = 'n/a';
+        try {
+            if (sequelize && sequelize.connectionManager && sequelize.connectionManager.pool) {
+                const pool = sequelize.connectionManager.pool;
+                dbPoolInfo = {
+                    // Generic-pool-ish fields if present
+                    max: pool.max || pool.size || null,
+                    min: pool.min || null,
+                    borrowed: typeof pool.borrowed === 'function' ? pool.borrowed() : (pool.used ? pool.used : 'n/a')
+                };
+            }
+        } catch (e) {
+            dbPoolInfo = `error reading pool: ${e.message}`;
+        }
+
+        const lastLogs = tailDebugLog(80);
+
+        const diag = {
+            time: new Date().toISOString(),
+            url: req.originalUrl,
+            method: req.method,
+            durationMs: durMs,
+            mem,
+            load,
+            uptimeSeconds: Math.round(uptime),
+            activeHandles,
+            activeRequests,
+            eventLoop: ev,
+            dbPoolInfo,
+            lastLogsSnippet: lastLogs
+        };
+        return JSON.stringify(diag, null, 2);
+    } catch (e) {
+        return `gatherDiagnostics failed: ${e && e.message}`;
+    }
+};
+
+
 app.use(async (req, res, next) => {
     // Skip for static-like paths just in case (though static middleware is now above)
     if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
@@ -253,6 +348,8 @@ app.use(async (req, res, next) => {
                 Category.findAll({ order: [['display_order', 'ASC']] })
             ]).then(([seo, categories]) => {
                 globalDataCache = { seo, categories, lastFetch: Date.now() };
+            }).catch(e => {
+                debugLog('Global data fetch error: ' + (e && e.message));
             });
             const timeoutPromise = new Promise((resolve) => setTimeout(resolve, timeoutMs));
             await Promise.race([fetchPromise, timeoutPromise]);
@@ -316,7 +413,7 @@ app.use((req, res, next) => {
     }
 });
 
-// Slow request logger
+// Slow request logger + 5s diagnostic trigger
 app.use((req, res, next) => {
     const start = process.hrtime.bigint();
     const slowMs = Number(process.env.SLOW_REQ_MS || 1000);
@@ -326,7 +423,17 @@ app.use((req, res, next) => {
             if (durMs >= slowMs) {
                 debugLog(`SLOW ${req.method} ${req.originalUrl} ${res.statusCode} ${durMs}ms`);
             }
-        } catch {}
+            // If duration crosses the 5 second threshold, gather diagnostics and print to console + debug.log
+            const diagThreshold = Number(process.env.DIAG_THRESHOLD_MS || 5000);
+            if (durMs >= diagThreshold) {
+                const diag = gatherDiagnostics(req, durMs);
+                const marker = `\n===== SLOW-REQUEST DIAGNOSTIC (${durMs}ms >= ${diagThreshold}ms) =====\n`;
+                console.error(marker + diag + '\n===== END DIAGNOSTIC =====\n');
+                debugLog(`DIAGNOSTIC_FOR_${req.method}_${req.originalUrl}: ${diag}`);
+            }
+        } catch (e) {
+            console.error('Slow logger error:', e);
+        }
     });
     next();
 });
@@ -334,6 +441,24 @@ app.use((req, res, next) => {
 // Use Routes
 app.use('/admin', adminRoutes);
 app.use('/', mainRoutes);
+
+// Global unhandled rejections / exceptions to prevent silent crashes
+process.on('unhandledRejection', (reason, p) => {
+    try {
+        const msg = `unhandledRejection: ${reason && (reason.stack || reason.toString())}`;
+        console.error(msg);
+        debugLog(msg);
+    } catch {}
+});
+process.on('uncaughtException', (err) => {
+    try {
+        const msg = `uncaughtException: ${err && (err.stack || err.toString())}`;
+        console.error(msg);
+        debugLog(msg);
+        // Attempt graceful shutdown if critical (do not exit immediately if PM2 or systemd will restart)
+        // setTimeout(() => process.exit(1), 5000);
+    } catch {}
+});
 
 // Sync Database & Start server
 const syncOptions = {
@@ -357,17 +482,24 @@ sequelize.sync(syncOptions)
                 http.get({ ...opts, path: '/' }).on('error', ()=>{});
                 http.get({ ...opts, path: '/en' }).on('error', ()=>{});
                 http.get({ ...opts, path: '/healthz' }).on('error', ()=>{});
-            } catch {}
+            } catch (e) {
+                debugLog('prewarm error: ' + (e && e.message));
+            }
         });
         // Tune server timeouts and keep-alive to avoid ghost Pending while preventing hangs
         try {
             server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
             server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
+            // Note: Node has no official server.requestTimeout; keep custom res.setTimeout used earlier
+            // but keep this value for reference/compatibility
             server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
-        } catch {}
+            debugLog(`Server timeouts set: keepAlive=${server.keepAliveTimeout} headers=${server.headersTimeout} request=${server.requestTimeout}`);
+        } catch (e) {
+            debugLog('timeout tune error: ' + (e && e.message));
+        }
     })
     .catch(err => {
-        const errMsg = `Database sync error (degraded mode): ${err.message}`;
+        const errMsg = `Database sync error (degraded mode): ${err && err.message}`;
         debugLog(errMsg);
         console.error(errMsg, err);
         // Start server in degraded mode to avoid downtime; pages will fallback where possible
@@ -380,5 +512,10 @@ sequelize.sync(syncOptions)
             server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
             server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
             server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
-        } catch {}
+        } catch (e) {
+            debugLog('timeout tune error (degraded): ' + (e && e.message));
+        }
     });
+
+// Export app for tests or external process managers
+module.exports = app;
