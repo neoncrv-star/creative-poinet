@@ -29,6 +29,10 @@
 
         // Ensure siteUrl doesn't have trailing slash for consistency
         if (siteUrl && siteUrl.endsWith('/')) siteUrl = siteUrl.slice(0, -1);
+        // Ensure favicon is absolute if provided as relative file name
+        if (favicon && !favicon.startsWith('http') && !favicon.startsWith('/')) {
+            favicon = '/' + favicon;
+        }
 
         // Page specific overrides
         let pageTitle = (typeof title !== 'undefined') ? title : '';

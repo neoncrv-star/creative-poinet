@@ -86,17 +86,51 @@ app.use((req, res, next) => {
 app.use('/uploads', (req, res, next) => {
     try {
         const reqPath = decodeURIComponent(req.path || '');
-        const filePath = path.join(__dirname, 'public', 'uploads', reqPath);
+        const uploadsDir = path.join(__dirname, 'public', 'uploads');
+        const filePath = path.join(uploadsDir, reqPath);
         if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
             return res.sendFile(filePath);
         }
-        // Fallback: return a tiny transparent PNG to avoid blocking/spinners when legacy paths requested
-        debugLog(`UPLOADS MISSING: ${reqPath} -> serving tiny placeholder`);
-        const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=', 'base64');
-        res.setHeader('Content-Type', 'image/png');
-        res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
-        return res.end(transparentPng);
+        // Self-heal: if requested extension missing but another variant exists, serve it
+        const basename = path.basename(reqPath, path.extname(reqPath));
+        if (basename) {
+            const candidates = ['.webp','.png','.jpg','.jpeg','.gif','.avif','.svg','.jfif'];
+            for (const ext of candidates) {
+                const alt = path.join(uploadsDir, basename + ext);
+                if (fs.existsSync(alt) && fs.statSync(alt).isFile()) {
+                    debugLog(`UPLOADS HEAL: ${reqPath} -> ${basename + ext}`);
+                    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+                    return res.sendFile(alt);
+                }
+            }
+        }
+        // Fallback: admin sees visible red placeholder; public gets transparent pixel
+        const ref = (req.get('referer') || '').toLowerCase();
+        const isAdminCtx = ref.includes('/admin') || req.query.admin === '1';
+        if (isAdminCtx) {
+            debugLog(`UPLOADS MISSING(ADMIN): ${reqPath} -> visible placeholder`);
+            const svg = Buffer.from(
+                `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120">
+                    <rect width="120" height="120" fill="#fff"/>
+                    <rect width="120" height="120" fill="url(#p)"/>
+                    <defs><pattern id="p" width="8" height="8" patternUnits="userSpaceOnUse">
+                        <path d="M0,0 L8,8 M8,0 L0,8" stroke="#D00000" stroke-width="2"/>
+                    </pattern></defs>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#D00000" font-family="Arial" font-size="12">MISSING</text>
+                </svg>`
+            );
+            res.setHeader('Content-Type', 'image/svg+xml');
+            res.setHeader('Cache-Control', 'no-cache');
+            return res.end(svg);
+        } else {
+            // Transparent pixel for public to prevent layout jumps/spinners
+            debugLog(`UPLOADS MISSING: ${reqPath} -> serving tiny placeholder`);
+            const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=', 'base64');
+            res.setHeader('Content-Type', 'image/png');
+            res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
+            return res.end(transparentPng);
+        }
     } catch (e) {
         return next();
     }
