@@ -57,6 +57,26 @@
 
                     ScrollTrigger.refresh();
                 } catch (e) {
+                    try {
+                        var isNotFound = e && (e.name === "NotFoundError" || (e.message && e.message.indexOf("insertBefore") !== -1));
+                        var ST = win.ScrollTrigger;
+                        if (isNotFound && ST && typeof ST.getAll === "function") {
+                            try {
+                                ST.getAll().forEach(function (t) {
+                                    try {
+                                        if (!t) return;
+                                        if (t.pin || (t.vars && (t.vars.pin || t.vars.pinSpacing))) {
+                                            t.kill(true);
+                                        }
+                                    } catch (e2) {}
+                                });
+                            } catch (e3) {}
+                            try {
+                                ST.refresh();
+                            } catch (e4) {}
+                            return;
+                        }
+                    } catch (inner) {}
                     console.warn("ScrollTrigger refresh failed:", e);
                 }
             });
