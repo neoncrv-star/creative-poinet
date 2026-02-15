@@ -25,12 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // تنظيف أي أنيميشن سابق لمنع التداخل
             if (ctx) ctx.revert();
 
-            // التحقق من وضع الجوال (يتطابق مع CSS 991px)
-            const isMobile = window.matchMedia('(max-width: 991px)').matches;
+            // التحقق من وضع الجوال / التابلت (يتطابق مع CSS 1024px)
+            const isMobile = window.matchMedia('(max-width: 1024px)').matches;
 
-            // في الجوال، نكتفي بالتنظيف ونخرج (يعمل التصميم العمودي عبر CSS)
+            // في الجوال والتابلت، نكتفي بالتنظيف ونخرج (يعمل التصميم العمودي عبر CSS)
             if (isMobile) {
-                servicesSection.style.height = 'auto'; // ضمان عدم وجود ارتفاع ثابت
+                servicesSection.style.height = 'auto';
+                servicesSection.style.minHeight = '0';
                 return;
             }
 

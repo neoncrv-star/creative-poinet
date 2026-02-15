@@ -12,28 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!journeySection || !lines.length) return;
 
-        // 🔥 Cache theme (منع reflow)
-        let currentTheme = document.documentElement.getAttribute('data-theme');
-        let activeColor = currentTheme === 'light' ? "#000" : "#fff";
-        let inactiveColor = currentTheme === 'light'
-            ? "rgba(0,0,0,0.15)"
-            : "rgba(255,255,255,0.1)";
-
-        // تحديث عند تغيير الثيم فقط
-        const updateTheme = () => {
-            currentTheme = document.documentElement.getAttribute('data-theme');
-            activeColor = currentTheme === 'light' ? "#000" : "#fff";
-            inactiveColor = currentTheme === 'light'
-                ? "rgba(0,0,0,0.15)"
-                : "rgba(255,255,255,0.1)";
-        };
-
-        const observer = new MutationObserver(updateTheme);
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-theme']
-        });
-
         gsap.fromTo(eyebrow,
             { opacity: 0, y: 40 },
             {
@@ -50,54 +28,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         );
 
-        // 🔥 initial state (بدون filter)
-        gsap.set(lines, {
-            opacity: 0.1,
-            color: inactiveColor,
-            willChange: "opacity, transform"
-        });
-
         // 🔥 batching = أداء عالي
         ScrollTrigger.batch(lines, {
             start: "top 70%",
             end: "bottom 40%",
 
             onEnter: (batch) => {
-                gsap.to(batch, {
-                    opacity: 1,
-                    color: activeColor,
-                    duration: 0.45,
-                    stagger: 0.06,
-                    overwrite: true
-                });
+                batch.forEach((el) => el.classList.add('is-active'));
             },
 
             onLeave: (batch) => {
-                gsap.to(batch, {
-                    opacity: 0.1,
-                    color: inactiveColor,
-                    duration: 0.35,
-                    overwrite: true
-                });
+                batch.forEach((el) => el.classList.remove('is-active'));
             },
 
             onEnterBack: (batch) => {
-                gsap.to(batch, {
-                    opacity: 1,
-                    color: activeColor,
-                    duration: 0.45,
-                    stagger: 0.06,
-                    overwrite: true
-                });
+                batch.forEach((el) => el.classList.add('is-active'));
             },
 
             onLeaveBack: (batch) => {
-                gsap.to(batch, {
-                    opacity: 0.1,
-                    color: inactiveColor,
-                    duration: 0.35,
-                    overwrite: true
-                });
+                batch.forEach((el) => el.classList.remove('is-active'));
             }
         });
 
@@ -105,10 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
             window.__CP_READY = window.__CP_READY || {};
             window.__CP_READY.journey = true;
         }
-
-        return () => {
-            observer.disconnect();
-        };
     };
 
     // 🔥 Scroll Manager

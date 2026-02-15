@@ -57,6 +57,7 @@
     color: currentColor; /* Use text color */
     /* transform removed for inline display compatibility */
     will-change: opacity, filter, color;
+    transition: opacity 0.4s ease, filter 0.4s ease, color 0.4s ease;
     filter: blur(3px); /* Cinematic blur for inactive */
     margin: 0; /* Natural spacing from HTML newlines */
     padding: 2px 0; /* Slight padding */
