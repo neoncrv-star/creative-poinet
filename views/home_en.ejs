@@ -340,15 +340,22 @@
                     <% if (partners && partners.length > 0) { %>
                         <% partners.forEach(partner => { %>
                             <div class="partner-item" data-gsap="fade-up">
-                                <img src="<%= partner.logo %>" alt="<%= partner.name %>" title="<%= partner.name %>">
+                                <img src="<%= partner.logo %>" alt="<%= partner.name %>" title="<%= partner.name %>" loading="lazy" decoding="async" width="200" height="80">
                             </div>
                         <% }) %>
                     <% } else { %>
-                        <!-- Fallback static logos if no partners in DB -->
-                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" alt="Saudi Aramco"></div>
-                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/ar/thumb/8/82/Misk_Foundation_logo.svg/1200px-Misk_Foundation_logo.svg.png" alt="Misk"></div>
-                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROSHN_Logo.svg/1200px-ROSHN_Logo.svg.png" alt="ROSHN"></div>
-                        <div class="partner-item" data-gsap="fade-up"><img src="https://upload.wikimedia.org/wikipedia/ar/thumb/e/e0/Diriyah_Gate_Development_Authority_logo.svg/1200px-Diriyah_Gate_Development_Authority_logo.svg.png" alt="DGDA"></div>
+                        <div class="partner-item" data-gsap="fade-up">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" alt="Saudi Aramco" loading="lazy" decoding="async" width="200" height="80">
+                        </div>
+                        <div class="partner-item" data-gsap="fade-up">
+                            <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/8/82/Misk_Foundation_logo.svg/1200px-Misk_Foundation_logo.svg.png" alt="Misk" loading="lazy" decoding="async" width="200" height="80">
+                        </div>
+                        <div class="partner-item" data-gsap="fade-up">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROSHN_Logo.svg/1200px-ROSHN_Logo.svg.png" alt="ROSHN" loading="lazy" decoding="async" width="200" height="80">
+                        </div>
+                        <div class="partner-item" data-gsap="fade-up">
+                            <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/e/e0/Diriyah_Gate_Development_Authority_logo.svg/1200px-Diriyah_Gate_Development_Authority_logo.svg.png" alt="DGDA" loading="lazy" decoding="async" width="200" height="80">
+                        </div>
                     <% } %>
                 </div>
             </div>
