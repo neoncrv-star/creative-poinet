@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof window === 'undefined') return;
+
     const initJourney = (gsap, ScrollTrigger) => {
+        if (!gsap || !ScrollTrigger) return;
+
         gsap.registerPlugin(ScrollTrigger);
 
         const journeySection = document.querySelector('.journey-scroll-section');
@@ -9,72 +12,118 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!journeySection || !lines.length) return;
 
-        gsap.to(eyebrow, {
-            scrollTrigger: {
-                trigger: journeySection,
-                start: "top 80%",
-                toggleActions: "play none none reverse"
-            },
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-            force3D: true
+        // 🔥 Cache theme (منع reflow)
+        let currentTheme = document.documentElement.getAttribute('data-theme');
+        let activeColor = currentTheme === 'light' ? "#000" : "#fff";
+        let inactiveColor = currentTheme === 'light'
+            ? "rgba(0,0,0,0.15)"
+            : "rgba(255,255,255,0.1)";
+
+        // تحديث عند تغيير الثيم فقط
+        const updateTheme = () => {
+            currentTheme = document.documentElement.getAttribute('data-theme');
+            activeColor = currentTheme === 'light' ? "#000" : "#fff";
+            inactiveColor = currentTheme === 'light'
+                ? "rgba(0,0,0,0.15)"
+                : "rgba(255,255,255,0.1)";
+        };
+
+        const observer = new MutationObserver(updateTheme);
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
         });
 
-        lines.forEach((line) => {
-            if (!line || !line.parentNode || !line.isConnected) return;
-            ScrollTrigger.create({
-                trigger: line,
-                start: "top 65%",
-                end: "bottom 35%",
-                toggleClass: "is-active",
-                onEnter: () => {
-                    if (!line || !line.parentNode || !line.isConnected) return;
-                    const currentTheme = document.documentElement.getAttribute('data-theme');
-                    const activeColor = currentTheme === 'light' ? "#000" : "#fff";
-                    gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5, force3D: true });
-                },
-                onLeave: () => {
-                    if (!line || !line.parentNode || !line.isConnected) return;
-                    const currentTheme = document.documentElement.getAttribute('data-theme');
-                    const inactiveColor = currentTheme === 'light' ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)";
-                    gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5, force3D: true });
-                },
-                onEnterBack: () => {
-                    if (!line || !line.parentNode || !line.isConnected) return;
-                    const currentTheme = document.documentElement.getAttribute('data-theme');
-                    const activeColor = currentTheme === 'light' ? "#000" : "#fff";
-                    gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5, force3D: true });
-                },
-                onLeaveBack: () => {
-                    if (!line || !line.parentNode || !line.isConnected) return;
-                    const currentTheme = document.documentElement.getAttribute('data-theme');
-                    const inactiveColor = currentTheme === 'light' ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)";
-                    gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5, force3D: true });
+        // 🔥 eyebrow animation
+        gsap.fromTo(eyebrow,
+            { opacity: 0, y: 40 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                force3D: true,
+                scrollTrigger: {
+                    trigger: journeySection,
+                    start: "top 80%",
+                    once: true
                 }
-            });
+            }
+        );
+
+        // 🔥 initial state (بدون filter)
+        gsap.set(lines, {
+            opacity: 0.1,
+            color: inactiveColor,
+            willChange: "opacity, transform"
         });
-        if (typeof window !== 'undefined') {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.journey = true;
-        }
+
+        // 🔥 batching = أداء عالي
+        ScrollTrigger.batch(lines, {
+            start: "top 70%",
+            end: "bottom 40%",
+
+            onEnter: (batch) => {
+                gsap.to(batch, {
+                    opacity: 1,
+                    color: activeColor,
+                    duration: 0.45,
+                    stagger: 0.06,
+                    overwrite: true
+                });
+            },
+
+            onLeave: (batch) => {
+                gsap.to(batch, {
+                    opacity: 0.1,
+                    color: inactiveColor,
+                    duration: 0.35,
+                    overwrite: true
+                });
+            },
+
+            onEnterBack: (batch) => {
+                gsap.to(batch, {
+                    opacity: 1,
+                    color: activeColor,
+                    duration: 0.45,
+                    stagger: 0.06,
+                    overwrite: true
+                });
+            },
+
+            onLeaveBack: (batch) => {
+                gsap.to(batch, {
+                    opacity: 0.1,
+                    color: inactiveColor,
+                    duration: 0.35,
+                    overwrite: true
+                });
+            }
+        });
+
+        // تنظيف عند destroy
+        return () => {
+            observer.disconnect();
+        };
     };
 
-    if (window.scrollManager && typeof window.scrollManager.section === 'function') {
+    // 🔥 Scroll Manager
+    if (window.scrollManager?.section) {
         window.scrollManager.section('journey', (gsap, ScrollTrigger) => {
-            if (!gsap || !ScrollTrigger) return;
             initJourney(gsap, ScrollTrigger);
         });
         return;
     }
-    if (typeof window.safeScrollTrigger === 'function') {
+
+    // fallback
+    if (window.safeScrollTrigger) {
         window.safeScrollTrigger((gsap, ScrollTrigger) => {
-            if (!gsap || !ScrollTrigger) return;
             initJourney(gsap, ScrollTrigger);
         });
         return;
     }
+
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     initJourney(gsap, ScrollTrigger);
 });

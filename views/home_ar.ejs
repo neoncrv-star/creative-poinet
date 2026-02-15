@@ -1,3 +1,5 @@
+--- START OF FILE Paste February 15, 2026 - 2:09PM ---
+
 <%- include('partials/header') %>
 
 <!-- Page Specific CSS (loaded asynchronously to avoid render-blocking) -->
@@ -12,7 +14,7 @@
     <link rel="stylesheet" href="/css/services.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="/css/portfolio-slider.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    </noscript>
+</noscript>
 
 <style>
     :root {
@@ -43,6 +45,64 @@
     
     .parallax-img {
         filter: brightness(var(--service-image-brightness)) contrast(1.1) !important;
+    }
+
+    /* --- Mobile Responsive Fixes (Applied Here to Ensure Priority) --- */
+    @media (max-width: 991px) {
+        /* Services Section Mobile Fix */
+        .services-horizontal-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow-x: hidden !important;
+        }
+
+        .service-panel {
+            width: 100% !important;
+            height: auto !important;
+            display: flex !important;
+            /* Column Reverse puts the Background (Image) on TOP and Content on BOTTOM because of HTML order */
+            flex-direction: column-reverse !important; 
+            position: relative !important;
+            margin-bottom: 0 !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .service-panel .panel-bg-wrapper {
+            position: relative !important;
+            width: 100% !important;
+            height: 350px !important; /* Fixed height for image on mobile as requested */
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: auto !important;
+            z-index: 1 !important;
+        }
+
+        .service-panel .panel-content {
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            padding: 40px 20px !important;
+            z-index: 2 !important;
+            background: #000 !important; /* Ensure text is readable */
+        }
+
+        .panel-overlay {
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 100%) !important;
+        }
+
+        /* Portfolio Section Mobile Fix */
+        .portfolio-swiper {
+            height: auto !important;
+            padding-bottom: 50px !important;
+        }
+
+        .project-card {
+            height: 400px !important; /* Reasonable height for mobile cards */
+            width: 100% !important;
+        }
     }
 </style>
 
@@ -182,6 +242,8 @@
                 <% if (services && services.length > 0) { %>
                     <% services.forEach((service, index) => { %>
                         <div class="service-panel" id="service-<%= index + 1 %>">
+                            <!-- HTML Order: Content first, then BG. 
+                                 CSS flex-direction: column-reverse on mobile will put BG on top. -->
                             <div class="panel-content">
                                 <div class="panel-header">
                                     <span class="panel-number">0<%= index + 1 %></span>
@@ -235,8 +297,6 @@
                                 <span class="panel-number">02</span>
                                 <h2 class="panel-title">التسويق الرقمي</h2>
                             </div>
-                        </div>
-                        <div class="panel-content">
                             <div class="panel-body">
                                 <p class="panel-desc">استراتيجيات تسويقية متكاملة للوصول إلى جمهورك المستهدف.</p>
                                 <div class="panel-tags">
@@ -508,14 +568,28 @@
     <script src="/js/journey-animation.js?v=<%= assetVersion %>" defer></script>
     <script src="/js/services-animation.js?v=<%= assetVersion %>" defer></script>
 
-    <!-- Slider Config Injection -->
+    <!-- Slider Config Injection (UPDATED WITH BREAKPOINTS) -->
     <script id="slider-config-data" type="application/json">
         <%- JSON.stringify({
             effect: (seo && seo.sliderEffect) ? seo.sliderEffect : "slide",
             autoplay: (seo && seo.sliderAutoplay) ? true : false,
             autoplayDelay: (seo && seo.sliderAutoplayDelay) ? seo.sliderAutoplayDelay : 3000,
             slidesPerView: (seo && seo.sliderSlidesPerView) ? seo.sliderSlidesPerView : 3,
-            spaceBetween: (seo && seo.sliderSpaceBetween) ? seo.sliderSpaceBetween : 30
+            spaceBetween: (seo && seo.sliderSpaceBetween) ? seo.sliderSpaceBetween : 30,
+            breakpoints: {
+                320: {
+                    slidesPerView: 1,
+                    spaceBetween: 20
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30
+                },
+                1024: {
+                    slidesPerView: (seo && seo.sliderSlidesPerView) ? seo.sliderSlidesPerView : 3,
+                    spaceBetween: 30
+                }
+            } 
         }) %>
     </script>
-    <%- include('partials/footer') %>
+    <%- include('partials/footer') %>  

@@ -1,29 +1,9 @@
-[2026-02-11T17:23:27.605Z] Attempting to load .env from: /home/u494530316/domains/cpoint-sa.com/public_html/.env
-[2026-02-11T17:23:27.613Z] DB_NAME from process.env: undefined
-[2026-02-11T17:54:15.891Z] Login attempt for username: admin
-[2026-02-11T17:54:15.892Z] Current DB dialect: sqlite
-[2026-02-11T17:54:15.897Z] User found, comparing passwords...
-[2026-02-11T17:54:15.898Z] Password match result: false
-[2026-02-11T17:54:15.900Z] Password mismatch for user: admin
-[2026-02-11T17:54:19.612Z] Login attempt for username: admin
-[2026-02-11T17:54:19.614Z] Current DB dialect: sqlite
-[2026-02-11T17:54:19.619Z] User found, comparing passwords...
-[2026-02-11T17:54:19.621Z] Password match result: false
-[2026-02-11T17:54:19.623Z] Password mismatch for user: admin
-[2026-02-11T18:04:01.812Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-11T18:04:03.019Z] Critical Database sync error: connect ECONNREFUSED 127.0.0.1:3306
-[2026-02-14T11:37:58.295Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-14T11:38:00.395Z] Critical Database sync error: connect ECONNREFUSED 127.0.0.1:3306
-[2026-02-14T12:15:35.309Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-14T12:15:38.115Z] Database synced successfully (MySQL)
-[2026-02-14T12:15:38.122Z] Server is running at http://localhost:3000
-[2026-02-14T13:25:55.347Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-14T13:26:48.491Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-14T13:27:07.458Z] Database synced successfully (MySQL)
-[2026-02-14T13:27:07.464Z] Server is running at http://localhost:3000
-[2026-02-14T13:27:28.499Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-14T13:27:45.270Z] Database synced successfully (MySQL)
-[2026-02-14T13:27:45.274Z] Server is running at http://localhost:3000
-[2026-02-14T13:32:24.397Z] Loaded environment from: C:\Users\Nibra\Downloads\creative poinet\.env
-[2026-02-14T13:32:40.713Z] Database synced successfully (MySQL)
-[2026-02-14T13:32:40.717Z] Server is running at http://localhost:3000
+[2026-02-15T11:23:11.870Z] EventLoopDelay monitor enabled
+[2026-02-15T11:23:12.978Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:15.993Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:19.001Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:22.016Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:25.030Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:28.039Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:31.055Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-15T11:23:34.061Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306

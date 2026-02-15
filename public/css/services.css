@@ -266,55 +266,96 @@ html[dir="rtl"] .panel-content {
     text-align: right;
 }
 
-/* MOBILE */
-@media screen and (max-width: 768px) {
+/* =========================================
+   MOBILE & TABLET RESPONSIVE FIXES
+   ========================================= */
+@media screen and (max-width: 991px) {
     .services-horizontal-section {
         overflow: visible;
         padding: 40px 0;
+        height: auto;
     }
 
     .services-horizontal-wrapper {
         height: auto;
-        display: block;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: visible;
     }
 
     .services-panel-container {
-        display: block;
+        display: flex;
+        flex-direction: column;
         width: 100%;
         height: auto;
         padding: 0 16px;
+        transform: none !important; /* Disable JS horizontal transform */
     }
 
     .service-panel {
-        display: block;
+        /* Important: Use flex to reorder content */
+        display: flex;
+        /* Reverse column puts the last element (Background) on TOP and first element (Content) on BOTTOM */
+        flex-direction: column-reverse; 
         width: 100%;
-        height: auto;
-        margin: 0 0 24px 0;
+        height: auto; /* Allow content to dictate height */
+        margin: 0 0 40px 0;
         border-radius: 20px;
+        background: #000; /* Card background */
+        overflow: hidden;
     }
 
+    /* 1. The Image Section (Now on Top) */
     .panel-bg-wrapper {
-        position: relative;
+        position: relative; /* Not absolute anymore */
         width: 100%;
-        height: auto;
-        margin-top: 12px;
+        height: 350px; /* Big explicit height for image */
+        top: auto; left: auto;
+        margin: 0;
+        z-index: 1;
     }
 
     .parallax-img {
         width: 100%;
-        height: auto;
-        object-fit: contain;
+        height: 100%;
+        object-fit: cover; /* Ensure it covers the area nicely */
+        filter: brightness(0.8); /* Slightly brighter on mobile */
     }
 
+    /* 2. The Text Section (Now on Bottom) */
     .panel-content {
-        padding: 16px;
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 30px 20px;
+        background: #050505; /* Solid background for text area */
+        z-index: 2;
+        justify-content: flex-start;
     }
 
+    /* Adjust Typography for Mobile */
     .panel-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
     }
 
     .services-section-title {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
     }
-}
+
+    .panel-desc {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .intro-panel {
+        /* Intro panel usually doesn't have an image, so column-reverse is fine or just column */
+        flex-direction: column;
+        min-height: auto;
+    }
+     
+    .scroll-indicator {
+        display: none; /* Hide horizontal scroll indicator on mobile */
+    }
+} 
