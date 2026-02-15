@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    if (typeof window === 'undefined') return;
     const langToggle = document.getElementById('lang-toggle');
     const html = document.documentElement;
     const body = document.body;
@@ -88,51 +89,52 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('lang', lang);
     }
 
-    // GSAP Animations for elements with data-gsap attribute
-    if (typeof gsap !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
-
-        const animateElements = document.querySelectorAll('[data-gsap]');
-        animateElements.forEach(el => {
-            const animationType = el.getAttribute('data-gsap');
-            
-            if (animationType === 'fade-up') {
-                gsap.from(el, {
-                    y: 50,
-                    opacity: 0,
-                    duration: 1,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: el,
-                        start: 'top 85%',
-                        toggleActions: 'play none none none'
-                    }
-                });
-            } else if (animationType === 'fade-left') {
-                gsap.from(el, {
-                    x: -50,
-                    opacity: 0,
-                    duration: 1,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: el,
-                        start: 'top 85%',
-                        toggleActions: 'play none none none'
-                    }
-                });
-            } else if (animationType === 'fade-right') {
-                gsap.from(el, {
-                    x: 50,
-                    opacity: 0,
-                    duration: 1,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: el,
-                        start: 'top 85%',
-                        toggleActions: 'play none none none'
-                    }
-                });
-            }
+    if (typeof window.safeScrollTrigger === 'function') {
+        window.safeScrollTrigger((gsap, ScrollTrigger) => {
+            gsap.registerPlugin(ScrollTrigger);
+            const animateElements = document.querySelectorAll('[data-gsap]');
+            if (!animateElements.length) return;
+            animateElements.forEach(el => {
+                if (!el || !el.parentNode || !el.isConnected) return;
+                const animationType = el.getAttribute('data-gsap');
+                if (animationType === 'fade-up') {
+                    gsap.from(el, {
+                        y: 50,
+                        opacity: 0,
+                        duration: 1,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 85%',
+                            toggleActions: 'play none none none'
+                        }
+                    });
+                } else if (animationType === 'fade-left') {
+                    gsap.from(el, {
+                        x: -50,
+                        opacity: 0,
+                        duration: 1,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 85%',
+                            toggleActions: 'play none none none'
+                        }
+                    });
+                } else if (animationType === 'fade-right') {
+                    gsap.from(el, {
+                        x: 50,
+                        opacity: 0,
+                        duration: 1,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 85%',
+                            toggleActions: 'play none none none'
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -161,9 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Refresh ScrollTrigger as heights change
-                if (typeof ScrollTrigger !== 'undefined') {
-                    ScrollTrigger.refresh();
+                if (typeof window.ScrollTrigger !== 'undefined') {
+                    requestAnimationFrame(() => {
+                        try {
+                            window.ScrollTrigger.refresh();
+                        } catch (e) {
+                            console.warn('ScrollTrigger refresh after filter failed:', e);
+                        }
+                    });
                 }
             });
         });

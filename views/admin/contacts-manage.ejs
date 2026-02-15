@@ -117,8 +117,6 @@
     .close-modal:hover {
         color: var(--primary-color);
     }
-</style>
-    }
     .message-box {
         background: #f9f9f9;
         padding: 15px;
@@ -133,7 +131,9 @@
 
 <script>
     function viewMessage(id, message) {
-        document.getElementById('messageContent').innerHTML = message;
+        var box = document.getElementById('messageContent');
+        if (!box) return;
+        box.textContent = message;
         document.getElementById('messageModal').style.display = 'block';
         
         // Optionally mark as read automatically

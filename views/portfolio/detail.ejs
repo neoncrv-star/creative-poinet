@@ -165,13 +165,36 @@
 
 <!-- Page Specific Animations -->
 <script>
-    // Animations
-    if (typeof gsap !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.safeScrollTrigger === 'function') {
+        window.safeScrollTrigger((gsap, ScrollTrigger) => {
+            gsap.registerPlugin(ScrollTrigger);
+            document.querySelectorAll('[data-gsap]').forEach(el => {
+                if (!el || !el.parentNode || !el.isConnected) return;
+                const effect = el.getAttribute('data-gsap');
+                const baseConfig = {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    },
+                    duration: 1,
+                    ease: 'power3.out'
+                };
+                if (effect === 'fade-up') {
+                    gsap.from(el, Object.assign({ y: 50, opacity: 0 }, baseConfig));
+                } else if (effect === 'fade-left') {
+                    gsap.from(el, Object.assign({ x: -50, opacity: 0 }, baseConfig));
+                } else if (effect === 'fade-right') {
+                    gsap.from(el, Object.assign({ x: 50, opacity: 0 }, baseConfig));
+                }
+            });
+        });
+    } else if (typeof gsap !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
-        
         document.querySelectorAll('[data-gsap]').forEach(el => {
+            if (!el || !el.parentNode || !el.isConnected) return;
             const effect = el.getAttribute('data-gsap');
-            const config = {
+            const baseConfig = {
                 scrollTrigger: {
                     trigger: el,
                     start: 'top 85%',
@@ -180,13 +203,12 @@
                 duration: 1,
                 ease: 'power3.out'
             };
-
             if (effect === 'fade-up') {
-                gsap.from(el, { ...config, y: 50, opacity: 0 });
+                gsap.from(el, Object.assign({ y: 50, opacity: 0 }, baseConfig));
             } else if (effect === 'fade-left') {
-                gsap.from(el, { ...config, x: -50, opacity: 0 });
+                gsap.from(el, Object.assign({ x: -50, opacity: 0 }, baseConfig));
             } else if (effect === 'fade-right') {
-                gsap.from(el, { ...config, x: 50, opacity: 0 });
+                gsap.from(el, Object.assign({ x: 50, opacity: 0 }, baseConfig));
             }
         });
     }
