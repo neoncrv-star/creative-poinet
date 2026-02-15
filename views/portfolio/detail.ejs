@@ -153,7 +153,11 @@
                     </form>
                     
                     <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
-                        <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; <%= isEn ? 'margin-right: 10px;' : 'margin-left: 10px;' %>"></i>
+                        <% if (isEn) { %>
+                            <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-right: 10px;"></i>
+                        <% } else { %>
+                            <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-left: 10px;"></i>
+                        <% } %>
                         <%= isEn ? 'Your request has been sent successfully! We will contact you soon.' : 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.' %>
                     </div>
                 </div>
