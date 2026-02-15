@@ -1,35 +1,43 @@
 /* Cinematic Services - Horizontal Scroll Showcase */
 :root {
-    --panel-width: 85vw; /* Smaller panels */
-    --panel-height: 80vh; /* Smaller panels */
+    --panel-width: 85vw;
+    --panel-height: 80vh;
     --primary-color: #e63946;
 }
 
+/* SECTION */
 .services-horizontal-section {
     position: relative;
     width: 100%;
     background-color: #050505;
     overflow: hidden;
+    contain: layout style paint;
 }
 
+/* WRAPPER */
 .services-horizontal-wrapper {
     width: 100%;
     height: 100vh;
     display: flex;
-    align-items: center; /* Center panels vertically */
+    align-items: center;
     overflow: hidden;
 }
 
+/* CONTAINER */
 .services-panel-container {
     display: flex;
     flex-wrap: nowrap;
     height: 100%;
-    width: fit-content;
+    width: max-content;
+    padding: 0 7.5vw;
+
+    /* Stability */
+    transform: translate3d(0, 0, 0);
     will-change: transform;
-    padding: 0 7.5vw; /* Add padding to help centering first/last panels */
+    backface-visibility: hidden;
 }
 
-/* Individual Panel */
+/* PANEL */
 .service-panel {
     position: relative;
     width: var(--panel-width);
@@ -39,15 +47,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 2vw; /* Space between panels */
-    border-radius: 30px; /* Rounded corners for smaller panels */
+    margin: 0 2vw;
+    border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    transition: border-color 0.3s ease;
-    will-change: transform, opacity;
+
+    /* GPU FIX */
+    transform: translateZ(0);
     backface-visibility: hidden;
+    will-change: transform;
+
+    /* FIX hover flicker */
+    isolation: isolate;
+
+    transition: border-color 0.3s ease;
 }
 
+/* Hover border without repaint */
 .service-panel::before {
     content: "";
     position: absolute;
@@ -56,28 +71,29 @@
     border: 1px solid transparent;
     pointer-events: none;
     transition: border-color 0.3s ease;
+    will-change: border-color;
 }
 
 .service-panel:hover::before {
     border-color: var(--primary-color);
 }
 
-.services-horizontal-section.services-scrolling .service-panel::before,
-.services-horizontal-section.services-scrolling .tag,
-.services-horizontal-section.services-scrolling .arrow-right,
-.services-horizontal-section.services-scrolling .arrow-left {
+/* Disable heavy effects while scrolling */
+.services-horizontal-section.services-scrolling .service-panel,
+.services-horizontal-section.services-scrolling .tag {
     pointer-events: none;
-    transition: none;
 }
 
-/* Background & Parallax */
+/* BACKGROUND */
 .panel-bg-wrapper {
     position: absolute;
     top: 0;
     left: 0;
-    width: 120%; /* Extra width for parallax */
+    width: 120%;
     height: 100%;
     z-index: 1;
+
+    transform: translateZ(0);
     will-change: transform;
 }
 
@@ -85,20 +101,27 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+
+    /* prevent repaint */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+
     filter: brightness(0.5) contrast(1.1);
 }
 
 .panel-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 100%);
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
     z-index: 2;
 }
 
-/* Content */
+/* CONTENT */
 .panel-content {
     position: relative;
     z-index: 10;
@@ -106,12 +129,15 @@
     max-width: 1200px;
     padding: 0 5vw;
     color: #fff;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    transform: translateZ(0);
 }
 
-/* Intro Panel Specific */
+/* INTRO */
 .intro-panel {
     background: #050505;
 }
@@ -129,9 +155,6 @@
     font-family: 'Courier New', monospace;
     color: var(--primary-color);
     margin-bottom: 1rem;
-    display: block;
-    opacity: 1; /* Fallback visible if JS fails */
-    transform: none;
 }
 
 .services-section-title {
@@ -139,46 +162,45 @@
     font-weight: 800;
     line-height: 1;
     margin-bottom: 2rem;
-    opacity: 1; /* Fallback visible if JS fails */
-    transform: none;
 }
 
 .services-desc {
     font-size: 1.2rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.7);
-    opacity: 1; /* Fallback visible if JS fails */
-    transform: none;
 }
 
+/* SCROLL INDICATOR */
 .scroll-indicator {
     margin-top: 4rem;
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    opacity: 1; /* Fallback visible if JS fails */
-    transform: none;
 }
 
-.arrow-right, .arrow-left {
+.arrow-right,
+.arrow-left {
     width: 60px;
     height: 60px;
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+
+    /* smoother animation */
+    transform: translateZ(0);
     animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); border-color: rgba(255,255,255,0.3); }
-    50% { transform: scale(1.1); border-color: var(--primary-color); }
-    100% { transform: scale(1); border-color: rgba(255,255,255,0.3); }
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
 
-/* Service Panel Header */
+/* HEADER */
 .panel-header {
     margin-bottom: 2rem;
 }
@@ -188,7 +210,6 @@
     font-family: 'Courier New', monospace;
     color: var(--primary-color);
     margin-bottom: 1rem;
-    display: block;
 }
 
 .panel-title {
@@ -197,10 +218,9 @@
     line-height: 1.1;
     margin: 0;
     text-transform: uppercase;
-    letter-spacing: -1px;
 }
 
-/* Service Panel Body */
+/* BODY */
 .panel-body {
     max-width: 500px;
 }
@@ -218,6 +238,7 @@
     gap: 1rem;
 }
 
+/* TAG */
 .tag {
     padding: 0.5rem 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -226,7 +247,9 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     background: rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
+
+    transform: translateZ(0);
+    transition: background 0.25s ease, border 0.25s ease;
 }
 
 .tag:hover {
@@ -234,64 +257,66 @@
     border-color: var(--primary-color);
 }
 
-/* RTL Support */
+/* RTL */
 html[dir="rtl"] .services-panel-container {
-    flex-direction: row; /* Still horizontal */
+    flex-direction: row;
 }
 
 html[dir="rtl"] .panel-content {
     text-align: right;
 }
 
-html[dir="rtl"] .intro-panel .panel-content {
-    align-items: flex-start; /* Correct for RTL too if content is aligned right */
-}
-
-/* Responsive */
+/* MOBILE */
 @media screen and (max-width: 768px) {
     .services-horizontal-section {
         overflow: visible;
         padding: 40px 0;
     }
+
     .services-horizontal-wrapper {
         height: auto;
         display: block;
     }
+
     .services-panel-container {
         display: block;
         width: 100%;
         height: auto;
         padding: 0 16px;
     }
+
     .service-panel {
         width: 100%;
         height: auto;
         margin: 0 0 24px 0;
         border-radius: 20px;
     }
+
     .panel-bg-wrapper {
         position: relative;
         width: 100%;
         height: auto;
     }
+
     .parallax-img {
         width: 100%;
         height: auto;
         object-fit: contain;
     }
+
     .panel-overlay {
         position: static;
-        width: 100%;
-        height: auto;
         background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
     }
+
     .panel-content {
-        position: relative;
-        padding: 16px 16px 20px;
+        padding: 16px;
     }
+
     .panel-title {
         font-size: 1.8rem;
     }
+
     .services-section-title {
         font-size: 2.2rem;
     }

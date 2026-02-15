@@ -213,10 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                if (typeof window.ScrollTrigger !== 'undefined') {
+                if (typeof window !== 'undefined') {
                     requestAnimationFrame(() => {
                         try {
-                            window.ScrollTrigger.refresh();
+                            if (window.scrollManager && typeof window.scrollManager.refresh === 'function') {
+                                window.scrollManager.refresh();
+                            } else if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function') {
+                                window.ScrollTrigger.refresh();
+                            }
                         } catch (e) {
                             console.warn('ScrollTrigger refresh after filter failed:', e);
                         }

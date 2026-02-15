@@ -165,13 +165,15 @@
 
 <!-- Page Specific Animations -->
 <script>
-    if (typeof window !== 'undefined' && typeof window.safeScrollTrigger === 'function') {
-        window.safeScrollTrigger((gsap, ScrollTrigger) => {
+    (function () {
+        function initPageAnimations(gsap, ScrollTrigger) {
+            if (!gsap || !ScrollTrigger) return;
             gsap.registerPlugin(ScrollTrigger);
-            document.querySelectorAll('[data-gsap]').forEach(el => {
+            var elements = document.querySelectorAll('[data-gsap]');
+            elements.forEach(function (el) {
                 if (!el || !el.parentNode || !el.isConnected) return;
-                const effect = el.getAttribute('data-gsap');
-                const baseConfig = {
+                var effect = el.getAttribute('data-gsap');
+                var baseConfig = {
                     scrollTrigger: {
                         trigger: el,
                         start: 'top 85%',
@@ -188,30 +190,25 @@
                     gsap.from(el, Object.assign({ x: 50, opacity: 0 }, baseConfig));
                 }
             });
-        });
-    } else if (typeof gsap !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
-        document.querySelectorAll('[data-gsap]').forEach(el => {
-            if (!el || !el.parentNode || !el.isConnected) return;
-            const effect = el.getAttribute('data-gsap');
-            const baseConfig = {
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none'
-                },
-                duration: 1,
-                ease: 'power3.out'
-            };
-            if (effect === 'fade-up') {
-                gsap.from(el, Object.assign({ y: 50, opacity: 0 }, baseConfig));
-            } else if (effect === 'fade-left') {
-                gsap.from(el, Object.assign({ x: -50, opacity: 0 }, baseConfig));
-            } else if (effect === 'fade-right') {
-                gsap.from(el, Object.assign({ x: 50, opacity: 0 }, baseConfig));
+            if (window.scrollManager && typeof window.scrollManager.refresh === 'function') {
+                window.scrollManager.refresh();
+            } else if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger && typeof ScrollTrigger.refresh === 'function') {
+                ScrollTrigger.refresh();
             }
-        });
-    }
+        }
+        if (typeof window === 'undefined') return;
+        if (window.scrollManager && typeof window.scrollManager.section === 'function') {
+            window.scrollManager.section('portfolio-detail', function (gsap, ScrollTrigger) {
+                initPageAnimations(gsap, ScrollTrigger);
+            });
+        } else if (typeof window.safeScrollTrigger === 'function') {
+            window.safeScrollTrigger(function (gsap, ScrollTrigger) {
+                initPageAnimations(gsap, ScrollTrigger);
+            });
+        } else if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            initPageAnimations(gsap, ScrollTrigger);
+        }
+    })();
 
     // Success Message Handling
     const urlParams = new URLSearchParams(window.location.search);

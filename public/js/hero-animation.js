@@ -104,9 +104,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    if (window.scrollManager && typeof window.scrollManager.section === 'function') {
+        window.scrollManager.section('hero', (gsap, ScrollTrigger) => {
+            if (!gsap || !ScrollTrigger) return;
+            start();
+        });
+        return;
+    }
     if (typeof window.safeScrollTrigger === 'function') {
-        window.safeScrollTrigger(() => {
-            if (!window.gsap || !window.ScrollTrigger) return;
+        window.safeScrollTrigger((gsap, ScrollTrigger) => {
+            if (!gsap || !ScrollTrigger) return;
             start();
         });
         return;

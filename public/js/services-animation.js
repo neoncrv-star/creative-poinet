@@ -164,7 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, servicesSection);
                     setTimeout(() => {
                         try {
-                            ScrollTrigger.refresh();
+                            if (window.scrollManager && typeof window.scrollManager.refresh === 'function') {
+                                window.scrollManager.refresh();
+                            } else if (ScrollTrigger && typeof ScrollTrigger.refresh === 'function') {
+                                ScrollTrigger.refresh();
+                            }
                         } finally {
                             building = false;
                         }
@@ -344,7 +348,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }, servicesSection);
             setTimeout(() => {
                 try {
-                    ScrollTrigger.refresh();
+                    if (window.scrollManager && typeof window.scrollManager.refresh === 'function') {
+                        window.scrollManager.refresh();
+                    } else if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger && typeof ScrollTrigger.refresh === 'function') {
+                        ScrollTrigger.refresh();
+                    }
                 } finally {
                     building = false;
                 }
