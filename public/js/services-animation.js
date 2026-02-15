@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof window === 'undefined') return;
     console.log("Services Animation: init");
+    var isMobile = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+    if (isMobile) {
+        if (typeof window !== 'undefined') {
+            window.__CP_READY = window.__CP_READY || {};
+            window.__CP_READY.services = true;
+        }
+        return;
+    }
     if (typeof window.safeScrollTrigger === 'function') {
         window.safeScrollTrigger((gsap, ScrollTrigger) => {
             gsap.registerPlugin(ScrollTrigger);
@@ -164,6 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             };
             setTimeout(() => requestAnimationFrame(updateScroll), 150);
+            if (typeof window !== 'undefined') {
+                window.__CP_READY = window.__CP_READY || {};
+                window.__CP_READY.services = true;
+            }
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
@@ -340,6 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     setTimeout(() => requestAnimationFrame(updateScroll), 150);
+    if (typeof window !== 'undefined') {
+        window.__CP_READY = window.__CP_READY || {};
+        window.__CP_READY.services = true;
+    }
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);

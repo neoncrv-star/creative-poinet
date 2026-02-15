@@ -37,23 +37,48 @@
     <!-- Scripts -->
     <script>
     (function() {
-        var removePreloader = function() {
+        function removePreloader() {
             try {
                 var el = document.getElementById('cpoint-preloader');
                 if (!el || el.classList.contains('hidden')) return;
                 el.classList.add('hidden');
             } catch (e) {}
-        };
-        window.addEventListener('load', function() {
-            if (window.safeScrollTrigger) {
-                window.safeScrollTrigger(function(gsap, ScrollTrigger) {
+        }
+        function waitForScrollReady(ScrollTrigger) {
+            var doc = document;
+            var start = Date.now();
+            var MAX_WAIT = 8000;
+            var required = [];
+            if (doc.querySelector('.hero-sticky-section')) required.push('hero');
+            if (doc.querySelector('.journey-scroll-section')) required.push('journey');
+            if (doc.querySelector('.services-horizontal-section')) required.push('services');
+            function isReady() {
+                if (!required.length) return true;
+                var state = window.__CP_READY || {};
+                for (var i = 0; i < required.length; i++) {
+                    if (!state[required[i]]) return false;
+                }
+                return true;
+            }
+            function check() {
+                if (isReady() || (Date.now() - start) > MAX_WAIT) {
                     if (ScrollTrigger && ScrollTrigger.refresh) {
                         try { ScrollTrigger.refresh(); } catch (e) {}
                     }
                     removePreloader();
+                } else {
+                    setTimeout(check, 120);
+                }
+            }
+            check();
+        }
+        window.addEventListener('load', function() {
+            if (window.safeScrollTrigger) {
+                window.safeScrollTrigger(function(gsap, ScrollTrigger) {
+                    waitForScrollReady(ScrollTrigger);
                 });
             } else {
-                removePreloader();
+                waitForScrollReady(window.ScrollTrigger || null);
             }
         });
     })();

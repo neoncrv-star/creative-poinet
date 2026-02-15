@@ -98,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 { opacity: 1, y: 0, duration: 2, ease: "power2.out", force3D: true }, 
                 9.0
             );
+        if (typeof window !== 'undefined') {
+            window.__CP_READY = window.__CP_READY || {};
+            window.__CP_READY.hero = true;
+        }
     };
 
     if (typeof window.safeScrollTrigger === 'function') {

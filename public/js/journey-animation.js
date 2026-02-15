@@ -56,6 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             });
+            if (typeof window !== 'undefined') {
+                window.__CP_READY = window.__CP_READY || {};
+                window.__CP_READY.journey = true;
+            }
         });
         return;
     }
@@ -110,4 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    if (typeof window !== 'undefined') {
+        window.__CP_READY = window.__CP_READY || {};
+        window.__CP_READY.journey = true;
+    }
 });

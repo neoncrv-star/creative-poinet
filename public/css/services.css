@@ -249,19 +249,50 @@ html[dir="rtl"] .intro-panel .panel-content {
 
 /* Responsive */
 @media screen and (max-width: 768px) {
-    .panel-content {
-        padding: 0 8vw;
+    .services-horizontal-section {
+        overflow: visible;
+        padding: 40px 0;
     }
-    
-    .panel-title {
-        font-size: 2.5rem;
+    .services-horizontal-wrapper {
+        height: auto;
+        display: block;
     }
-    
-    .services-section-title {
-        font-size: 3rem;
+    .services-panel-container {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 0 16px;
     }
-    
+    .service-panel {
+        width: 100%;
+        height: auto;
+        margin: 0 0 24px 0;
+        border-radius: 20px;
+    }
     .panel-bg-wrapper {
-        width: 150%; /* More parallax space on mobile */
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    .parallax-img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+    .panel-overlay {
+        position: static;
+        width: 100%;
+        height: auto;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+    }
+    .panel-content {
+        position: relative;
+        padding: 16px 16px 20px;
+    }
+    .panel-title {
+        font-size: 1.8rem;
+    }
+    .services-section-title {
+        font-size: 2.2rem;
     }
 }
