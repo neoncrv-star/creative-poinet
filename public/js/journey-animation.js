@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             attributeFilter: ['data-theme']
         });
 
-        // 🔥 eyebrow animation
         gsap.fromTo(eyebrow,
             { opacity: 0, y: 40 },
             {
@@ -102,7 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // تنظيف عند destroy
+        if (typeof window !== 'undefined') {
+            window.__CP_READY = window.__CP_READY || {};
+            window.__CP_READY.journey = true;
+        }
+
         return () => {
             observer.disconnect();
         };
