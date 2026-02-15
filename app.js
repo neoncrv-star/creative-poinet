@@ -43,6 +43,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const compression = require('compression');
 const sequelize = require('./config/database');
+const storageService = require('./src/storage/storage.service');
 
 const app = express();
 app.disable('x-powered-by');
@@ -77,16 +78,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// Robust uploads serving with fallback (before static)
+// Serve uploads from persistent path if configured, then apply fallback/self-heal
+app.use('/uploads', express.static(storageService.UPLOAD_PATH, {
+    maxAge: '365d',
+    etag: true
+}));
+
 app.use('/uploads', (req, res, next) => {
     try {
         const reqPath = decodeURIComponent(req.path || '');
-        const uploadsDir = path.join(__dirname, 'public', 'uploads');
-        const filePath = path.join(uploadsDir, reqPath);
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-            return res.sendFile(filePath);
-        }
+        const uploadsDir = storageService.UPLOAD_PATH;
         // Self-heal: if requested extension missing but another variant exists, serve it
         const basename = path.basename(reqPath, path.extname(reqPath));
         if (basename) {
@@ -137,7 +138,7 @@ app.use((req, res, next) => {
         const p = req.path || '';
         const m = p.match(/^\/([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
         if (!m) return next();
-        const uploadsDir = path.join(__dirname, 'public', 'uploads');
+        const uploadsDir = storageService.UPLOAD_PATH;
         const filePath = path.join(uploadsDir, `${m[1]}.${m[2].toLowerCase()}`);
         if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
@@ -149,7 +150,7 @@ app.use((req, res, next) => {
     }
 });
 
-// Serve static files FIRST to avoid running middleware for assets (after uploads fallback)
+// Serve static files FIRST to avoid running middleware for assets (after uploads handling)
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '30d',
     etag: true,

@@ -17,26 +17,27 @@ const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString(
 // Helper to delete file
 // NOTE: Intentionally disabled physical deletion to keep assets immutable.
 // Files are content-addressed and never removed to avoid accidental loss.
-const deleteFile = (_filePath) => {};
+const storageService = require('../src/storage/storage.service');
 
-// Normalize stored asset paths to absolute '/uploads/...' to avoid relative resolution issues
-const normalizeAsset = (value) => {
-    if (!value) return value;
-    let v = value.trim();
-    // If full URL or data URI, keep as is
-    if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) return v;
-    // Collapse multiple slashes
-    v = v.replace(/\/{2,}/g, '/');
-    // If begins with 'uploads/', prefix with '/'
-    if (/^uploads\//i.test(v)) v = '/' + v;
-    // Ensure '/uploads/<name>' structure when pointing to uploads root
-    if (/^\/?uploads\/[^/]+$/i.test(v)) {
-        if (!v.startsWith('/')) v = '/' + v;
+const deleteFile = (stored) => {
+    try {
+        const filename = storageService.mapDbValueToLocal(stored);
+        if (!filename) return;
+        storageService.removeFile(filename);
+    } catch (e) {
+        console.error('deleteFile error', e);
     }
-    return v;
 };
 
-// Content-addressed storage: move uploaded file to <sha256>.<ext> and return '/uploads/<name>'
+// Normalize stored asset paths to canonical uploads URL based on storage service
+const normalizeAsset = (value) => {
+    if (!value) return value;
+    const filename = storageService.mapDbValueToLocal(value);
+    if (!filename) return value;
+    return storageService.toDbValue(filename);
+};
+
+// Content-addressed storage: move uploaded file to <sha256>.<ext> and return canonical storage URL
 const toHashedAsset = async (file) => {
     if (!file) return null;
     const tmpPath = file.path; // absolute or relative from process cwd
@@ -45,7 +46,7 @@ const toHashedAsset = async (file) => {
     const sha = crypto.createHash('sha256').update(buf).digest('hex').slice(0, 32);
     const ext = (path.extname(file.originalname) || path.extname(file.filename) || '').toLowerCase() || '.bin';
     const finalName = `${sha}${ext}`;
-    const uploadsDir = path.join(__dirname, '../public/uploads');
+    const uploadsDir = storageService.UPLOAD_PATH;
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
     const finalAbs = path.join(uploadsDir, finalName);
     // Write original hashed if not exists
@@ -63,12 +64,12 @@ const toHashedAsset = async (file) => {
                 await sharp(finalAbs).webp({ effort: 4, quality: 82 }).toFile(finalWebpAbs);
                 debugLog(`ASSET WEBP: ${webpName} created`);
             } catch (e) {
-                return '/uploads/' + finalName;
+                return storageService.toDbValue(finalName);
             }
         }
-        return '/uploads/' + webpName;
+        return storageService.toDbValue(webpName);
     } catch (e) {
-        return '/uploads/' + finalName;
+        return storageService.toDbValue(finalName);
     }
 };
 
@@ -312,7 +313,7 @@ exports.getSiteHealth = async (req, res) => {
 // --- Uploads Browser ---
 exports.listUploads = async (req, res) => {
     try {
-        const dir = path.join(__dirname, '../public/uploads');
+        const dir = storageService.UPLOAD_PATH;
         if (!fs.existsSync(dir)) return res.json({ files: [] });
         const allowed = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.avif', '.jfif']);
         const entries = fs.readdirSync(dir).filter(f => allowed.has(path.extname(f).toLowerCase()));
@@ -322,7 +323,7 @@ exports.listUploads = async (req, res) => {
             try { stat = fs.statSync(p); } catch {}
             return {
                 name,
-                url: '/uploads/' + name,
+                url: storageService.buildPublicUrl(name),
                 bytes: stat.size,
                 mtimeMs: stat.mtimeMs
             };
@@ -341,13 +342,14 @@ const collectAssetRefs = async () => {
         if (!value) return;
         const isExternal = /^https?:\/\//i.test(value);
         let rel = value;
-        if (!isExternal && value.startsWith('/uploads/')) {
-            rel = value.replace(/^\/+/, '');
+        if (!isExternal) {
+            const filename = storageService.mapDbValueToLocal(value);
+            rel = filename ? filename : value;
         }
         let exists = true;
         let fileSize = 0;
-        if (!isExternal && rel.startsWith('uploads/')) {
-            const abs = path.join(__dirname, '../public', rel);
+        if (!isExternal) {
+            const abs = storageService.buildAbsolutePath(rel);
             exists = fs.existsSync(abs);
             if (exists) {
                 try { fileSize = fs.statSync(abs).size; } catch {}

@@ -4,11 +4,12 @@ const adminController = require('../controllers/adminController');
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const storageService = require('../src/storage/storage.service');
 
 // Multer Config
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/uploads');
+        cb(null, storageService.UPLOAD_PATH);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
