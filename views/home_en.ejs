@@ -69,15 +69,20 @@
                             } else if (heroVideoSrc.includes('embed/')) {
                                 videoId = heroVideoSrc.split('embed/')[1].split('?')[0];
                             }
-                            heroVideoSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&enablejsapi=1&modestbranding=1&iv_load_policy=3&origin=${process.env.APP_URL || ''}`;
+                            heroVideoSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&enablejsapi=1&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&origin=${process.env.APP_URL || ''}`;
                         }
                         %>
                         
                         <% if (isYoutube) { %>
-                            <div class="yt-lite" data-id="<%= (typeof videoId !== 'undefined' && videoId) ? videoId : '' %>" style="position:relative;display:block;cursor:pointer;">
-                                <div class="lty-playbtn" style="width:68px;height:48px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);border-radius:14%;"></div>
-                                <img src="https://i.ytimg.com/vi/<%= (typeof videoId !== 'undefined' && videoId) ? videoId : '' %>/hqdefault.jpg" alt="Hero Video" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;">
-                            </div>
+                            <iframe
+                                class="hero-video"
+                                src="<%= heroVideoSrc %>"
+                                loading="lazy"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allow="autoplay; encrypted-media; picture-in-picture; web-share"
+                                frameborder="0"
+                                style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
+                            </iframe>
                         <% } else { %>
                             <video class="hero-video" playsinline muted loop autoplay preload="metadata" poster="/210.png">
                                 <source src="<%= heroVideoSrc %>" type="video/mp4">
@@ -132,28 +137,6 @@
                 </div>
             </div>
         </section>
-        <script>
-        (function(){
-          const lite = document.querySelector('.yt-lite');
-          if (!lite) return;
-          const id = lite.getAttribute('data-id');
-          function activate(){
-            if (lite.dataset.loaded) return;
-            lite.dataset.loaded = '1';
-            const iframe = document.createElement('iframe');
-            iframe.className = 'hero-video';
-            iframe.loading = 'lazy';
-            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-            iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3`;
-            iframe.style.pointerEvents = 'none';
-            lite.replaceWith(iframe);
-          }
-          lite.addEventListener('click', activate, { once: true });
-          if ('requestIdleCallback' in window) requestIdleCallback(()=>setTimeout(activate, 2000));
-          else window.addEventListener('load', ()=>setTimeout(activate, 2000), { once: true });
-        })();
-        </script>
 
         <!-- =========================
              Cinematic Horizontal Services Section

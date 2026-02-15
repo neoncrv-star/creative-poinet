@@ -28,23 +28,40 @@
     var refreshTimeout = null;
 
     function scheduleRefresh() {
-    if (!win || !win.ScrollTrigger) return;
-    if (interactionLock) return;
+        if (!win || !win.ScrollTrigger) return;
+        if (interactionLock) return;
 
-    if (refreshTimeout) {
-        clearTimeout(refreshTimeout);
-    }
-
-    refreshTimeout = setTimeout(function () {
-        try {
-            requestAnimationFrame(function () {
-                win.ScrollTrigger.refresh();
-            });
-        } catch (e) {
-            console.warn("ScrollTrigger refresh failed:", e);
+        if (refreshTimeout) {
+            clearTimeout(refreshTimeout);
         }
-    }, 220);
-}
+
+        refreshTimeout = setTimeout(function () {
+            requestAnimationFrame(function () {
+                try {
+                    var ScrollTrigger = win.ScrollTrigger;
+
+                    if (!ScrollTrigger) return;
+
+                    if (typeof ScrollTrigger.getAll === "function") {
+                        ScrollTrigger.getAll().forEach(function (t) {
+                            try {
+                                if (!t) return;
+                                var pin = t.pin || t.trigger;
+                                if (!pin) return;
+                                if (!pin.parentNode || !pin.isConnected) {
+                                    t.kill(true);
+                                }
+                            } catch (e) {}
+                        });
+                    }
+
+                    ScrollTrigger.refresh();
+                } catch (e) {
+                    console.warn("ScrollTrigger refresh failed:", e);
+                }
+            });
+        }, 220);
+    }
 
 
     function initGlobal(ScrollTrigger) {
