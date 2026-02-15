@@ -1,124 +1,122 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof window === 'undefined') return;
 
-    console.log("Services Animation: init");
-
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    if (isMobile) {
-        window.__CP_READY = window.__CP_READY || {};
-        window.__CP_READY.services = true;
-        return;
-    }
-
-    const initServices = (gsap, ScrollTrigger) => {
+    // دالة التهيئة الرئيسية لضمان عدم تكرار الكود
+    const initServicesAnimation = (gsap, ScrollTrigger) => {
         gsap.registerPlugin(ScrollTrigger);
 
         const servicesSection = document.querySelector('.services-horizontal-section');
         const panelContainer = document.querySelector('.services-panel-container');
         const panels = gsap.utils.toArray('.service-panel');
-        const isRTL = document.documentElement.getAttribute('dir') === 'rtl';
-
-        if (!servicesSection || !panelContainer || !panels.length) {
-            console.warn('Services Animation: Required elements missing');
+        
+        // التحقق من وجود العناصر
+        if (!servicesSection || !panelContainer || panels.length === 0) {
             return;
         }
 
-        /* ---------------- Intro animation ---------------- */
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: servicesSection,
-                start: "top 80%",
-                once: true
-            }
-        })
-        .to('.services-counter', { opacity: 1, y: 0, duration: 0.8 })
-        .to('.services-section-title', { opacity: 1, y: 0, duration: 0.8 }, "-=0.6")
-        .to('.services-desc', { opacity: 1, y: 0, duration: 0.8 }, "-=0.6")
-        .to('.scroll-indicator', { opacity: 1, y: 0, duration: 0.8 }, "-=0.6");
+        // إعدادات الاتجاه (RTL/LTR)
+        const isRTL = document.documentElement.getAttribute('dir') === 'rtl';
 
-
-        /* ---------------- Main scroll ---------------- */
-        let mainTween;
+        // متغير لتخزين سياق GSAP للتنظيف لاحقاً
         let ctx;
 
-        const destroy = () => {
-            if (ctx) {
-                ctx.revert();
-                ctx = null;
+        // دالة بناء الأنيميشن
+        const buildAnimation = () => {
+            // تنظيف أي أنيميشن سابق لمنع التداخل
+            if (ctx) ctx.revert();
+
+            // التحقق من وضع الجوال (يتطابق مع CSS 991px)
+            const isMobile = window.matchMedia('(max-width: 991px)').matches;
+
+            // في الجوال، نكتفي بالتنظيف ونخرج (يعمل التصميم العمودي عبر CSS)
+            if (isMobile) {
+                servicesSection.style.height = 'auto'; // ضمان عدم وجود ارتفاع ثابت
+                return;
             }
-            if (mainTween) {
-                mainTween.kill();
-                mainTween = null;
-            }
-            ScrollTrigger.getAll().forEach(st => {
-                if (st.vars?.id?.startsWith('services')) st.kill();
-            });
-        };
 
-
-        const build = () => {
-            destroy();
-
-            if (!panelContainer.isConnected) return;
-
-            const totalWidth = panelContainer.scrollWidth;
-            const scrollAmount = Math.max(0, totalWidth - window.innerWidth);
-            const xValue = isRTL ? scrollAmount : -scrollAmount;
-
+            // إنشاء سياق جديد
             ctx = gsap.context(() => {
-
-                mainTween = gsap.to(panelContainer, {
-                    x: xValue,
-                    ease: "none",
-                    force3D: true,
+                // 1. أنيميشن ظهور العناصر التعريفية (Intro)
+                const introTl = gsap.timeline({
                     scrollTrigger: {
-                        id: "services-main",
                         trigger: servicesSection,
-                        pin: true,
-                        scrub: 1,
-                        start: "top top",
-                        end: () => `+=${scrollAmount}`,
-                        invalidateOnRefresh: true,
-                        anticipatePin: 1
+                        start: "top 80%",
+                        toggleActions: "play none none reverse"
                     }
                 });
 
-                /* -------- Panels -------- */
-                panels.forEach((panel, i) => {
+                introTl.to('.services-counter', { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" })
+                       .to('.services-section-title', { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.6")
+                       .to('.services-desc', { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.6")
+                       .to('.scroll-indicator', { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.6");
 
-                    const bg = panel.querySelector('.panel-bg-wrapper');
+                // 2. حساب مسافة السكرول الأفقي
+                // نستخدم function للحصول على القيمة ديناميكياً عند تغيير الحجم
+                const getTotalWidth = () => panelContainer.offsetWidth;
+                const getScrollAmount = () => Math.max(0, getTotalWidth() - window.innerWidth);
+
+                // 3. الأنيميشن الرئيسي (Horizontal Scroll)
+                const mainTween = gsap.to(panelContainer, {
+                    x: () => isRTL ? getScrollAmount() : -getScrollAmount(),
+                    ease: "none",
+                    scrollTrigger: {
+                        id: "servicesScroll",
+                        trigger: servicesSection,
+                        pin: true,
+                        pinSpacing: true,
+                        pinReparent: true,
+                        start: "top top",
+                        end: () => `+=${getScrollAmount()}`,
+                        scrub: 1,
+                        invalidateOnRefresh: true, // مهم جداً لإعادة الحساب عند تغيير الحجم
+                        anticipatePin: 1,
+                        onUpdate: (self) => {
+                            // إضافة كلاس أثناء السكرول لتحسين الأداء (pointer-events)
+                            if (Math.abs(self.getVelocity()) > 5) {
+                                servicesSection.classList.add('services-scrolling');
+                            } else {
+                                servicesSection.classList.remove('services-scrolling');
+                            }
+                        }
+                    }
+                });
+
+                // 4. تأثيرات داخلية لكل لوحة (Parallax & Reveal)
+                panels.forEach((panel, i) => {
+                    const bgWrapper = panel.querySelector('.panel-bg-wrapper');
                     const content = panel.querySelector('.panel-content');
 
-                    if (bg) {
-                        gsap.fromTo(bg,
-                            { x: isRTL ? "-15%" : "15%" },
-                            {
+                    // تأثير البارالاكس للخلفية
+                    if (bgWrapper) {
+                        gsap.fromTo(bgWrapper, 
+                            { x: isRTL ? "-15%" : "15%" }, 
+                            { 
                                 x: isRTL ? "15%" : "-15%",
                                 ease: "none",
-                                force3D: true,
+                                force3D: true, // تحسين الأداء
                                 scrollTrigger: {
-                                    id: `services-parallax-${i}`,
                                     trigger: panel,
                                     containerAnimation: mainTween,
+                                    start: isRTL ? "right left" : "left right",
+                                    end: isRTL ? "left right" : "right left",
                                     scrub: true
                                 }
                             }
                         );
                     }
 
+                    // تأثير ظهور المحتوى (ما عدا أول لوحة لأنها تظهر مع الـ Intro)
                     if (content && !panel.classList.contains('intro-panel')) {
-                        gsap.fromTo(content,
+                        gsap.fromTo(content, 
                             { opacity: 0, y: 50, x: isRTL ? -30 : 30 },
                             {
-                                opacity: 1,
-                                y: 0,
-                                x: 0,
-                                duration: 0.9,
+                                opacity: 1, y: 0, x: 0,
+                                duration: 1,
                                 ease: "power2.out",
                                 scrollTrigger: {
-                                    id: `services-reveal-${i}`,
                                     trigger: panel,
                                     containerAnimation: mainTween,
+                                    start: isRTL ? "right 85%" : "left 85%",
                                     toggleActions: "play none none reverse"
                                 }
                             }
@@ -126,39 +124,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-            }, servicesSection);
-
-            ScrollTrigger.refresh();
+            }, servicesSection); // Scope definition
         };
 
+        const updateScroll = () => {
+            buildAnimation();
+            ScrollTrigger.refresh(true);
+        };
 
-        /* -------- Delay to ensure layout ready -------- */
-        requestAnimationFrame(() => {
-            setTimeout(build, 120);
+        let lastWidth = window.innerWidth;
+
+        buildAnimation();
+
+        window.addEventListener("resize", () => {
+            const currentWidth = window.innerWidth;
+            if (Math.abs(currentWidth - lastWidth) < 50) return;
+            lastWidth = currentWidth;
+            window.requestAnimationFrame(updateScroll);
         });
 
-
-        /* ---------------- Resize (debounced) ---------------- */
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                build();
-            }, 300);
-        });
-
-
-        window.__CP_READY = window.__CP_READY || {};
-        window.__CP_READY.services = true;
+        // إشارة للنظام بأن السكربت جاهز
+        if (typeof window !== 'undefined') {
+            window.__CP_READY = window.__CP_READY || {};
+            window.__CP_READY.services = true;
+        }
     };
 
-
-    /* -------- Safe GSAP loader -------- */
+    // نقطة الدخول: التحقق من safeScrollTrigger أو استخدام GSAP العالمي
     if (typeof window.safeScrollTrigger === 'function') {
-        window.safeScrollTrigger(initServices);
-    } else if (window.gsap && window.ScrollTrigger) {
-        initServices(window.gsap, window.ScrollTrigger);
+        window.safeScrollTrigger((gsap, ScrollTrigger) => {
+            initServicesAnimation(gsap, ScrollTrigger);
+        });
+    } else if (typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined') {
+        initServicesAnimation(window.gsap, window.ScrollTrigger);
     } else {
-        console.warn('Services Animation: GSAP unavailable');
+        console.warn('Services Animation: GSAP or ScrollTrigger not found.');
     }
 });

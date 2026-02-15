@@ -37,7 +37,7 @@
 
         refreshTimeout = setTimeout(function () {
             try {
-                win.ScrollTrigger.refresh();
+                win.ScrollTrigger.refresh(true);
             } catch (e) {
                 console.warn("ScrollTrigger refresh failed:", e);
             }
@@ -50,7 +50,7 @@
 
         try {
             ScrollTrigger.config({
-                autoRefreshEvents: "visibilitychange",
+                autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
                 limitCallbacks: true,
                 ignoreMobileResize: true
             });

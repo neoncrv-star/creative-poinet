@@ -36,7 +36,6 @@
 [data-theme="light"] {
     --bg-color: #ffffff;
     --text-color: #1a1a1a;
-    --primary-color: #ff3131;
     --secondary-color: #1a1a1a;
     --accent-color: #888888;
     --card-bg: #f5f5f5;
@@ -44,29 +43,66 @@
     --header-bg: rgba(255, 255, 255, 0.8);
 }
 
-* {
+/* ===== GLOBAL RESET ===== */
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* 🔥 Prevent ANY horizontal overflow globally */
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 🔥 Prevent flex and absolute overflow */
+body > * {
+    max-width: 100%;
+}
+
+/* 🔥 Media elements fix */
 img,
 video,
-canvas {
+canvas,
+iframe {
+    max-width: 100%;
+    height: auto;
     transform: translateZ(0);
     backface-visibility: hidden;
 }
 
+/* 🔥 Fix common GSAP and transform overflow */
+section,
+div,
+main,
+header,
+footer {
+    max-width: 100%;
+}
+
+/* 🔥 Prevent 100vw scrollbar issue */
+.full-width,
+[class*="full"],
+[class*="vw"] {
+    max-width: 100%;
+}
+
+/* ===== LINKS ===== */
 a {
     color: inherit;
     text-decoration: none;
     transition: color 0.3s ease;
 }
-
 a:visited {
     color: inherit;
 }
 
+/* ===== BODY ===== */
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -74,126 +110,97 @@ body {
     line-height: 1.6;
 }
 
-main {
-    padding-top: 0;
-}
-
-.header-logo-img {
-    height: 40px;
-    width: auto;
-    object-fit: contain;
-}
-
-.footer-logo-img {
-    height: 50px;
-    width: auto;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-
-/* Container */
+/* ===== CONTAINER ===== */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Header */
+/* ===== HEADER ===== */
 header {
     padding: 15px 0;
     border-bottom: 1px solid var(--border-color);
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+    inset-inline: 0;
     z-index: 1000;
     background: var(--header-bg);
     backdrop-filter: blur(15px);
     transition: transform 0.4s ease, background 0.3s ease;
-
     will-change: transform;
-    transform: translateZ(0);
 }
 
 header.header-hidden {
     transform: translateY(-100%);
 }
-
 header.header-visible {
     transform: translateY(0);
 }
 
-/* Sections */
+/* ===== SECTIONS ===== */
 section {
     padding: 60px 0;
     border-bottom: 1px solid #222;
+    overflow: hidden; /* 🔥 prevent accidental overflow */
 }
 
-/* Partners */
+/* ===== PARTNERS ===== */
 .partner-item img {
     max-width: 200px;
     max-height: 80px;
     object-fit: contain;
-
     filter: grayscale(1) brightness(0.2);
     opacity: 0.6;
-
     transition: opacity 0.4s ease, filter 0.4s ease;
-
-    transform: translateZ(0);
-    will-change: opacity, filter;
 }
-
 .partner-item:hover img {
     opacity: 1;
     filter: grayscale(0) brightness(1);
 }
 
-/* Blog */
+/* ===== BLOG ===== */
+.blog-image {
+    overflow: hidden;
+}
 .blog-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-
     transition: transform 0.6s ease;
-
-    transform: translateZ(0);
-    will-change: transform;
 }
-
 .blog-card:hover .blog-image img {
     transform: scale(1.1);
 }
 
-/* Marquee */
+/* ===== MARQUEE ===== */
+.marquee {
+    overflow: hidden;
+}
 .marquee-content {
     display: flex;
-    animation: marquee 20s linear infinite;
     gap: 50px;
-
+    animation: marquee 20s linear infinite;
     will-change: transform;
-    transform: translate3d(0,0,0);
 }
-
 @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
 }
 
-/* Footer */
+/* ===== FOOTER ===== */
 .footer-bottom {
     display: flex;
     justify-content: space-between;
 }
 
-/* Buttons */
+/* ===== BUTTON ===== */
 .btn {
     display: inline-block;
     padding: 10px 20px;
     border: 1px solid #fff;
 }
 
-/* Preloader */
+/* ===== PRELOADER ===== */
 #cpoint-preloader {
     position: fixed;
     inset: 0;
@@ -214,34 +221,21 @@ section {
 .cpoint-spinner {
     width: 96px;
     height: 96px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     animation: cpoint-spin 1.2s linear infinite;
-    transform-origin: center center;
 }
-
 .cpoint-spinner img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    display: block;
-    pointer-events: none;
 }
 
 @keyframes cpoint-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* ===== SCROLL PERFORMANCE FIX ===== */
-html.is-scrolling *,
-html.is-scrolling *::before,
-html.is-scrolling *::after {
+html.is-scrolling * {
     transition: none !important;
     animation: none !important;
 }
