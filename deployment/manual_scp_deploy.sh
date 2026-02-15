@@ -9,12 +9,14 @@ if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_HOST" ] || [ -z "$REMOTE_PATH" ]; then
   exit 1
 fi
 FOLDERS=("config" "controllers" "middleware" "models" "public" "routes" "views")
-FILES=("app.js" "package.json")
+FILES=("app.js" "package.json" ".env.prod" ".env")
 for folder in "${FOLDERS[@]}"; do
   scp -P "$REMOTE_PORT" -r "$folder" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
 done
 for file in "${FILES[@]}"; do
-  scp -P "$REMOTE_PORT" "$file" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
+  if [ -f "$file" ]; then
+    scp -P "$REMOTE_PORT" "$file" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
+  fi
 done
 ssh -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" "mkdir -p $REMOTE_PATH/tmp ; touch $REMOTE_PATH/tmp/restart.txt"
 echo "Done"

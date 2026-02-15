@@ -13,9 +13,11 @@ $folders = @("config","controllers","middleware","models","public","routes","vie
 foreach ($folder in $folders) {
   scp -P $SSH_PORT -r "$folder" "$REMOTE_USER@$REMOTE_HOST:$TARGET_DIR/"
 }
-$files = @("app.js","package.json")
+$files = @("app.js","package.json",".env.prod",".env")
 foreach ($file in $files) {
-  scp -P $SSH_PORT $file "$REMOTE_USER@$REMOTE_HOST:$TARGET_DIR/$file"
+  if (Test-Path $file) {
+    scp -P $SSH_PORT $file "$REMOTE_USER@$REMOTE_HOST:$TARGET_DIR/$file"
+  }
 }
 ssh -p $SSH_PORT "$REMOTE_USER@$REMOTE_HOST" "mkdir -p $TARGET_DIR/tmp ; touch $TARGET_DIR/tmp/restart.txt"
 Write-Host "Done" -ForegroundColor Green

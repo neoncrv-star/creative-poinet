@@ -39,41 +39,6 @@ const tailDebugLog = (lines = 30) => {
     }
 };
 
-const loadEnv = () => {
-    const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
-    const envProd = path.join(__dirname, '.env.prod');
-    const envDev = path.join(__dirname, '.env');
-    const legacy = [
-        '/home/u494530316/domains/cpoint-sa.com/public_html/.env.prod',
-        '/home/u494530316/domains/cpoint-sa.com/public_html/.env'
-    ];
-    const ordered = [];
-    if (isProd) {
-        if (fs.existsSync(envProd)) ordered.push(envProd);
-        if (fs.existsSync(envDev)) ordered.push(envDev);
-    } else {
-        if (fs.existsSync(envDev)) ordered.push(envDev);
-        // If no .env exists locally but .env.prod is present (e.g., misconfigured prod), load it
-        if (!fs.existsSync(envDev) && fs.existsSync(envProd)) ordered.push(envProd);
-    }
-    legacy.forEach(f => ordered.push(f));
-    for (const file of ordered) {
-        try {
-            if (fs.existsSync(file)) {
-                require('dotenv').config({ path: file, override: true });
-                debugLog(`Loaded environment from: ${file}`);
-                console.log(`Loaded environment from: ${file}`);
-                // Stop after first real file in project root
-                if (file === envProd || file === envDev) break;
-            }
-        } catch (e) {
-            debugLog(`env load error for ${file}: ${e && e.message}`);
-        }
-    }
-};
-
-loadEnv();
-
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const compression = require('compression');
@@ -212,6 +177,51 @@ app.get('/healthz', (req, res) => {
         res.end(JSON.stringify(info));
     } catch (e) {
         res.status(500).json({ status: 'error' });
+    }
+});
+
+app.get('/health/db', async (req, res) => {
+    const start = process.hrtime.bigint();
+    let active = null;
+    let idle = null;
+    try {
+        await sequelize.authenticate();
+        const latencyMs = Number((process.hrtime.bigint() - start) / 1000000n);
+        try {
+            if (sequelize && sequelize.connectionManager && sequelize.connectionManager.pool) {
+                const pool = sequelize.connectionManager.pool;
+                if (typeof pool.borrowed === 'function') {
+                    active = pool.borrowed();
+                } else if (typeof pool.used === 'number') {
+                    active = pool.used;
+                }
+                if (typeof pool.available === 'function') {
+                    idle = pool.available();
+                } else if (typeof pool.free === 'number') {
+                    idle = pool.free;
+                }
+            }
+        } catch (e) {
+            debugLog('DB health pool read error: ' + (e && e.message));
+        }
+        const payload = {
+            status: 'ok',
+            latency: `${latencyMs} ms`,
+            pool: { active, idle }
+        };
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Robots-Tag', 'noindex');
+        res.status(200).json(payload);
+    } catch (err) {
+        const latencyMs = Number((process.hrtime.bigint() - start) / 1000000n);
+        const msg = `DB health check failed: ${err && err.message}`;
+        debugLog(msg);
+        console.error(msg);
+        res.status(500).json({
+            status: 'error',
+            latency: `${latencyMs} ms`,
+            pool: { active: null, idle: null }
+        });
     }
 });
 
@@ -506,82 +516,110 @@ const syncOptions = {
     force: (process.env.DB_SYNC_FORCE || 'false').toLowerCase() === 'true'
 };
 
-sequelize.sync(syncOptions)
-    .then(async () => {
-        const msg = `Database synced successfully (MySQL)`;
+async function ensureMySQLConnection(retries = 10) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const t0 = process.hrtime.bigint();
+            await sequelize.authenticate();
+            const latencyMs = Number((process.hrtime.bigint() - t0) / 1000000n);
+            const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
+            const info = {
+                host: process.env.DB_HOST,
+                name: process.env.DB_NAME,
+                dialect,
+                latency: `${latencyMs} ms`
+            };
+            const msg = `✅ MySQL connection established in ${latencyMs}ms`;
+            debugLog(`${msg} host=${info.host} db=${info.name} dialect=${info.dialect}`);
+            console.log('📊 Database:', info);
+            return latencyMs;
+        } catch (err) {
+            const warn = `⚠️ Waiting for MySQL... ${err && err.message}`;
+            debugLog(warn);
+            console.error('⚠️ Waiting for MySQL...', err && err.message);
+            await new Promise(r => setTimeout(r, 3000));
+        }
+    }
+    const errMsg = '❌ MySQL is not reachable. Server stopped.';
+    debugLog(errMsg);
+    console.error(errMsg);
+    process.exit(1);
+}
+
+async function startServer() {
+    const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
+    if (dialect !== 'mysql') {
+        const msg = `❌ Invalid DB dialect at runtime: ${dialect}`;
         debugLog(msg);
-        console.log(msg);
-        const server = app.listen(port, () => {
-            const startMsg = `Server is running at http://localhost:${port}`;
-            debugLog(startMsg);
-            console.log(startMsg);
-            // Prewarm critical pages cache to minimize first-hit latency
+        console.error(msg);
+        process.exit(1);
+    }
+
+    await ensureMySQLConnection(10);
+
+    await sequelize.sync(syncOptions);
+    const msg = 'Database synced successfully (MySQL)';
+    debugLog(msg);
+    console.log(msg);
+
+    const server = app.listen(port, () => {
+        const startMsg = `Server is running at http://localhost:${port}`;
+        debugLog(startMsg);
+        console.log(startMsg);
+        try {
+            const http = require('http');
+            const opts = { host: '127.0.0.1', port, timeout: 2000 };
+            http.get({ ...opts, path: '/' }).on('error', ()=>{});
+            http.get({ ...opts, path: '/en' }).on('error', ()=>{});
+            http.get({ ...opts, path: '/healthz' }).on('error', ()=>{});
+            http.get({ ...opts, path: '/health/db' }).on('error', ()=>{});
+        } catch (e) {
+            debugLog('prewarm error: ' + (e && e.message));
+        }
+        setTimeout(async () => {
             try {
-                const http = require('http');
-                const opts = { host: '127.0.0.1', port, timeout: 2000 };
-                http.get({ ...opts, path: '/' }).on('error', ()=>{});
-                http.get({ ...opts, path: '/en' }).on('error', ()=>{});
-                http.get({ ...opts, path: '/healthz' }).on('error', ()=>{});
-            } catch (e) {
-                debugLog('prewarm error: ' + (e && e.message));
-            }
-            setTimeout(async () => {
-                try {
-                    const rows = await Service.findAll();
-                    let c = 0;
-                    for (const s of rows) {
-                        const v = s.image;
-                        if (!v) continue;
-                        if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) continue;
-                        let vv = String(v).trim().replace(/\/{2,}/g, '/');
-                        if (!vv.startsWith('/uploads/')) {
-                            if (vv.startsWith('uploads/')) vv = '/' + vv;
-                            else {
-                                const m = vv.match(/^([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
-                                vv = m ? `/uploads/${m[1]}.${m[2].toLowerCase()}` : `/uploads/${vv.replace(/^\//,'')}`;
-                            }
-                        }
-                        if (vv !== v) {
-                            await s.update({ image: vv });
-                            c++;
+                const rows = await Service.findAll();
+                let c = 0;
+                for (const s of rows) {
+                    const v = s.image;
+                    if (!v) continue;
+                    if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) continue;
+                    let vv = String(v).trim().replace(/\/{2,}/g, '/');
+                    if (!vv.startsWith('/uploads/')) {
+                        if (vv.startsWith('uploads/')) vv = '/' + vv;
+                        else {
+                            const m = vv.match(/^([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
+                            vv = m ? `/uploads/${m[1]}.${m[2].toLowerCase()}` : `/uploads/${vv.replace(/^\//,'')}`;
                         }
                     }
-                    if (c > 0) debugLog(`normalized Service.image ${c}`);
-                } catch (e) {
-                    debugLog('service normalize error: ' + (e && e.message));
+                    if (vv !== v) {
+                        await s.update({ image: vv });
+                        c++;
+                    }
                 }
-            }, 1200);
-        });
-        // Tune server timeouts and keep-alive to avoid ghost Pending while preventing hangs
-        try {
-            server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
-            server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
-            // Note: Node has no official server.requestTimeout; keep custom res.setTimeout used earlier
-            // but keep this value for reference/compatibility
-            server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
-            debugLog(`Server timeouts set: keepAlive=${server.keepAliveTimeout} headers=${server.headersTimeout} request=${server.requestTimeout}`);
-        } catch (e) {
-            debugLog('timeout tune error: ' + (e && e.message));
-        }
-    })
-    .catch(err => {
-        const errMsg = `Database sync error (degraded mode): ${err && err.message}`;
-        debugLog(errMsg);
-        console.error(errMsg, err);
-        // Start server in degraded mode to avoid downtime; pages will fallback where possible
-        const server = app.listen(port, () => {
-            const startMsg = `Server (degraded) running at http://localhost:${port}`;
-            debugLog(startMsg);
-            console.log(startMsg);
-        });
-        try {
-            server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
-            server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
-            server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
-        } catch (e) {
-            debugLog('timeout tune error (degraded): ' + (e && e.message));
-        }
+                if (c > 0) debugLog(`normalized Service.image ${c}`);
+            } catch (e) {
+                debugLog('service normalize error: ' + (e && e.message));
+            }
+        }, 1200);
     });
+
+    try {
+        server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS || 65000);
+        server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS || 70000);
+        server.requestTimeout = Number(process.env.REQ_TIMEOUT_MS || 15000);
+        debugLog(`Server timeouts set: keepAlive=${server.keepAliveTimeout} headers=${server.headersTimeout} request=${server.requestTimeout}`);
+    } catch (e) {
+        debugLog('timeout tune error: ' + (e && e.message));
+    }
+}
+
+startServer().catch(err => {
+    const errMsg = `Database startup error: ${err && err.message}`;
+    debugLog(errMsg);
+    console.error(errMsg, err);
+    process.exit(1);
+});
 
 // Export app for tests or external process managers
 module.exports = app;
