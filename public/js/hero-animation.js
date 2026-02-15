@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Initial Load Animations ---
         const loadTl = gsap.timeline();
         loadTl
-            .fromTo(whiteDot, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.3)" })
-            .fromTo(initialText, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.5");
+            .fromTo(whiteDot, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.3)", force3D: true })
+            .fromTo(initialText, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power2.out", force3D: true }, "-=0.5");
 
         // --- Scroll Animation Timeline ---
         // Use a longer end value to create virtual scroll space
@@ -53,17 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Force Initial States immediately
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
         const initialTextColor = currentTheme === 'light' ? "#000" : "#fff";
-        gsap.set(contentOverlay, { opacity: 0, y: 50 });
+        gsap.set(contentOverlay, { opacity: 0, y: 50, force3D: true });
         gsap.set(maskContainer, { clipPath: "circle(0% at 50% 50%)", webkitClipPath: "circle(0% at 50% 50%)" });
         gsap.set(whiteDot, { scale: 1, opacity: 1 });
         gsap.set(redDot, { scale: 0, opacity: 1 });
         gsap.set(initialText, { opacity: 1, color: initialTextColor, fontWeight: "300", scale: 1, y: 0 });
         scrollTl
             .to(scrollMouse, { opacity: 0, duration: 0.5 }, 0)
-            .to(whiteDot, { scale: 150, duration: 2, ease: "none" }, 0)
+            .to(whiteDot, { scale: 150, duration: 2, ease: "none", force3D: true }, 0)
             .fromTo(redDot, 
                 { scale: 0 },
-                { scale: 300, duration: 3, ease: "none" }, 
+                { scale: 300, duration: 3, ease: "none", force3D: true }, 
                 1.5 
             )
             .to(initialText, { 
@@ -72,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 scale: 1.5,
                 fontWeight: "900",
                 duration: 1,
-                ease: "none"
+                ease: "none",
+                force3D: true
             }, 2.0)
             .to(maskContainer, 
                 { 
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 4.5 
             )
-            .to(initialText, { opacity: 0, scale: 0, duration: 0.5 }, 4.5)
+            .to(initialText, { opacity: 0, scale: 0, duration: 0.5, force3D: true }, 4.5)
             .to(maskContainer, 
                 { 
                     clipPath: "circle(150% at 50% 50%)", 
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 5.5 
             )
             .to(contentOverlay, 
-                { opacity: 1, y: 0, duration: 2, ease: "power2.out" }, 
+                { opacity: 1, y: 0, duration: 2, ease: "power2.out", force3D: true }, 
                 9.0
             );
     };

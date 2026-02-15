@@ -722,3 +722,38 @@ footer {
     background: #fff;
     color: #000;
 }
+
+[data-gsap] {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+#cpoint-preloader {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+#cpoint-preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.cpoint-spinner {
+    width: 120px;
+    height: 120px;
+    animation: cpoint-spin 1.4s linear infinite;
+}
+
+@keyframes cpoint-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

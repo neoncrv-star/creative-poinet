@@ -44,10 +44,30 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     transition: border-color 0.3s ease;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
 }
 
-.service-panel:hover {
+.service-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    pointer-events: none;
+    transition: border-color 0.3s ease;
+}
+
+.service-panel:hover::before {
     border-color: var(--primary-color);
+}
+
+.services-horizontal-section.services-scrolling .service-panel::before,
+.services-horizontal-section.services-scrolling .tag,
+.services-horizontal-section.services-scrolling .arrow-right,
+.services-horizontal-section.services-scrolling .arrow-left {
+    pointer-events: none;
+    transition: none;
 }
 
 /* Background & Parallax */

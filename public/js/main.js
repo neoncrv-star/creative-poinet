@@ -94,47 +94,97 @@ document.addEventListener('DOMContentLoaded', () => {
             gsap.registerPlugin(ScrollTrigger);
             const animateElements = document.querySelectorAll('[data-gsap]');
             if (!animateElements.length) return;
+            const fadeUp = [];
+            const fadeLeft = [];
+            const fadeRight = [];
             animateElements.forEach(el => {
                 if (!el || !el.parentNode || !el.isConnected) return;
-                const animationType = el.getAttribute('data-gsap');
-                if (animationType === 'fade-up') {
-                    gsap.from(el, {
-                        y: 50,
-                        opacity: 0,
-                        duration: 1,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 85%',
-                            toggleActions: 'play none none none'
-                        }
-                    });
-                } else if (animationType === 'fade-left') {
-                    gsap.from(el, {
-                        x: -50,
-                        opacity: 0,
-                        duration: 1,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 85%',
-                            toggleActions: 'play none none none'
-                        }
-                    });
-                } else if (animationType === 'fade-right') {
-                    gsap.from(el, {
-                        x: 50,
-                        opacity: 0,
-                        duration: 1,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 85%',
-                            toggleActions: 'play none none none'
-                        }
-                    });
-                }
+                const type = el.getAttribute('data-gsap');
+                if (type === 'fade-up') fadeUp.push(el);
+                else if (type === 'fade-left') fadeLeft.push(el);
+                else if (type === 'fade-right') fadeRight.push(el);
             });
+            if (fadeUp.length) {
+                ScrollTrigger.batch(fadeUp, {
+                    start: 'top 85%',
+                    onEnter: batch => {
+                        gsap.from(batch, {
+                            y: 50,
+                            opacity: 0,
+                            duration: 1,
+                            ease: 'power3.out',
+                            force3D: true,
+                            stagger: 0.12,
+                            overwrite: 'auto'
+                        });
+                    },
+                    onEnterBack: batch => {
+                        gsap.from(batch, {
+                            y: 50,
+                            opacity: 0,
+                            duration: 1,
+                            ease: 'power3.out',
+                            force3D: true,
+                            stagger: 0.12,
+                            overwrite: 'auto'
+                        });
+                    }
+                });
+            }
+            if (fadeLeft.length) {
+                ScrollTrigger.batch(fadeLeft, {
+                    start: 'top 85%',
+                    onEnter: batch => {
+                        gsap.from(batch, {
+                            x: -50,
+                            opacity: 0,
+                            duration: 1,
+                            ease: 'power3.out',
+                            force3D: true,
+                            stagger: 0.12,
+                            overwrite: 'auto'
+                        });
+                    },
+                    onEnterBack: batch => {
+                        gsap.from(batch, {
+                            x: -50,
+                            opacity: 0,
+                            duration: 1,
+                            ease: 'power3.out',
+                            force3D: true,
+                            stagger: 0.12,
+                            overwrite: 'auto'
+                        });
+                    }
+                });
+            }
+            if (fadeRight.length) {
+                ScrollTrigger.batch(fadeRight, {
+                    start: 'top 85%',
+                    onEnter: batch => {
+                        gsap.from(batch, {
+                            x: 50,
+                            opacity: 0,
+                            duration: 1,
+                            ease: 'power3.out',
+                            force3D: true,
+                            stagger: 0.12,
+                            overwrite: 'auto'
+                        });
+                    },
+                    onEnterBack: batch => {
+                        gsap.from(batch, {
+                            x: 50,
+                            opacity: 0,
+                            duration: 1,
+                            ease: 'power3.out',
+                            force3D: true,
+                            stagger: 0.12,
+                            overwrite: 'auto'
+                        });
+                    }
+                });
+            }
         });
     }
 

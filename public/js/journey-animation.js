@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 opacity: 1,
                 y: 0,
                 duration: 1,
-                ease: "power2.out"
+                ease: "power2.out",
+                force3D: true
             });
 
             lines.forEach((line) => {
@@ -33,25 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (!line || !line.parentNode || !line.isConnected) return;
                         const currentTheme = document.documentElement.getAttribute('data-theme');
                         const activeColor = currentTheme === 'light' ? "#000" : "#fff";
-                        gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5 });
+                        gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5, force3D: true });
                     },
                     onLeave: () => {
                         if (!line || !line.parentNode || !line.isConnected) return;
                         const currentTheme = document.documentElement.getAttribute('data-theme');
                         const inactiveColor = currentTheme === 'light' ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)";
-                        gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5 });
+                        gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5, force3D: true });
                     },
                     onEnterBack: () => {
                         if (!line || !line.parentNode || !line.isConnected) return;
                         const currentTheme = document.documentElement.getAttribute('data-theme');
                         const activeColor = currentTheme === 'light' ? "#000" : "#fff";
-                        gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5 });
+                        gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5, force3D: true });
                     },
                     onLeaveBack: () => {
                         if (!line || !line.parentNode || !line.isConnected) return;
                         const currentTheme = document.documentElement.getAttribute('data-theme');
                         const inactiveColor = currentTheme === 'light' ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)";
-                        gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5 });
+                        gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5, force3D: true });
                     }
                 });
             });
@@ -73,7 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 1,
         y: 0,
         duration: 1,
-        ease: "power2.out"
+        ease: "power2.out",
+        force3D: true
     });
     lines.forEach((line) => {
         if (!line || !line.parentNode || !line.isConnected) return;
@@ -86,25 +88,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!line || !line.parentNode || !line.isConnected) return;
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 const activeColor = currentTheme === 'light' ? "#000" : "#fff";
-                gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5 });
+                gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5, force3D: true });
             },
             onLeave: () => {
                 if (!line || !line.parentNode || !line.isConnected) return;
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 const inactiveColor = currentTheme === 'light' ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)";
-                gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5 });
+                gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5, force3D: true });
             },
             onEnterBack: () => {
                 if (!line || !line.parentNode || !line.isConnected) return;
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 const activeColor = currentTheme === 'light' ? "#000" : "#fff";
-                gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5 });
+                gsap.to(line, { opacity: 1, color: activeColor, filter: "blur(0px)", duration: 0.5, force3D: true });
             },
             onLeaveBack: () => {
                 if (!line || !line.parentNode || !line.isConnected) return;
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 const inactiveColor = currentTheme === 'light' ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.1)";
-                gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5 });
+                gsap.to(line, { opacity: 0.1, color: inactiveColor, filter: "blur(2px)", duration: 0.5, force3D: true });
             }
         });
     });

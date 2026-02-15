@@ -193,6 +193,27 @@
     <script src="/js/gsap-safe.js?v=<%= assetVersion %>" defer></script>
 </head>
 <body class="<%= typeof isEn !== 'undefined' && isEn ? 'lang-en' : 'lang-ar' %>">
+    <div id="cpoint-preloader">
+        <div class="cpoint-spinner">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle cx="100" cy="100" r="24" fill="#e30613"></circle>
+                <g>
+                    <path d="M100 0 L112 60 A60 60 0 0 0 88 60 Z" fill="#2c2c2c"></path>
+                    <path d="M157 18 L130 70 A60 60 0 0 0 148 82 Z" fill="#e30613"></path>
+                    <path d="M194 63 L136 92 A60 60 0 0 0 144 112 Z" fill="#2c2c2c"></path>
+                    <path d="M200 120 L140 124 A60 60 0 0 0 136 144 Z" fill="#e30613"></path>
+                    <path d="M182 177 L132 136 A60 60 0 0 0 116 152 Z" fill="#2c2c2c"></path>
+                    <path d="M137 194 L112 140 A60 60 0 0 0 92 148 Z" fill="#e30613"></path>
+                    <path d="M80 200 L88 140 A60 60 0 0 0 68 136 Z" fill="#2c2c2c"></path>
+                    <path d="M23 182 L70 130 A60 60 0 0 0 52 118 Z" fill="#e30613"></path>
+                    <path d="M0 120 L60 120 A60 60 0 0 0 64 100 Z" fill="#2c2c2c"></path>
+                    <path d="M6 60 L64 92 A60 60 0 0 0 72 72 Z" fill="#e30613"></path>
+                    <path d="M43 17 L80 70 A60 60 0 0 0 96 56 Z" fill="#2c2c2c"></path>
+                    <path d="M100 0 L104 60 A60 60 0 0 0 124 64 Z" fill="#e30613"></path>
+                </g>
+            </svg>
+        </div>
+    </div>
     <header>
         <div class="container header-container">
             <div class="logo">

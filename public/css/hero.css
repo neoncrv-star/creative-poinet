@@ -5,7 +5,9 @@
     width: 100%;
     background-color: var(--bg-color, #000);
     z-index: 10;
-    overflow: hidden; /* Ensure no scrollbars within the section */
+    overflow: hidden;
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 /* Theme adaptation for Hero section */
@@ -172,7 +174,9 @@ iframe.hero-video {
     background: rgba(0,0,0,0.3);
     opacity: 0;
     padding: 20px;
-    pointer-events: auto; /* Enable interaction for buttons */
+    pointer-events: auto;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
 }
 
 .hero-title {

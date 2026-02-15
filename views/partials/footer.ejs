@@ -35,6 +35,29 @@
     </footer>
 
     <!-- Scripts -->
+    <script>
+    (function() {
+        var removePreloader = function() {
+            try {
+                var el = document.getElementById('cpoint-preloader');
+                if (!el || el.classList.contains('hidden')) return;
+                el.classList.add('hidden');
+            } catch (e) {}
+        };
+        window.addEventListener('load', function() {
+            if (window.safeScrollTrigger) {
+                window.safeScrollTrigger(function(gsap, ScrollTrigger) {
+                    if (ScrollTrigger && ScrollTrigger.refresh) {
+                        try { ScrollTrigger.refresh(); } catch (e) {}
+                    }
+                    removePreloader();
+                });
+            } else {
+                removePreloader();
+            }
+        });
+    })();
+    </script>
     <script src="/js/main.js?v=<%= assetVersion %>" defer></script>
     <script src="/js/menu.js?v=<%= assetVersion %>" defer></script>
     

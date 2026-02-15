@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let mainTween;
             let building = false;
             let ctx = null;
+            let scrollStateTimeout = null;
             const cleanup = () => {
                 try {
                     building = false;
@@ -93,7 +94,24 @@ document.addEventListener('DOMContentLoaded', () => {
                                 end: () => `+=${scrollAmount}`,
                                 scrub: 1,
                                 invalidateOnRefresh: true,
-                                anticipatePin: 1
+                                anticipatePin: 1,
+                                onToggle: (self) => {
+                                    if (!servicesSection) return;
+                                    if (self.isActive) {
+                                        servicesSection.classList.add('services-active');
+                                    } else {
+                                        servicesSection.classList.remove('services-active');
+                                        servicesSection.classList.remove('services-scrolling');
+                                    }
+                                },
+                                onUpdate: () => {
+                                    if (!servicesSection || !servicesSection.classList.contains('services-active')) return;
+                                    servicesSection.classList.add('services-scrolling');
+                                    clearTimeout(scrollStateTimeout);
+                                    scrollStateTimeout = setTimeout(() => {
+                                        servicesSection.classList.remove('services-scrolling');
+                                    }, 150);
+                                }
                             }
                         });
                         panels.forEach((panel, i) => {
@@ -190,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let mainTween;
     let building = false;
     let ctx = null;
+    let scrollStateTimeout = null;
     const cleanup = () => {
         try {
             building = false;
@@ -239,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainTween = gsap.to(panelContainer, {
                     x: xValue,
                     ease: "none",
+                    force3D: true,
                     scrollTrigger: {
                         id: "servicesScroll",
                         trigger: servicesSection,
@@ -247,8 +267,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         start: "top top",
                         end: () => `+=${scrollAmount}`,
                         scrub: 1,
-                        invalidateOnRefresh: true,
-                        anticipatePin: 1
+                        invalidateOnRefresh: false,
+                        anticipatePin: 1,
+                        onToggle: (self) => {
+                            if (!servicesSection) return;
+                            if (self.isActive) {
+                                servicesSection.classList.add('services-active');
+                            } else {
+                                servicesSection.classList.remove('services-active');
+                                servicesSection.classList.remove('services-scrolling');
+                            }
+                        },
+                        onUpdate: () => {
+                            if (!servicesSection || !servicesSection.classList.contains('services-active')) return;
+                            servicesSection.classList.add('services-scrolling');
+                            clearTimeout(scrollStateTimeout);
+                            scrollStateTimeout = setTimeout(() => {
+                                servicesSection.classList.remove('services-scrolling');
+                            }, 150);
+                        }
                     }
                 });
                 panels.forEach((panel, i) => {
@@ -261,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             { 
                                 x: isRTL ? "15%" : "-15%",
                                 ease: "none",
+                                force3D: true,
                                 scrollTrigger: {
                                     id: `service-parallax-${i}`,
                                     trigger: panel,
@@ -279,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 opacity: 1, y: 0, x: 0,
                                 duration: 1,
                                 ease: "power2.out",
+                                force3D: true,
                                 scrollTrigger: {
                                     id: `service-reveal-${i}`,
                                     trigger: panel,
