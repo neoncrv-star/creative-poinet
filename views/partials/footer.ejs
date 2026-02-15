@@ -10,19 +10,69 @@
             </div>
         </div>
         <div class="container">
-            <div class="footer-bottom">
-                <div class="footer-logo">
-                    <img src="/210.png" alt="Creative Point Logo" class="footer-logo-img">
+            <div class="footer-shell">
+                <div class="footer-top">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <img src="/210.png" alt="Creative Point Logo" class="footer-logo-img">
+                        </div>
+                        <div class="footer-brand-text">
+                            <p class="footer-title"><%= typeof isEn !== 'undefined' && isEn ? 'Creative Point Agency' : 'وكالة نقطة إبداعية' %></p>
+                            <p class="footer-subtitle">
+                                <%= typeof isEn !== 'undefined' && isEn
+                                    ? 'Design, strategy and digital experiences from a single point of impact.'
+                                    : 'تصميم واستراتيجية وتجارب رقمية تنطلق من نقطة تأثير واحدة.' %>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="footer-nav">
+                        <h4 class="footer-nav-title"><%= typeof isEn !== 'undefined' && isEn ? 'Navigate' : 'تصفح' %></h4>
+                        <div class="footer-nav-links">
+                            <% if(typeof isEn !== 'undefined' && isEn) { %>
+                                <a href="/en#journey">Journey</a>
+                                <a href="/en#services">Services</a>
+                                <a href="/en/portfolio">Our Work</a>
+                                <a href="/en#blog">Blog</a>
+                                <a href="/en#contact">Contact</a>
+                            <% } else { %>
+                                <a href="/#journey">رحلتنا</a>
+                                <a href="/#services">خدماتنا</a>
+                                <a href="/portfolio">أعمالنا</a>
+                                <a href="/#blog">المدونة</a>
+                                <a href="/#contact">تواصل معنا</a>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="footer-meta">
+                        <h4 class="footer-nav-title"><%= typeof isEn !== 'undefined' && isEn ? 'Stay Connected' : 'ابق على تواصل' %></h4>
+                        <div class="footer-contact">
+                            <p>
+                                <span><i class="ri-phone-line"></i></span>
+                                <span dir="ltr">+966 56 839 49 45</span>
+                            </p>
+                            <p>
+                                <span><i class="ri-mail-line"></i></span>
+                                <span>info@cpoint-sa.com</span>
+                            </p>
+                        </div>
+                        <div class="footer-lang-social">
+                            <div class="footer-links">
+                                <% if(typeof isEn !== 'undefined' && isEn) { %>
+                                    <a href="/">العربية</a>
+                                <% } else { %>
+                                    <a href="/en">English</a>
+                                <% } %>
+                            </div>
+                            <div class="footer-social">
+                                <a href="#"><i class="ri-instagram-line"></i></a>
+                                <a href="#"><i class="ri-twitter-x-line"></i></a>
+                                <a href="#"><i class="ri-linkedin-box-line"></i></a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="footer-copyright">
+                <div class="footer-bottom">
                     <p>&copy; <%= new Date().getFullYear() %> Creative Point. <%= typeof isEn !== 'undefined' && isEn ? 'All rights reserved.' : 'جميع الحقوق محفوظة.' %></p>
-                </div>
-                <div class="footer-links">
-                    <% if(typeof isEn !== 'undefined' && isEn) { %>
-                        <a href="/">العربية</a>
-                    <% } else { %>
-                        <a href="/en">English</a>
-                    <% } %>
                 </div>
             </div>
         </div>
@@ -30,7 +80,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; <%= new Date().getFullYear() %> Creative Point. <%= typeof isEn !== 'undefined' && isEn ? 'All rights reserved.' : 'جميع الحقوق محفوظة.' %></p>
+            <p class="footer-mini-copy">&copy; <%= new Date().getFullYear() %> Creative Point. <%= typeof isEn !== 'undefined' && isEn ? 'All rights reserved.' : 'جميع الحقوق محفوظة.' %></p>
         </div>
     </footer>
 
@@ -52,12 +102,39 @@
             if (doc.querySelector('.hero-sticky-section')) required.push('hero');
             if (doc.querySelector('.journey-scroll-section')) required.push('journey');
             if (doc.querySelector('.services-horizontal-section')) required.push('services');
+            var mediaReady = false;
+            (function() {
+                var nodes = doc.querySelectorAll('.hero-sticky-section img, .hero-sticky-section video, .services-horizontal-section img, .portfolio-section img, .blog-home-section img');
+                var total = 0;
+                var loaded = 0;
+                function done() {
+                    loaded++;
+                    if (loaded >= total) mediaReady = true;
+                }
+                nodes.forEach(function(node) {
+                    if (total >= 20) return;
+                    var tag = node.tagName;
+                    if (tag === 'IMG') {
+                        if (node.complete && node.naturalWidth > 0) return;
+                        total++;
+                        node.addEventListener('load', done, { once: true });
+                        node.addEventListener('error', done, { once: true });
+                    } else if (tag === 'VIDEO') {
+                        if (node.readyState && node.readyState >= 2) return;
+                        total++;
+                        node.addEventListener('loadeddata', done, { once: true });
+                        node.addEventListener('error', done, { once: true });
+                    }
+                });
+                if (!total) mediaReady = true;
+            })();
             function isReady() {
-                if (!required.length) return true;
+                if (!required.length && mediaReady) return true;
                 var state = window.__CP_READY || {};
                 for (var i = 0; i < required.length; i++) {
                     if (!state[required[i]]) return false;
                 }
+                if (!mediaReady) return false;
                 return true;
             }
             function check() {

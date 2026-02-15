@@ -374,40 +374,42 @@
         <!-- Blog Section -->
         <section id="blog" class="blog-home-section">
             <div class="container">
-                <div class="section-header" data-gsap="fade-up" style="text-align: center; margin-bottom: 3rem;">
-                    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Latest Articles</h2>
-                    <p style="color: #888; font-size: 1.1rem;">Insights and thoughts in the world of design and technology</p>
-                </div>
-                
-                <div class="blog-grid">
-                    <% if (posts && posts.length > 0) { %>
-                        <% posts.forEach(post => { %>
-                            <article class="blog-card" data-gsap="fade-up">
-                                <% if (post.image) { %>
-                                    <div class="blog-image">
-                                        <img src="<%= post.image %>" alt="<%= post.title %>">
+                <div class="blog-section-inner" data-gsap="fade-up">
+                    <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                        <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Latest Articles</h2>
+                        <p style="color: #888; font-size: 1.1rem;">Insights and thoughts in the world of design and technology</p>
+                    </div>
+                    
+                    <div class="blog-grid">
+                        <% if (posts && posts.length > 0) { %>
+                            <% posts.forEach(post => { %>
+                                <article class="blog-card">
+                                    <% if (post.image) { %>
+                                        <div class="blog-image">
+                                            <img src="<%= post.image %>" alt="<%= post.title %>">
+                                        </div>
+                                    <% } %>
+                                    <div class="blog-content">
+                                        <span class="blog-date"><%= post.date %></span>
+                                        <h3><%= post.title %></h3>
+                                        <p class="blog-excerpt"><%= post.excerpt %></p>
+                                        <a href="/blog/<%= post.id %>" class="read-more">
+                                            <span>Read More</span>
+                                            <i class="ri-arrow-right-line"></i>
+                                        </a>
                                     </div>
-                                <% } %>
-                                <div class="blog-content">
-                                    <span class="blog-date"><%= post.date %></span>
-                                    <h3><%= post.title %></h3>
-                                    <p class="blog-excerpt"><%= post.excerpt %></p>
-                                    <a href="/blog/<%= post.id %>" class="read-more">
-                                        <span>Read More</span>
-                                        <i class="ri-arrow-right-line"></i>
-                                    </a>
-                                </div>
-                            </article>
-                        <% }) %>
-                    <% } else { %>
-                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #0a0a0a; border-radius: 20px; border: 1px solid #1a1a1a;">
-                            <p style="color: #666;">No articles available at the moment.</p>
-                        </div>
-                    <% } %>
-                </div>
-                
-                <div class="view-all-container" data-gsap="fade-up">
-                    <a href="/blog" class="view-all-btn">View All Articles</a>
+                                </article>
+                            <% }) %>
+                        <% } else { %>
+                            <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #0a0a0a; border-radius: 20px; border: 1px solid #1a1a1a;">
+                                <p style="color: #666;">No articles available at the moment.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <div class="view-all-container">
+                        <a href="/blog" class="view-all-btn">View All Articles</a>
+                    </div>
                 </div>
             </div>
         </section>
