@@ -181,14 +181,6 @@
                     <% if (services && services.length > 0) { %>
                         <% services.forEach((service, index) => { %>
                             <div class="service-panel" id="service-<%= index + 1 %>">
-                                <div class="panel-bg-wrapper">
-                                    <% if (service.image) { %>
-                                        <img src="<%= assetPath(service.image) %>" alt="<%= service.title_en %>" class="parallax-img" loading="lazy" decoding="async" width="1200" height="800" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
-                                    <% } else { %>
-                                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Service Placeholder" class="parallax-img" loading="lazy" decoding="async" width="1200" height="800" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
-                                    <% } %>
-                                    <div class="panel-overlay"></div>
-                                </div>
                                 <div class="panel-content">
                                     <div class="panel-header">
                                         <span class="panel-number">0<%= index + 1 %></span>
@@ -203,15 +195,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="panel-bg-wrapper">
+                                    <% if (service.image) { %>
+                                        <img src="<%= assetPath(service.image) %>" alt="<%= service.title_en %>" class="parallax-img" loading="lazy" decoding="async" width="1200" height="800" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
+                                    <% } else { %>
+                                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Service Placeholder" class="parallax-img" loading="lazy" decoding="async" width="1200" height="800" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
+                                    <% } %>
+                                    <div class="panel-overlay"></div>
+                                </div>
                             </div>
                         <% }); %>
                     <% } else { %>
                         <!-- Fallback Static Content -->
                         <div class="service-panel" id="service-1">
-                            <div class="panel-bg-wrapper">
-                                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Visual Identity" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
-                                <div class="panel-overlay"></div>
-                            </div>
                             <div class="panel-content">
                                 <div class="panel-header">
                                     <span class="panel-number">01</span>
@@ -226,18 +222,20 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="panel-bg-wrapper">
+                                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Visual Identity" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
+                                <div class="panel-overlay"></div>
+                            </div>
                         </div>
 
                         <div class="service-panel" id="service-2">
-                            <div class="panel-bg-wrapper">
-                                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Digital Marketing" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
-                                <div class="panel-overlay"></div>
-                            </div>
                             <div class="panel-content">
                                 <div class="panel-header">
                                     <span class="panel-number">02</span>
                                     <h2 class="panel-title">Digital Marketing</h2>
                                 </div>
+                            </div>
+                            <div class="panel-content">
                                 <div class="panel-body">
                                     <p class="panel-desc">Integrated marketing strategies to reach your target audience.</p>
                                     <div class="panel-tags">
@@ -247,13 +245,13 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="panel-bg-wrapper">
+                                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Digital Marketing" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
+                                <div class="panel-overlay"></div>
+                            </div>
                         </div>
 
                         <div class="service-panel" id="service-3">
-                            <div class="panel-bg-wrapper">
-                                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Web Development" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
-                                <div class="panel-overlay"></div>
-                            </div>
                             <div class="panel-content">
                                 <div class="panel-header">
                                     <span class="panel-number">03</span>
@@ -267,6 +265,10 @@
                                         <span class="tag">Maintenance</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="panel-bg-wrapper">
+                                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Web Development" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
+                                <div class="panel-overlay"></div>
                             </div>
                         </div>
                     <% } %>

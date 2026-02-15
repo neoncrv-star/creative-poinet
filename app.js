@@ -150,6 +150,17 @@ app.use((req, res, next) => {
     }
 });
 
+
+// Dedicated route for preloader spinner asset (stored under /views)
+app.get('/preloader-spinner.png', (req, res) => {
+    try {
+        const imgPath = path.join(__dirname, 'views', '4433444.png');
+        return res.sendFile(imgPath);
+    } catch (e) {
+        return res.status(404).end();
+    }
+});
+
 // Serve static files FIRST to avoid running middleware for assets (after uploads handling)
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '30d',

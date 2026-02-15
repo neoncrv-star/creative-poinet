@@ -286,6 +286,7 @@ html[dir="rtl"] .panel-content {
     }
 
     .service-panel {
+        display: block;
         width: 100%;
         height: auto;
         margin: 0 0 24px 0;
@@ -296,17 +297,13 @@ html[dir="rtl"] .panel-content {
         position: relative;
         width: 100%;
         height: auto;
+        margin-top: 12px;
     }
 
     .parallax-img {
         width: 100%;
         height: auto;
         object-fit: contain;
-    }
-
-    .panel-overlay {
-        position: static;
-        background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
     }
 
     .panel-content {
