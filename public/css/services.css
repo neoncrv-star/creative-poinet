@@ -11,7 +11,7 @@
     width: 100%;
     background-color: #050505;
     overflow: hidden;
-    contain: layout style paint;
+    contain: none !important;
 }
 
 /* WRAPPER */
@@ -21,6 +21,7 @@
     display: flex;
     align-items: center;
     overflow: hidden;
+    position: relative;
 }
 
 /* CONTAINER */
@@ -28,8 +29,9 @@
     display: flex;
     flex-wrap: nowrap;
     height: 100%;
-    width: max-content;
-    padding: 0 7.5vw;
+    width: auto !important;
+    min-width: 100%;
+    padding: 0 clamp(16px, 5vw, 80px);
 
     /* Stability */
     transform: translate3d(0, 0, 0);
@@ -47,7 +49,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 2vw;
+    margin: 0 clamp(8px, 1.5vw, 24px);
     border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 

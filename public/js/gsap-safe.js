@@ -28,21 +28,24 @@
     var refreshTimeout = null;
 
     function scheduleRefresh() {
-        if (!win || !win.ScrollTrigger) return;
-        if (interactionLock) return;
+    if (!win || !win.ScrollTrigger) return;
+    if (interactionLock) return;
 
-        if (refreshTimeout) {
-            clearTimeout(refreshTimeout);
-        }
-
-        refreshTimeout = setTimeout(function () {
-            try {
-                win.ScrollTrigger.refresh(true);
-            } catch (e) {
-                console.warn("ScrollTrigger refresh failed:", e);
-            }
-        }, 180);
+    if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
     }
+
+    refreshTimeout = setTimeout(function () {
+        try {
+            requestAnimationFrame(function () {
+                win.ScrollTrigger.refresh();
+            });
+        } catch (e) {
+            console.warn("ScrollTrigger refresh failed:", e);
+        }
+    }, 220);
+}
+
 
     function initGlobal(ScrollTrigger) {
         if (inited || !ScrollTrigger) return;

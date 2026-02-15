@@ -50,10 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
                        .to('.services-desc', { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.6")
                        .to('.scroll-indicator', { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.6");
 
-                // 2. حساب مسافة السكرول الأفقي
-                // نستخدم function للحصول على القيمة ديناميكياً عند تغيير الحجم
-                const getTotalWidth = () => panelContainer.offsetWidth;
-                const getScrollAmount = () => Math.max(0, getTotalWidth() - window.innerWidth);
+                const getScrollAmount = () => {
+                    const totalWidth = panelContainer.scrollWidth || 0;
+                    const viewport = window.innerWidth || 0;
+                    const scrollDistance = totalWidth - viewport;
+                    return scrollDistance > 0 ? scrollDistance : 0;
+                };
 
                 // 3. الأنيميشن الرئيسي (Horizontal Scroll)
                 const mainTween = gsap.to(panelContainer, {
@@ -64,14 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         trigger: servicesSection,
                         pin: true,
                         pinSpacing: true,
-                        pinReparent: true,
+                        anticipatePin: 1,
+                        invalidateOnRefresh: true,
                         start: "top top",
                         end: () => `+=${getScrollAmount()}`,
                         scrub: 1,
-                        invalidateOnRefresh: true, // مهم جداً لإعادة الحساب عند تغيير الحجم
-                        anticipatePin: 1,
                         onUpdate: (self) => {
-                            // إضافة كلاس أثناء السكرول لتحسين الأداء (pointer-events)
                             if (Math.abs(self.getVelocity()) > 5) {
                                 servicesSection.classList.add('services-scrolling');
                             } else {
@@ -135,6 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let lastWidth = window.innerWidth;
 
         buildAnimation();
+
+        if (typeof ScrollTrigger !== "undefined" && typeof ScrollTrigger.refresh === "function") {
+            window.requestAnimationFrame(() => {
+                ScrollTrigger.refresh(true);
+            });
+        }
 
         window.addEventListener("resize", () => {
             const currentWidth = window.innerWidth;

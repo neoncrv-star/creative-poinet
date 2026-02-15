@@ -9,7 +9,8 @@
     background: var(--bg-color, #000);
     z-index: 10;
     overflow: hidden;
-    contain: layout paint size; /* تحسين الأداء */
+    contain: paint;
+
 }
 
 /* Light mode */
@@ -235,8 +236,9 @@ iframe.hero-video {
 @media (max-width: 768px) {
 
     .hero-sticky-section {
-        height: 100dvh;
-    }
+    overflow: clip;
+}
+
 
     .hero-content-overlay {
         padding: 80px 16px 20px;
@@ -246,11 +248,11 @@ iframe.hero-video {
         font-size: .95rem;
     }
 
-    iframe.hero-video {
-        width: 240vw;
-        height: 135vw;
-        transform: translate(-50%, -50%);
-    }
+   iframe.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
     .scroll-mouse-icon {
         bottom: 18px;
