@@ -20,35 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // متغير لتخزين سياق GSAP للتنظيف لاحقاً
         let ctx;
 
+        // دالة بناء الأنيميشن
         const buildAnimation = () => {
+            // تنظيف أي أنيميشن سابق لمنع التداخل
             if (ctx) ctx.revert();
 
+            // التحقق من وضع الجوال / التابلت (يتطابق مع CSS 1024px)
             const isMobile = window.matchMedia('(max-width: 1024px)').matches;
 
+            // في الجوال والتابلت، نكتفي بالتنظيف ونخرج (يعمل التصميم العمودي عبر CSS)
             if (isMobile) {
                 servicesSection.style.height = 'auto';
                 servicesSection.style.minHeight = '0';
-                servicesSection.classList.remove('services-scrolling');
-
-                if (panelContainer && panelContainer.style) {
-                    panelContainer.style.transform = 'none';
-                }
-
-                if (ScrollTrigger && typeof ScrollTrigger.getAll === 'function') {
-                    try {
-                        ScrollTrigger.getAll().forEach(t => {
-                            if (!t) return;
-                            if (t.vars && t.vars.id === 'servicesScroll') {
-                                t.kill(true);
-                                return;
-                            }
-                            if (t.trigger === servicesSection) {
-                                t.kill(true);
-                            }
-                        });
-                    } catch (e) {}
-                }
-
                 return;
             }
 
@@ -182,10 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined') {
         initServicesAnimation(window.gsap, window.ScrollTrigger);
     } else {
-        if (typeof window !== 'undefined') {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-        }
         console.warn('Services Animation: GSAP or ScrollTrigger not found.');
     }
 });

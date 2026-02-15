@@ -276,8 +276,6 @@ html[dir="rtl"] .panel-content {
         overflow: visible;
         padding: 40px 0;
         height: auto;
-        min-height: 400px;
-        display: block;
     }
 
     .services-horizontal-wrapper {
