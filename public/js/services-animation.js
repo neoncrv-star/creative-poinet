@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // التحقق من بيئة العمل
     if (typeof window === 'undefined') return;
 
     var start = function () {
+        // التحقق من تحميل مكتبات GSAP
         if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            console.warn('GSAP or ScrollTrigger not loaded');
+            // تعيين علامة الجاهزية لتجنب التعليق
             window.__CP_READY = window.__CP_READY || {};
             window.__CP_READY.services = true;
             return;
@@ -10,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         gsap.registerPlugin(ScrollTrigger);
 
+        // 1. تحديد العناصر
         var section = document.querySelector('.services-horizontal-section');
         if (!section) {
             window.__CP_READY = window.__CP_READY || {};
@@ -17,150 +22,141 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        var mediaSticky = section.querySelector('.services-media-sticky');
         var mediaImage = section.querySelector('.services-media-image-inner');
         var mediaTitle = section.querySelector('.services-media-title');
         var mediaText = section.querySelector('.services-media-text');
         var cards = section.querySelectorAll('.service-card');
 
-        if (!mediaSticky || !mediaImage || !mediaTitle || !mediaText || !cards.length) {
+        // التحقق من وجود العناصر الأساسية
+        if (!mediaImage || !cards.length) {
             window.__CP_READY = window.__CP_READY || {};
             window.__CP_READY.services = true;
             return;
         }
 
-        var activeIndex = -1;
-        var easing = "power3.out";
-        var inactiveOpacity = 0.35;
-        var activeOpacity = 1;
-        var inactiveBlur = 'blur(4px)';
-        var activeBlur = 'blur(0px)';
+        var activeIndex = -1; // لتتبع الكرت الحالي
 
-        function setActive(card, index) {
-            if (!card || index === activeIndex) return;
+        // 2. دالة تحديث الصورة والنصوص (القسم الثابت)
+        function updateStickyContent(card, index) {
+            if (index === activeIndex) return; // منع التكرار إذا نفس الكرت
             activeIndex = index;
 
-            cards.forEach(function (c) {
-                if (!c) return;
-                var isActive = c === card;
-                c.classList.toggle('service-card-active', isActive);
-                var targetOpacity = isActive ? activeOpacity : inactiveOpacity;
-                var targetFilter = isActive ? activeBlur : inactiveBlur;
-                gsap.to(c, {
-                    opacity: targetOpacity,
-                    filter: targetFilter,
-                    duration: 0.4,
-                    ease: easing
-                });
-            });
+            // جلب البيانات
+            var newImageSrc = card.getAttribute('data-image');
+            var newTitle = card.getAttribute('data-title') || card.querySelector('.service-card-title')?.textContent;
+            var newDesc = card.getAttribute('data-description') || card.querySelector('.service-card-desc')?.textContent;
 
-            var title = card.getAttribute('data-title') || '';
-            var description = card.getAttribute('data-description') || '';
-            var imageSrc = card.getAttribute('data-image') || '';
+            // إنشاء Timeline لتزامن خروج القديم ودخول الجديد
+            var tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
 
-            var targetTitle = title || (card.querySelector('.service-card-title') ? card.querySelector('.service-card-title').textContent : '');
-            var targetDesc = description || (card.querySelector('.service-card-desc') ? card.querySelector('.service-card-desc').textContent : '');
-
-            gsap.to([mediaTitle, mediaText], {
+            // أ) إخفاء العناصر الحالية (Fade Out & Move Up)
+            tl.to([mediaImage, mediaTitle, mediaText], {
                 opacity: 0,
-                y: 12,
-                duration: 0.28,
-                ease: easing,
-                onComplete: function () {
-                    mediaTitle.textContent = targetTitle;
-                    mediaText.textContent = targetDesc;
-                    gsap.to([mediaTitle, mediaText], {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.42,
-                        ease: easing
+                y: -15,
+                filter: 'blur(5px)',
+                duration: 0.3
+            })
+            // ب) تغيير المحتوى فعلياً
+            .call(function () {
+                if (mediaTitle) mediaTitle.textContent = newTitle;
+                if (mediaText) mediaText.textContent = newDesc;
+                if (mediaImage && newImageSrc && mediaImage.tagName === 'IMG') {
+                    mediaImage.setAttribute('src', newImageSrc);
+                }
+            })
+            // ج) إعادة تهيئة الموقع (set) ثم الإظهار (Fade In)
+            .set([mediaImage, mediaTitle, mediaText], { y: 15 }) // نبدأ من الأسفل قليلاً
+            .to([mediaImage, mediaTitle, mediaText], {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                duration: 0.4,
+                stagger: 0.05 // تأخير بسيط بين الصورة والنصوص لجمالية الحركة
+            });
+        }
+
+        // 3. دالة تفعيل الكرت (القائمة المتحركة)
+        function activateCard(index) {
+            cards.forEach(function (c, i) {
+                var isActive = (i === index);
+                var divider = c.querySelector('.service-divider');
+                var marker = c.querySelector('.service-card-marker');
+
+                // إضافة/إزالة الكلاس للتحكم بالـ CSS أيضاً
+                if (isActive) {
+                    c.classList.add('service-card-active');
+                } else {
+                    c.classList.remove('service-card-active');
+                }
+
+                // حركة GSAP للكروت (التركيز vs التغبيش)
+                gsap.to(c, {
+                    opacity: isActive ? 1 : 0.25, // الكرت غير النشط شفاف
+                    filter: isActive ? 'blur(0px)' : 'blur(4px)', // الكرت غير النشط مغبش
+                    scale: isActive ? 1 : 0.95, // الكرت النشط أكبر قليلاً
+                    duration: 0.5,
+                    overwrite: true
+                });
+
+                // حركة الخط الفاصل (Divider)
+                if (divider) {
+                    gsap.to(divider, {
+                        scaleX: isActive ? 1 : 0,
+                        transformOrigin: "left center",
+                        duration: 0.5,
+                        overwrite: true
+                    });
+                }
+
+                // حركة النقطة (Marker)
+                if (marker) {
+                    gsap.to(marker, {
+                        backgroundColor: isActive ? "#ff0000" : "transparent",
+                        borderColor: isActive ? "#ff0000" : "rgba(255,255,255,0.2)",
+                        scale: isActive ? 1.1 : 1,
+                        duration: 0.3
                     });
                 }
             });
-
-            if (imageSrc && mediaImage.tagName === 'IMG') {
-                gsap.to(mediaImage, {
-                    scale: 1.03,
-                    filter: 'blur(4px)',
-                    duration: 0.28,
-                    ease: easing,
-                    onComplete: function () {
-                        mediaImage.setAttribute('src', imageSrc);
-                        gsap.to(mediaImage, {
-                            scale: 1,
-                            filter: 'blur(0px)',
-                            duration: 0.5,
-                            ease: easing
-                        });
-                    }
-                });
-            }
         }
 
-        if (window.innerWidth >= 900) {
-        }
-
+        // 4. إعداد مراقب السكرول (ScrollTrigger)
         cards.forEach(function (card, index) {
-            var divider = card.querySelector('.service-divider');
-
-            gsap.set(card, {
-                opacity: inactiveOpacity,
-                y: 26,
-                filter: inactiveBlur
-            });
-
-            if (divider) {
-                gsap.set(divider, {
-                    scaleX: 0,
-                    transformOrigin: "0% 50%"
-                });
-            }
-
             ScrollTrigger.create({
                 trigger: card,
-                start: "top center",
-                end: "bottom center",
+                // يبدأ التفعيل عندما يصل أعلى الكرت إلى 55% من ارتفاع الشاشة (المنتصف تقريباً)
+                start: "top 55%", 
+                // ينتهي عندما يغادر
+                end: "bottom 55%",
+                
                 onEnter: function () {
-                    gsap.to(card, {
-                        y: 0,
-                        duration: 0.6,
-                        ease: easing
-                    });
-                    if (divider) {
-                        gsap.to(divider, {
-                            scaleX: 1,
-                            duration: 0.6,
-                            ease: easing
-                        });
-                    }
-                    setActive(card, index);
+                    activateCard(index);
+                    updateStickyContent(card, index);
                 },
                 onEnterBack: function () {
-                    gsap.to(card, {
-                        y: 0,
-                        duration: 0.6,
-                        ease: easing
-                    });
-                    if (divider) {
-                        gsap.to(divider, {
-                            scaleX: 1,
-                            duration: 0.6,
-                            ease: easing
-                        });
-                    }
-                    setActive(card, index);
+                    activateCard(index);
+                    updateStickyContent(card, index);
                 }
             });
         });
 
-        if (cards[0]) {
-            setActive(cards[0], 0);
+        // 5. التهيئة الأولية (تفعيل أول كرت عند التحميل)
+        if (cards.length > 0) {
+            activateCard(0);
+            // ملاحظة: لا نستدعي updateStickyContent هنا لتجنب وميض الصورة عند تحميل الصفحة
+            // نفترض أن الـ HTML يحتوي بالفعل على صورة ونصوص الكرت الأول
         }
 
+        // إشعار اكتمال التحميل
         window.__CP_READY = window.__CP_READY || {};
         window.__CP_READY.services = true;
     };
 
+    // ==========================================
+    // منطق التحميل الآمن (تكامل مع النظام لديك)
+    // ==========================================
+    
+    // 1. محاولة استخدام scrollManager إذا وجد
     if (window.scrollManager && typeof window.scrollManager.section === 'function') {
         window.scrollManager.section('services', function (gsapRef, ScrollTriggerRef) {
             if (!gsapRef || !ScrollTriggerRef) return;
@@ -169,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // 2. محاولة استخدام safeScrollTrigger إذا وجد
     if (typeof window.safeScrollTrigger === 'function') {
         window.safeScrollTrigger(function (gsapRef, ScrollTriggerRef) {
             if (!gsapRef || !ScrollTriggerRef) return;
@@ -177,11 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') {
-        window.__CP_READY = window.__CP_READY || {};
-        window.__CP_READY.services = true;
-        return;
-    }
-
+    // 3. التشغيل المباشر
     start();
 });
+  
