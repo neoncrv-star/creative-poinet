@@ -257,7 +257,7 @@ body.lang-ar .services-header-note {
    ════════════════════════════════════════════════════════════════════ */
 
 .services-list-column {
-    padding: 50vh 0;
+    padding: 30vh 0;
     
     /* CSS Scroll Snap (Backup) */
     scroll-snap-type: y proximity;
@@ -270,7 +270,7 @@ body.lang-ar .services-header-note {
 .services-panel-container {
     display: flex;
     flex-direction: column;
-    scroll-padding: 50vh 0;
+    scroll-padding: 30vh 0;
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -291,8 +291,7 @@ body.lang-ar .services-header-note {
     padding: 32px;
     overflow: hidden;
     
-    /* ✅ Spacing = Smooth Scroll Secret */
-    margin-bottom: 100vh;
+    margin-bottom: 40vh;
     min-height: 300px;
     
     /* ✅ Scroll Snap Configuration */
@@ -313,7 +312,7 @@ body.lang-ar .services-header-note {
 }
 
 .service-card:last-child {
-    margin-bottom: 50vh;
+    margin-bottom: 25vh;
 }
 
 /* Card Glow Effect (Pseudo-element) */
@@ -358,7 +357,8 @@ body.lang-ar .services-header-note {
 
 /* In-View Class (Additional State) */
 .service-card.is-in-view {
-    /* Optional: additional styling for cards in viewport */
+    transform: scale(0.98);
+    opacity: 0.45;
 }
 
 /* ════════════════════════════════════════════════════════════════════

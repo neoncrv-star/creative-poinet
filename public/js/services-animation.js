@@ -96,8 +96,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 ease: "power1.in",
                 onComplete: () => {
                     try {
-                        if (newSrc && mediaImage && mediaImage.tagName === 'IMG') {
-                            mediaImage.src = newSrc;
+                        if (newSrc && mediaImage) {
+                            if (mediaImage.tagName === 'IMG') {
+                                mediaImage.src = newSrc;
+                            } else {
+                                mediaImage.style.backgroundImage = "url('" + newSrc + "')";
+                                mediaImage.style.backgroundSize = 'cover';
+                                mediaImage.style.backgroundPosition = 'center';
+                                mediaImage.classList.remove('services-media-image-placeholder');
+                            }
                         }
                         if (newTitle && mediaTitle) {
                             mediaTitle.textContent = newTitle;
@@ -126,44 +133,26 @@ document.addEventListener('DOMContentLoaded', function () {
         
         const activateCard = (activeIndex) => {
             cards.forEach((card, index) => {
-                const isActive = (index === activeIndex);
+                const isActive = index === activeIndex;
                 const marker = card.querySelector('.service-card-marker');
 
                 try {
                     if (isActive) {
                         card.classList.add('active-service');
-                        
-                        gsap.to(card, { 
-                            opacity: 1, 
-                            filter: "blur(0px)", 
-                            scale: 1, 
-                            duration: 0.5,
-                            ease: "power2.out"
-                        });
-                        
                         if (marker) {
-                            gsap.to(marker, { 
-                                background: "#ff0000", 
-                                scale: 1.2, 
+                            gsap.to(marker, {
+                                background: "#ff0000",
+                                scale: 1.2,
                                 duration: 0.3,
                                 ease: "back.out(1.7)"
                             });
                         }
                     } else {
                         card.classList.remove('active-service');
-                        
-                        gsap.to(card, { 
-                            opacity: 0.3, 
-                            filter: "blur(4px)", 
-                            scale: 0.95, 
-                            duration: 0.5,
-                            ease: "power2.out"
-                        });
-                        
                         if (marker) {
-                            gsap.to(marker, { 
-                                background: "transparent", 
-                                scale: 1, 
+                            gsap.to(marker, {
+                                background: "transparent",
+                                scale: 1,
                                 duration: 0.3,
                                 ease: "power2.out"
                             });
@@ -175,27 +164,91 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
         
-        cards.forEach((card, index) => {
-            try {
-                ScrollTrigger.create({
-                    id: `service-card-${index}`,
-                    trigger: card,
-                    start: "center center",
-                    end: "bottom center",
-                    onEnter: () => {
-                        activateCard(index);
-                        updateMedia(index);
-                    },
-                    onEnterBack: () => {
-                        activateCard(index);
-                        updateMedia(index);
-                    },
-                    invalidateOnRefresh: true
+        const listColumn = section.querySelector('.services-list-column');
+        if (!listColumn) {
+            console.warn('[Services] List column not found');
+            return;
+        }
+
+        let cardGap = 0;
+        if (cards.length > 1) {
+            const firstTop = cards[0].offsetTop;
+            const secondTop = cards[1].offsetTop;
+            cardGap = Math.max(0, secondTop - firstTop);
+        }
+
+        const steps = Math.max(cards.length - 1, 1);
+        const totalShift = cardGap * steps;
+
+        const updateVisualByCenter = () => {
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+            const centerLine = viewportHeight / 2;
+            let bestIndex = 0;
+            let bestScore = -1;
+
+            cards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                const cardCenter = rect.top + rect.height / 2;
+                const dist = Math.abs(cardCenter - centerLine);
+                const maxDist = viewportHeight * 0.6;
+                const t = 1 - Math.min(dist / maxDist, 1);
+
+                const opacity = 0.25 + t * 0.75;
+                const blur = 5 - t * 5;
+                const scale = 0.95 + t * 0.05;
+
+                gsap.to(card, {
+                    opacity,
+                    filter: "blur(" + blur + "px)",
+                    scale,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    overwrite: "auto"
                 });
-            } catch (e) {
-                console.warn('[Services] Failed to create trigger for card', index, e.message);
+
+                if (t > bestScore) {
+                    bestScore = t;
+                    bestIndex = index;
+                }
+            });
+
+            if (bestScore > 0.7 && bestIndex !== currentActiveIndex && !isUpdating) {
+                try {
+                    activateCard(bestIndex);
+                    updateMedia(bestIndex);
+                } catch (e) {
+                    console.warn('[Services] Center update error:', e.message);
+                }
+            }
+        };
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                id: 'services-master',
+                trigger: section,
+                start: 'top top',
+                end: '+=' + (steps * 450),
+                pin: true,
+                scrub: 0.7,
+                snap: {
+                    snapTo: (value) => {
+                        if (!steps) return 0;
+                        const step = 1 / steps;
+                        return Math.round(value / step) * step;
+                    },
+                    duration: { min: 0.15, max: 0.25 },
+                    ease: 'power2.out'
+                },
+                onUpdate: () => {
+                    updateVisualByCenter();
+                },
+                invalidateOnRefresh: true
             }
         });
+
+        tl.fromTo(listColumn, { y: 0 }, { y: -totalShift, ease: 'power1.out' }, 0);
+
+        updateVisualByCenter();
 
         // ════════════════════════════════════════════════════════════
         // Initial State
