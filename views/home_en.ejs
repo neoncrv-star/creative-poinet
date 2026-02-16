@@ -126,7 +126,7 @@
                 <% stats.forEach(function(stat) { %>
                     <article class="stat-item">
                         <div class="stat-value">
-                            <span><%= stat.value %></span>
+                            <span class="stat-number" data-target="<%= stat.value %>">0</span>
                             <% if (stat.suffix_en) { %>
                                 <span class="stat-suffix"><%= stat.suffix_en %></span>
                             <% } %>

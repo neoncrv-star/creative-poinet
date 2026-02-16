@@ -356,4 +356,83 @@ document.addEventListener('DOMContentLoaded', () => {
         // Call it initially
         updateVideoHover();
     }
+
+    const statItems = document.querySelectorAll('.stat-item');
+    if (statItems.length) {
+        const statsData = [];
+        statItems.forEach(item => {
+            const numberEl = item.querySelector('.stat-number');
+            if (!numberEl) return;
+            const targetAttr = numberEl.getAttribute('data-target') || '0';
+            const cleaned = String(targetAttr).replace(/[^0-9.,]/g, '').replace(',', '.');
+            const target = parseFloat(cleaned);
+            if (!isFinite(target)) return;
+            numberEl.textContent = '0';
+            statsData.push({
+                item,
+                el: numberEl,
+                target,
+                started: false
+            });
+        });
+
+        const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+        const runAnimation = stat => {
+            if (stat.started) return;
+            stat.started = true;
+            stat.item.classList.add('stat-visible');
+            const duration = 1400 + Math.random() * 600;
+            const start = performance.now();
+
+            const tick = now => {
+                const progress = Math.min(1, (now - start) / duration);
+                let displayValue;
+                if (progress < 0.3) {
+                    displayValue = Math.floor(Math.random() * stat.target);
+                } else {
+                    const eased = easeOutCubic(progress);
+                    displayValue = Math.floor(stat.target * eased);
+                }
+                if (displayValue > stat.target) displayValue = stat.target;
+                stat.el.textContent = displayValue.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    stat.el.textContent = stat.target.toLocaleString();
+                }
+            };
+
+            requestAnimationFrame(tick);
+        };
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const item = entry.target;
+                        const stat = statsData.find(s => s.item === item);
+                        if (stat) runAnimation(stat);
+                        observer.unobserve(item);
+                    }
+                });
+            }, { threshold: 0.35 });
+
+            statsData.forEach(stat => observer.observe(stat.item));
+        } else {
+            const checkAndRun = () => {
+                statsData.forEach(stat => {
+                    if (stat.started) return;
+                    const rect = stat.item.getBoundingClientRect();
+                    const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+                    if (rect.top < vh * 0.8 && rect.bottom > vh * 0.1) {
+                        runAnimation(stat);
+                    }
+                });
+            };
+            window.addEventListener('scroll', checkAndRun, { passive: true });
+            window.addEventListener('resize', checkAndRun);
+            checkAndRun();
+        }
+    }
 });

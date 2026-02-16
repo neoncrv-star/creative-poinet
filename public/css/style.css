@@ -166,6 +166,9 @@ section {
     padding: 20px 18px;
     background: radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 55%), rgba(5, 5, 5, 0.96);
     text-align: center;
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+    transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 [data-theme="light"] .stat-item {
@@ -180,6 +183,11 @@ section {
     font-size: clamp(2rem, 3vw, 2.6rem);
     font-weight: 700;
     margin-bottom: 6px;
+}
+
+.stat-item.stat-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 .stat-suffix {
