@@ -474,10 +474,13 @@ section[id] {
 .marquee-wrapper {
     overflow: hidden;
 }
+.contact-section .marquee-wrapper {
+    margin-bottom: 32px;
+}
 .marquee-content {
     display: flex;
     gap: 50px;
-    animation: marquee 20s linear infinite;
+    animation: marquee 12s linear infinite;
     will-change: transform;
 }
 @keyframes marquee {
@@ -494,8 +497,9 @@ section[id] {
     font-weight: 800;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    opacity: 0.08;
+    opacity: 0.6;
     white-space: nowrap;
+    color: #ffffff;
 }
 
 /* ===== FOOTER ===== */
@@ -505,8 +509,8 @@ section[id] {
 
 .footer-top {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 20px;
     flex-wrap: wrap;
     padding: 20px 0 10px;
@@ -646,19 +650,7 @@ footer {
     .footer-top {
         flex-direction: column;
         text-align: center;
-        align-items: flex-start;
-    }
-    .footer-brand {
-        justify-content: center;
-    }
-    .footer-nav {
-        width: 100%;
-    }
-    .footer-nav-links {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px 16px;
+        align-items: center;
     }
     .footer-meta {
         width: 100%;

@@ -35,16 +35,6 @@
         object-fit: cover !important;
     }
 
-    .panel-overlay {
-        background: linear-gradient(to right, 
-            rgba(0,0,0, var(--service-overlay-opacity)) 0%, 
-            rgba(0,0,0, 0.2) 50%, 
-            rgba(0,0,0, var(--service-overlay-opacity)) 100%) !important;
-    }
-    
-    .parallax-img {
-        filter: brightness(var(--service-image-brightness)) contrast(1.1) !important;
-    }
 </style>
 
 <main>
@@ -59,35 +49,10 @@
                     <div class="hero-video-wrapper">
                         <% 
                         let heroVideoSrc = seo && seo.heroVideoUrl ? seo.heroVideoUrl : 'https://cdn.coverr.co/videos/coverr-red-smoke-5374/1080p.mp4';
-                        let isYoutube = heroVideoSrc.includes('youtube.com') || heroVideoSrc.includes('youtu.be');
-                        let videoId = '';
-                        if (isYoutube) {
-                            if (heroVideoSrc.includes('youtu.be/')) {
-                                videoId = heroVideoSrc.split('youtu.be/')[1].split('?')[0];
-                            } else if (heroVideoSrc.includes('v=')) {
-                                videoId = heroVideoSrc.split('v=')[1].split('&')[0];
-                            } else if (heroVideoSrc.includes('embed/')) {
-                                videoId = heroVideoSrc.split('embed/')[1].split('?')[0];
-                            }
-                            heroVideoSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&enablejsapi=1&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&origin=${process.env.APP_URL || ''}`;
-                        }
                         %>
-                        
-                        <% if (isYoutube) { %>
-                            <iframe
-                                class="hero-video"
-                                src="<%= heroVideoSrc %>"
-                                loading="lazy"
-                                referrerpolicy="strict-origin-when-cross-origin"
-                                allow="autoplay; encrypted-media; picture-in-picture; web-share"
-                                frameborder="0"
-                                style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
-                            </iframe>
-                        <% } else { %>
-                            <video class="hero-video" playsinline muted loop autoplay preload="metadata" poster="/210.png">
-                                <source src="<%= heroVideoSrc %>" type="video/mp4">
-                            </video>
-                        <% } %>
+                        <video class="hero-video" playsinline muted loop autoplay preload="metadata" poster="/210.png">
+                            <source src="<%= heroVideoSrc %>" type="video/mp4">
+                        </video>
                         <div class="hero-video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2;"></div>
                     </div>
                     
@@ -138,122 +103,91 @@
             </div>
         </section>
 
-        <!-- =========================
-             Cinematic Horizontal Services Section
-        ========================== -->
         <section id="services" class="services-horizontal-section">
             <div class="services-horizontal-wrapper">
-                <div class="services-panel-container">
-                    <!-- Intro Panel -->
-                    <div class="service-panel intro-panel">
-                        <div class="panel-content">
-                            <div class="intro-text-wrap">
-                                <span class="services-counter">(0<%= services && services.length > 0 ? services.length : 3 %>)</span>
-                                <h2 class="services-section-title">Services</h2>
-                                <p class="services-desc">Integrated creative solutions starting from a single point... turning into an impactful system</p>
-                            </div>
-                            <div class="scroll-indicator">
-                                <div class="arrow-right">
-                                    <i class="ri-arrow-right-line"></i>
-                                </div>
-                                <span>Scroll to Explore</span>
-                            </div>
-                        </div>
+                <div class="services-header">
+                    <div class="services-header-main">
+                        <p class="services-eyebrow">SERVICES</p>
+                        <h2 class="services-title">What We Offer</h2>
+                        <p class="services-subtitle">
+                            Practical branding, design, and exhibition services built on one smart decision.
+                        </p>
                     </div>
+                    <p class="services-header-note">
+                        Each service is a focused point: from clear brand foundations to campaigns
+                        and real-world exhibition setups that feel consistent and intentional.
+                    </p>
+                </div>
 
+                <div class="services-panel-container">
                     <% if (services && services.length > 0) { %>
                         <% services.forEach((service, index) => { %>
-                            <div class="service-panel" id="service-<%= index + 1 %>">
-                                <div class="panel-content">
-                                    <div class="panel-header">
-                                        <span class="panel-number">0<%= index + 1 %></span>
-                                        <h2 class="panel-title"><%= service.title_en %></h2>
-                                    </div>
-                                    <div class="panel-body">
-                                        <p class="panel-desc"><%= service.description_en %></p>
-                                        <div class="panel-tags">
-                                            <span class="tag"><%= service.tag1_en || 'Strategy' %></span>
-                                            <span class="tag"><%= service.tag2_en || 'Design' %></span>
-                                            <span class="tag"><%= service.tag3_en || 'Execution' %></span>
-                                        </div>
-                                    </div>
+                            <article class="service-card" id="service-<%= index + 1 %>">
+                                <div class="service-card-header">
+                                    <h3 class="service-card-title">
+                                        <%= service.title_en || service.title_ar || service.title || 'Service' %>
+                                    </h3>
+                                    <span class="service-card-index">
+                                        <%= (index + 1).toString().padStart(2, '0') %>
+                                    </span>
                                 </div>
-                                <div class="panel-bg-wrapper">
-                                    <% if (service.image) { %>
-                                        <img src="<%= assetPath(service.image) %>" alt="<%= service.title_en %>" class="parallax-img" loading="lazy" decoding="async" width="1200" height="800" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
-                                    <% } else { %>
-                                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Service Placeholder" class="parallax-img" loading="lazy" decoding="async" width="1200" height="800" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';">
+                                <% if (service.description_en || service.description_ar) { %>
+                                    <p class="service-card-desc">
+                                        <%= service.description_en || service.description_ar %>
+                                    </p>
+                                <% } %>
+                                <ul class="service-card-tags">
+                                    <% if (service.tag1_en || service.tag1_ar) { %>
+                                        <li class="service-card-tag"><%= service.tag1_en || service.tag1_ar %></li>
                                     <% } %>
-                                    <div class="panel-overlay"></div>
+                                    <% if (service.tag2_en || service.tag2_ar) { %>
+                                        <li class="service-card-tag"><%= service.tag2_en || service.tag2_ar %></li>
+                                    <% } %>
+                                    <% if (service.tag3_en || service.tag3_ar) { %>
+                                        <li class="service-card-tag"><%= service.tag3_en || service.tag3_ar %></li>
+                                    <% } %>
+                                </ul>
+                                <div class="service-card-footer">
+                                    <div class="service-card-marker">•</div>
                                 </div>
-                            </div>
+                            </article>
                         <% }); %>
                     <% } else { %>
-                        <!-- Fallback Static Content -->
-                        <div class="service-panel" id="service-1">
-                            <div class="panel-content">
-                                <div class="panel-header">
-                                    <span class="panel-number">01</span>
-                                    <h2 class="panel-title">Visual Identity</h2>
-                                </div>
-                                <div class="panel-body">
-                                    <p class="panel-desc">We turn marketing messages into smart designs that achieve their purpose.</p>
-                                    <div class="panel-tags">
-                                        <span class="tag">Logo</span>
-                                        <span class="tag">Branding</span>
-                                        <span class="tag">Guidelines</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-bg-wrapper">
-                                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Visual Identity" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
-                                <div class="panel-overlay"></div>
-                            </div>
-                        </div>
+                        <article class="service-card">
+                            <h3 class="service-card-title">Visual Identity</h3>
+                            <p class="service-card-desc">
+                                We design a complete visual system that keeps your brand consistent and memorable.
+                            </p>
+                            <ul class="service-card-tags">
+                                <li class="service-card-tag">Logo</li>
+                                <li class="service-card-tag">Brand Book</li>
+                                <li class="service-card-tag">Print Collateral</li>
+                            </ul>
+                        </article>
 
-                        <div class="service-panel" id="service-2">
-                            <div class="panel-content">
-                                <div class="panel-header">
-                                    <span class="panel-number">02</span>
-                                    <h2 class="panel-title">Digital Marketing</h2>
-                                </div>
-                            </div>
-                            <div class="panel-content">
-                                <div class="panel-body">
-                                    <p class="panel-desc">Integrated marketing strategies to reach your target audience.</p>
-                                    <div class="panel-tags">
-                                        <span class="tag">SEO</span>
-                                        <span class="tag">Ads</span>
-                                        <span class="tag">Analytics</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-bg-wrapper">
-                                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Digital Marketing" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
-                                <div class="panel-overlay"></div>
-                            </div>
-                        </div>
+                        <article class="service-card">
+                            <h3 class="service-card-title">Campaign Design</h3>
+                            <p class="service-card-desc">
+                                Clear, focused campaign visuals that speak directly to your audience.
+                            </p>
+                            <ul class="service-card-tags">
+                                <li class="service-card-tag">Social Media</li>
+                                <li class="service-card-tag">Campaign Assets</li>
+                                <li class="service-card-tag">Outdoor</li>
+                            </ul>
+                        </article>
 
-                        <div class="service-panel" id="service-3">
-                            <div class="panel-content">
-                                <div class="panel-header">
-                                    <span class="panel-number">03</span>
-                                    <h2 class="panel-title">Web Development</h2>
-                                </div>
-                                <div class="panel-body">
-                                    <p class="panel-desc">We design the experience before we design the interface with the latest technologies.</p>
-                                    <div class="panel-tags">
-                                        <span class="tag">UI/UX</span>
-                                        <span class="tag">Full Stack</span>
-                                        <span class="tag">Maintenance</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-bg-wrapper">
-                                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Web Development" class="parallax-img" width="1200" height="800" loading="lazy" decoding="async">
-                                <div class="panel-overlay"></div>
-                            </div>
-                        </div>
+                        <article class="service-card">
+                            <h3 class="service-card-title">Exhibitions & Booths</h3>
+                            <p class="service-card-desc">
+                                End-to-end exhibition setups that translate your brand into real spaces.
+                            </p>
+                            <ul class="service-card-tags">
+                                <li class="service-card-tag">Space Design</li>
+                                <li class="service-card-tag">Production</li>
+                                <li class="service-card-tag">On-ground Support</li>
+                            </ul>
+                        </article>
                     <% } %>
                 </div>
             </div>
@@ -406,6 +340,14 @@
 
         <!-- Contact Section -->
         <section id="contact" class="contact-section">
+            <div class="marquee-wrapper contact-marquee">
+                <div class="marquee-content">
+                    <h1 class="finale-text">CREATIVE POINT</h1>
+                    <h1 class="finale-text">CREATIVE POINT</h1>
+                    <h1 class="finale-text">CREATIVE POINT</h1>
+                    <h1 class="finale-text">CREATIVE POINT</h1>
+                </div>
+            </div>
             <div class="container">
                 <div class="contact-grid">
                     <div class="contact-info" data-gsap="fade-right">

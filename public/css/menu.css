@@ -149,17 +149,17 @@ header .container {
 .header-menu {
     position: absolute;
     top: 0;
-    right: 0; 
     height: 100%;
     display: flex;
     align-items: center;
     background: var(--menu-bg);
+    /* default for Arabic (logo يسار، زر القائمة يمين) */
+    right: 0;
+    left: auto;
     padding: 0 60px 0 30px;
-    
-    /* Ensure it's hidden */
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Block interactions when hidden */
+    pointer-events: none;
     overflow: hidden;
     z-index: 1001;
     border-radius: 40px 0 0 40px;
@@ -169,15 +169,15 @@ header .container {
 .header-menu.is-open {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto; /* Allow interactions when open */
+    pointer-events: auto;
 }
 
-/* RTL Support */
-html[dir="rtl"] .header-menu {
+/* Align menu with logo side in English (logo يمين، زر القائمة يسار) */
+.lang-en .header-menu {
     right: auto;
     left: 0;
-    padding: 0 30px 0 60px; /* Left padding for button space */
-    border-radius: 0 40px 40px 0; /* Rounded corner on right */
+    padding: 0 30px 0 60px;
+    border-radius: 0 40px 40px 0;
 }
 
 /* Menu Links */
@@ -242,14 +242,7 @@ html[dir="rtl"] .header-menu {
         transform: translateY(-100%); /* Start from top */
     }
 
-    /* Reset RTL specific positioning for mobile if needed, 
-       but fixed/top/left/right covers it */
-    html[dir="rtl"] .header-menu {
-        right: 0;
-        left: 0;
-        padding: 0;
-        border-radius: 0;
-    }
+        /* نفس السلوك على الموبايل للغتين (قائمة تغطي الشاشة كاملة) */
 
     .header-menu a {
         margin: 15px 0;

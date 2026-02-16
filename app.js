@@ -256,6 +256,7 @@ const port = process.env.PORT || 3000;
 
 // Session Config
 const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
+const allowStartWithoutDb = (process.env.ALLOW_START_WITHOUT_DB || '').toLowerCase() === 'true' && !isProd;
 const trustProxy = Number(process.env.TRUST_PROXY || 1);
 app.set('trust proxy', trustProxy);
 
@@ -560,6 +561,16 @@ async function ensureMySQLConnection(retries = 10) {
             await new Promise(r => setTimeout(r, 3000));
         }
     }
+    const baseMsg = '❌ MySQL is not reachable.';
+    debugLog(baseMsg);
+    console.error(baseMsg);
+    if (allowStartWithoutDb) {
+        const warn = '⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.';
+        debugLog(warn);
+        console.warn(warn);
+        app.locals.dbConnected = false;
+        return null;
+    }
     const errMsg = '❌ MySQL is not reachable. Server stopped.';
     debugLog(errMsg);
     console.error(errMsg);
@@ -576,11 +587,12 @@ async function startServer() {
     }
 
     await ensureMySQLConnection(10);
-
-    await sequelize.sync(syncOptions);
-    const msg = 'Database synced successfully (MySQL)';
-    debugLog(msg);
-    console.log(msg);
+    if (!allowStartWithoutDb || app.locals.dbConnected !== false) {
+        await sequelize.sync(syncOptions);
+        const msg = 'Database synced successfully (MySQL)';
+        debugLog(msg);
+        console.log(msg);
+    }
 
     const server = app.listen(port, () => {
         const startMsg = `Server is running at http://localhost:${port}`;
@@ -597,6 +609,9 @@ async function startServer() {
             debugLog('prewarm error: ' + (e && e.message));
         }
         setTimeout(async () => {
+            if (allowStartWithoutDb && app.locals.dbConnected === false) {
+                return;
+            }
             try {
                 const rows = await Service.findAll();
                 let c = 0;

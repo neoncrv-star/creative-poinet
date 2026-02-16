@@ -19,3 +19,285 @@
 [2026-02-15T12:57:00.957Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-15T12:57:03.975Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-15T12:57:06.980Z] ❌ MySQL is not reachable. Server stopped.
+[2026-02-16T02:10:59.590Z] EventLoopDelay monitor enabled
+[2026-02-16T02:11:02.061Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:05.071Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:08.080Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:11.101Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:14.114Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:17.124Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:20.130Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:23.144Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:26.153Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:29.164Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:11:32.171Z] ❌ MySQL is not reachable. Server stopped.
+[2026-02-16T02:13:43.385Z] EventLoopDelay monitor enabled
+[2026-02-16T02:13:44.282Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:13:47.290Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:13:50.307Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:13:53.324Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:13:56.334Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:13:59.350Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:02.361Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:05.377Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:08.385Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:11.391Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:14.407Z] ❌ MySQL is not reachable.
+[2026-02-16T02:14:14.410Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-02-16T02:14:14.413Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-02-16T02:14:14.415Z] Server is running at http://localhost:3000
+[2026-02-16T02:14:14.442Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:14.444Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:14.445Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:14.459Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:14.522Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:37.014Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:37.020Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:14:38.146Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:16:14.509Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:16:14.528Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:18:24.276Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:18:24.289Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:18:42.252Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:18:42.263Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:29.431Z] EventLoopDelay monitor enabled
+[2026-02-16T02:19:32.584Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:35.596Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:38.609Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:41.627Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:44.649Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:47.654Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:50.666Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:53.681Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:56.702Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:19:59.717Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:20:02.720Z] ❌ MySQL is not reachable.
+[2026-02-16T02:20:02.723Z] ❌ MySQL is not reachable. Server stopped.
+[2026-02-16T02:21:21.469Z] EventLoopDelay monitor enabled
+[2026-02-16T02:21:25.032Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:32.677Z] EventLoopDelay monitor enabled
+[2026-02-16T02:21:35.726Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:38.745Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:41.763Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:44.774Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:47.789Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:50.795Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:53.804Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:56.825Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:21:59.834Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:22:02.849Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:22:05.858Z] ❌ MySQL is not reachable.
+[2026-02-16T02:22:05.861Z] ❌ MySQL is not reachable. Server stopped.
+[2026-02-16T02:22:43.486Z] EventLoopDelay monitor enabled
+[2026-02-16T02:22:46.558Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:22:49.571Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:22:52.582Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:22:55.597Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:22:58.607Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:01.618Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:04.629Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:07.648Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:10.659Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:13.671Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:16.686Z] ❌ MySQL is not reachable.
+[2026-02-16T02:23:16.688Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-02-16T02:23:16.695Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-02-16T02:23:16.697Z] Server is running at http://localhost:3000
+[2026-02-16T02:23:16.757Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:16.763Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:16.765Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:16.789Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:16.820Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:21.177Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:21.190Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:39.649Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:39.659Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:23:40.839Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:26:19.164Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:26:19.168Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:26:19.782Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:27:03.892Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:27:03.900Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:27:48.659Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:27:48.670Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:29:04.909Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:29:04.913Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:29:17.402Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:29:17.409Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:30:55.656Z] EventLoopDelay monitor enabled
+[2026-02-16T02:30:56.691Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:30:59.707Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:02.717Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:05.735Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:08.742Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:11.754Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:14.762Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:17.767Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:20.775Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:23.786Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:26.795Z] ❌ MySQL is not reachable.
+[2026-02-16T02:31:26.797Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-02-16T02:31:26.801Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-02-16T02:31:26.802Z] Server is running at http://localhost:3000
+[2026-02-16T02:31:26.826Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:26.829Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:26.830Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:26.841Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:26.856Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:34.181Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:31:34.187Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:34:07.633Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:34:07.637Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:34:08.110Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:34:53.681Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:34:53.684Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:34:54.058Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:35:21.122Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:35:21.126Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:35:21.478Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:35:48.738Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:35:48.742Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:35:49.112Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:36:07.068Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:36:07.078Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:37:27.370Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:37:27.378Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:37:40.128Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:37:40.132Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:24.059Z] EventLoopDelay monitor enabled
+[2026-02-16T02:40:25.140Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:28.143Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:31.154Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:34.171Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:37.185Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:40.204Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:43.211Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:46.230Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:49.236Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:52.246Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.261Z] ❌ MySQL is not reachable.
+[2026-02-16T02:40:55.262Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-02-16T02:40:55.268Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-02-16T02:40:55.270Z] Server is running at http://localhost:3000
+[2026-02-16T02:40:55.309Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.312Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.313Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.329Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.351Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.369Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.380Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.417Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:55.422Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:40:56.045Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:45:19.920Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:45:19.924Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:45:21.426Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:45:56.936Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:45:56.941Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:45:57.374Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:47:13.349Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:48:24.363Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:48:24.371Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:48:24.435Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:48:41.175Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:48:41.179Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:48:46.269Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:05.521Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:05.528Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:05.559Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:14.510Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:14.516Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:38.766Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:38.771Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:39.140Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:41.301Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:41.305Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:49:41.608Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:23.136Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:23.140Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:23.609Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:25.568Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:25.573Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:25.866Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:29.079Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:29.083Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:29.389Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:31.987Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:31.992Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:42.445Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:47.895Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:47.900Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:48.265Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:51.581Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:51.588Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:50:56.973Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:46.179Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:46.183Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:46.572Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:47.385Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:47.389Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:47.644Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:48.690Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:48.694Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:48.935Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:49.818Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:49.821Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:50.066Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:51.390Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:51.394Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:54.540Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:54.545Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:51:55.057Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:11.466Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:11.471Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:12.077Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:26.479Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:26.484Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:26.938Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:36.718Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:36.722Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:37.105Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:49.415Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:49.419Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:54:49.759Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:55:01.009Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:55:01.012Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:55:01.372Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:55:14.590Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:55:14.594Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:55:25.307Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:57:04.981Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:57:04.987Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:57:13.419Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:57:52.308Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T02:57:52.315Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:00:56.406Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:00:56.410Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:02:31.400Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:02:31.408Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:02:39.154Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:02:39.159Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:17.942Z] EventLoopDelay monitor enabled
+[2026-02-16T03:03:19.115Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:22.132Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:25.144Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:28.152Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:31.168Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:34.176Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:37.186Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:40.191Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:43.202Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:46.211Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.215Z] ❌ MySQL is not reachable.
+[2026-02-16T03:03:49.216Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-02-16T03:03:49.220Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-02-16T03:03:49.222Z] Server is running at http://localhost:3000
+[2026-02-16T03:03:49.256Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.260Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.261Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.276Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.309Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.655Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:03:49.661Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:04:19.558Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T03:04:19.563Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306

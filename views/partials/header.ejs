@@ -202,18 +202,26 @@
     </div>
     <header>
         <div class="container header-container">
-            <div class="logo">
-                <a href="<%= typeof isEn !== 'undefined' && isEn ? '/en' : '/' %>" style="text-decoration: none; color: inherit;">
-                    <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="64" height="64" decoding="async" fetchpriority="high">
-                </a>
-            </div>
-            
-            <!-- Toggle Button -->
-            <button class="menu-dot" aria-expanded="false" aria-label="Toggle Menu">
-                <span class="dot"></span>
-            </button>
+            <% if(typeof isEn !== 'undefined' && isEn) { %>
+                <div class="logo">
+                    <a href="/en" style="text-decoration: none; color: inherit;">
+                        <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="64" height="64" decoding="async" fetchpriority="high">
+                    </a>
+                </div>
+                <button class="menu-dot" aria-expanded="false" aria-label="Toggle Menu">
+                    <span class="dot"></span>
+                </button>
+            <% } else { %>
+                <button class="menu-dot" aria-expanded="false" aria-label="Toggle Menu">
+                    <span class="dot"></span>
+                </button>
+                <div class="logo">
+                    <a href="/" style="text-decoration: none; color: inherit;">
+                        <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="64" height="64" decoding="async" fetchpriority="high">
+                    </a>
+                </div>
+            <% } %>
 
-            <!-- Menu -->
             <nav class="header-menu">
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
                     <i class="ri-moon-line"></i>
