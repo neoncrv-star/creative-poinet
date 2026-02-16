@@ -134,6 +134,11 @@
         </div>
         <div id="uploadsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; max-height: 60vh; overflow: auto;"></div>
     </div>
+    <style>
+        #uploadsGrid img{width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid #eee}
+        .upload-tile{cursor:pointer;position:relative}
+        .upload-tile span{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:.75rem;padding:2px 4px;border-radius:0 0 8px 8px;direction:ltr}
+    </style>
 </div>
 
 <script>
@@ -161,21 +166,20 @@ function closeUploadsBrowser() {
     }
 }
 async function refreshUploads() {
-    var qInput = document.getElementById('uploadsSearch');
-    var q = qInput && qInput.value ? qInput.value.trim().toLowerCase() : '';
+    var searchInput = document.getElementById('uploadsSearch');
+    var q = searchInput && searchInput.value ? searchInput.value.trim().toLowerCase() : '';
     var res = await fetch('/admin/uploads/list');
     var json = await res.json();
     var grid = document.getElementById('uploadsGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    (json.files || []).filter(function(f) {
-        return !q || f.name.toLowerCase().includes(q);
-    }).forEach(function(f) {
+    (json.files || []).filter(function (f) {
+        return !q || (f.name && f.name.toLowerCase().includes(q));
+    }).forEach(function (f) {
         var div = document.createElement('div');
-        div.style.cursor = 'pointer';
-        div.innerHTML = '<img src="' + f.url + '" alt="' + f.name + '" style="width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid #eee"><span style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:.75rem;padding:2px 4px;border-radius:0 0 8px 8px;direction:ltr;display:block;text-align:center;">' + f.name + '</span>';
-        div.style.position = 'relative';
-        div.onclick = function() { selectExistingImage(f.url); };
+        div.className = 'upload-tile';
+        div.onclick = function () { selectExistingImage(f.url); };
+        div.innerHTML = '<img src="' + f.url + '" alt="' + (f.name || "") + '"><span>' + (f.name || "") + '</span>';
         grid.appendChild(div);
     });
 }
@@ -207,4 +211,3 @@ function selectExistingImage(url) {
 </style>
 
 <%- include('layout-footer') %>
-

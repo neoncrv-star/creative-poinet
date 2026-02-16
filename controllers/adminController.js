@@ -1136,6 +1136,8 @@ exports.postAddService = async (req, res) => {
             existingImage
         } = req.body;
 
+        const normalizedExistingImage = normalizeAsset(existingImage);
+
         const data = {
             title_ar,
             title_en,
@@ -1154,8 +1156,8 @@ exports.postAddService = async (req, res) => {
             seoKeywords: seoKeywords || null
         };
 
-        if (existingImage) {
-            data.image = existingImage;
+        if (normalizedExistingImage) {
+            data.image = normalizedExistingImage;
         } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
@@ -1208,6 +1210,8 @@ exports.postEditService = async (req, res) => {
             existingImage
         } = req.body;
 
+        const normalizedExistingImage = normalizeAsset(existingImage);
+
         const data = {
             title_ar,
             title_en,
@@ -1226,8 +1230,8 @@ exports.postEditService = async (req, res) => {
             seoKeywords: seoKeywords || null
         };
 
-        if (existingImage) {
-            data.image = existingImage;
+        if (normalizedExistingImage) {
+            data.image = normalizedExistingImage;
         } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
