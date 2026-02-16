@@ -438,7 +438,25 @@ app.use((req, res, next) => {
         try {
             if (!value) return value;
             const v = String(value).trim();
-            if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) return v;
+
+            if (/^https?:\/\//i.test(v)) {
+                try {
+                    const url = new URL(v);
+                    const pathname = url.pathname || '';
+                    const idx = pathname.lastIndexOf('/uploads/');
+                    if (idx !== -1) {
+                        const filename = pathname.substring(idx + '/uploads/'.length).replace(/^\/+/, '');
+                        const m = filename.match(/^([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
+                        if (m) return `/uploads/${m[1]}.${m[2].toLowerCase()}`;
+                        return `/uploads/${filename}`;
+                    }
+                } catch {
+                }
+                return v;
+            }
+
+            if (/^data:/i.test(v)) return v;
+
             const fixed = v.replace(/\/{2,}/g, '/');
             if (fixed.startsWith('/uploads/')) return fixed;
             if (fixed.startsWith('uploads/')) return '/' + fixed;

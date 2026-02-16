@@ -118,5 +118,37 @@
       });
     })();
     </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then(function (reg) {
+              try {
+                var worker = reg.active || reg.waiting || reg.installing;
+                if (worker) {
+                  worker.postMessage({ type: 'PRELOAD_ROUTES' });
+                } else if (reg.addEventListener) {
+                  reg.addEventListener('updatefound', function () {
+                    if (reg.installing) {
+                      reg.installing.addEventListener('statechange', function (e) {
+                        if (e.target.state === 'activated') {
+                          e.target.postMessage({ type: 'PRELOAD_ROUTES' });
+                        }
+                      });
+                    }
+                  });
+                }
+              } catch (e) {
+                console.debug('SW preload message error', e);
+              }
+            })
+            .catch(function (e) {
+              console.debug('Service worker registration failed', e);
+            });
+        });
+      }
+    </script>
 </body>
 </html>

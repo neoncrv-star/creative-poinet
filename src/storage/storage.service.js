@@ -48,18 +48,20 @@ function mapDbValueToLocal(dbValue) {
     if (!dbValue) return '';
     const v = String(dbValue).trim();
     if (!v) return '';
-    if (/^https?:\/\//i.test(v)) {
-        if (!UPLOAD_URL) return '';
-        try {
+    try {
+        if (/^https?:\/\//i.test(v)) {
             const url = new URL(v);
-            if (localHost && url.host.toLowerCase() === localHost && url.pathname.startsWith(localPrefix)) {
-                const parts = url.pathname.split('/');
+            const pathname = url.pathname || '';
+            const idxPath = pathname.lastIndexOf('/uploads/');
+            if (idxPath !== -1) {
+                return pathname.substring(idxPath + '/uploads/'.length).replace(/^\/+/, '');
+            }
+            if (localHost && url.host.toLowerCase() === localHost && pathname.startsWith(localPrefix)) {
+                const parts = pathname.split('/');
                 return parts[parts.length - 1];
             }
-            return '';
-        } catch {
-            return '';
         }
+    } catch {
     }
     const idx = v.lastIndexOf('/uploads/');
     if (idx !== -1) {
