@@ -1,6 +1,59 @@
 /* =========================================
    Services Section Styles - Corrected & Safe
    ========================================= */
+/* =========================================
+   ✨ إضافة Smooth Scrolling للقسم
+   ========================================= */
+
+.services-horizontal-section {
+    width: 100%;
+    background: radial-gradient(circle at top, #111 0, #050505 55%, #000 100%);
+    padding: 0;
+    position: relative;
+    overflow: visible;
+    
+    /* ✅ إضافة Scroll Behavior السلس */
+    scroll-behavior: smooth;
+}
+
+/* ✨ تحسين تجربة السكرول */
+.services-list-column {
+    padding: 15vh 0 15vh 0;
+    
+    /* ✅ إضافة CSS Scroll Snap كبديل احتياطي */
+    scroll-snap-type: y proximity;
+    overflow-y: visible;
+}
+
+.service-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 255, 255, 0.01));
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 32px;
+    overflow: hidden;
+    
+    /* ✅ زيادة المسافة للسماح بالوصول للمنتصف */
+    margin-bottom: 40vh;
+    
+    /* ✅ إضافة Snap Point */
+    scroll-snap-align: center;
+    scroll-snap-stop: normal;
+    
+    /* الحالة الافتراضية */
+    opacity: 0.25;
+    filter: blur(5px);
+    transform: scale(0.95);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ✅ زيادة Scroll Padding لتحسين المحاذاة */
+.services-panel-container {
+    display: flex;
+    flex-direction: column;
+    scroll-padding: 50vh 0;
+}
+
 
 /* 1. الحاوية الرئيسية */
 .services-horizontal-section {

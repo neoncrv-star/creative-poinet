@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         gsap.registerPlugin(ScrollTrigger);
 
+        // إزالة ScrollTriggers القديمة
         ScrollTrigger.getAll().forEach(t => {
             if (t.vars && t.vars.id === 'service-card-trigger') t.kill();
         });
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let currentActiveIndex = -1;
 
+        // تحديث الصورة والنص
         const updateMedia = (index) => {
             if (index === currentActiveIndex) return;
             currentActiveIndex = index;
@@ -52,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
 
+        // تفعيل الكرت المحدد
         const activateCard = (index) => {
             cards.forEach((c, i) => {
                 const isActive = (i === index);
@@ -69,14 +72,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
 
+        // ✨ الجزء الجديد: إضافة Snap و Pin
         cards.forEach((card, index) => {
             ScrollTrigger.create({
                 id: 'service-card-trigger',
                 trigger: card,
-                start: "center center",
-                end: "center center+=1",
+                start: "top center",       // ← يبدأ عندما يصل أعلى الكرت لمنتصف الشاشة
+                end: "bottom center",      // ← ينتهي عندما يصل أسفل الكرت لمنتصف الشاشة
+                
+                // ✅ الإضافة الأهم: Snap
+                snap: {
+                    snapTo: 0.5,           // ← يثبت الكرت في المنتصف (0.5 = 50%)
+                    duration: { min: 0.3, max: 0.6 }, // ← سرعة الانتقال
+                    delay: 0.1,            // ← تأخير بسيط للسلاسة
+                    ease: "power2.inOut"   // ← منحنى الحركة
+                },
+                
                 toggleClass: "is-in-view",
                 invalidateOnRefresh: true,
+                
                 onEnter: () => {
                     activateCard(index);
                     updateMedia(index);
@@ -88,12 +102,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
+        // تفعيل أول كرت افتراضياً
         activateCard(0);
         updateMedia(0);
 
         ScrollTrigger.refresh();
     };
 
+    // التحميل الآمن
     if (window.scrollManager && typeof window.scrollManager.section === 'function') {
         window.scrollManager.section('services', (gsap, ScrollTrigger) => {
             initServices(gsap, ScrollTrigger);
