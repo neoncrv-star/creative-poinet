@@ -34,9 +34,6 @@ const resolveServiceImageDiagnostics = () => {
                     }
                 } catch {}
                 debugLog(`SERVICE_IMG id=${s.id} raw="${raw}" rel="${rel}" exists=${exists} abs="${abs}"`);
-                if (!exists && raw) {
-                    s.image = null;
-                }
             });
         } catch (e) {
             debugLog(`SERVICE_IMG_DIAG_ERROR: ${e && e.message}`);
