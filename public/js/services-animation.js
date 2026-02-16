@@ -98,15 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (window.innerWidth >= 900) {
-            ScrollTrigger.create({
-                trigger: section,
-                start: "top top+=80",
-                end: "bottom bottom-=80",
-                pin: mediaSticky,
-                scrub: 0.7,
-                anticipatePin: 1
-            });
-
             gsap.to(mediaImage, {
                 y: 40,
                 scale: 1.05,
@@ -138,8 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             ScrollTrigger.create({
                 trigger: card,
-                start: "top 80%",
-                end: "top 40%",
+                start: "top center",
+                end: "bottom center",
                 onEnter: function () {
                     gsap.to(card, {
                         y: 0,
