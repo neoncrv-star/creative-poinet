@@ -322,3 +322,9 @@
 [2026-02-16T03:19:29.012Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-16T03:19:29.015Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-16T03:22:24.684Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T08:30:49.268Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T08:30:49.292Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T08:30:52.448Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T08:31:06.347Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T08:31:06.352Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T08:31:14.154Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306

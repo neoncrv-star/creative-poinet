@@ -98,17 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (window.innerWidth >= 900) {
-            gsap.to(mediaImage, {
-                y: 40,
-                scale: 1.05,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: 0.5
-                }
-            });
         }
 
         cards.forEach(function (card, index) {

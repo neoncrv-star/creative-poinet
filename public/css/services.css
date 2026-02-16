@@ -84,7 +84,7 @@ body.lang-ar .services-header-note {
 
 .services-media-sticky {
     position: sticky;
-    top: 50%;
+    top: 50vh;
     transform: translateY(-50%);
     width: 100%;
 }
@@ -276,7 +276,7 @@ body.lang-ar .services-header-note {
     will-change: transform, opacity, filter;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1024px) {
     .services-layout {
         grid-template-columns: 1fr;
         gap: 32px;
@@ -290,6 +290,7 @@ body.lang-ar .services-header-note {
     }
 
     .services-media-column {
+        display: none;
         align-items: stretch;
     }
 
