@@ -1,17 +1,7 @@
 /**
  * ════════════════════════════════════════════════════════════════════
- * Services Section Animation - Production Ready
+ * Services Animation - Final Fixed (No Pin Conflicts)
  * ════════════════════════════════════════════════════════════════════
- * 
- * ميزات:
- * - Smooth scroll snapping للكروت
- * - تغيير تلقائي للصور والنصوص
- * - تأثيرات بصرية احترافية (blur, opacity, scale)
- * - حماية من الأخطاء وإدارة آمنة للذاكرة
- * - دعم كامل للموبايل
- * 
- * @version 2.0.0
- * @author Creative Point
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -19,10 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
     
     if (typeof window === 'undefined') return;
 
-    // ════════════════════════════════════════════════════════════════
-    // 1. Main Initialization Function
-    // ════════════════════════════════════════════════════════════════
-    
     const initServices = (gsap, ScrollTrigger) => {
         if (!gsap || !ScrollTrigger) {
             console.warn('[Services] GSAP or ScrollTrigger not available');
@@ -37,13 +23,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ════════════════════════════════════════════════════════════
-        // 2. Cleanup Old Triggers
+        // Cleanup Old Triggers
         // ════════════════════════════════════════════════════════════
         
         try {
             ScrollTrigger.getAll().forEach(trigger => {
-                if (trigger.vars && trigger.vars.id === 'service-card-trigger') {
-                    trigger.kill(true); // ← true للتنظيف الكامل
+                if (trigger.vars && trigger.vars.id && trigger.vars.id.includes('service')) {
+                    trigger.kill(true);
                 }
             });
         } catch (e) {
@@ -51,12 +37,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ════════════════════════════════════════════════════════════
-        // 3. DOM Elements Selection
+        // DOM Elements
         // ════════════════════════════════════════════════════════════
         
         const section = document.querySelector('.services-horizontal-section');
         if (!section) {
-            console.info('[Services] Section not found, skipping initialization');
+            console.info('[Services] Section not found');
             return;
         }
 
@@ -65,33 +51,23 @@ document.addEventListener('DOMContentLoaded', function () {
         const mediaTitle = section.querySelector('.services-media-title');
         const mediaText = section.querySelector('.services-media-text');
 
-        if (!cards.length) {
-            console.warn('[Services] No service cards found');
-            return;
-        }
-
-        if (!mediaImage) {
-            console.warn('[Services] Media image element not found');
+        if (!cards.length || !mediaImage) {
+            console.warn('[Services] Required elements not found');
             return;
         }
 
         // ════════════════════════════════════════════════════════════
-        // 4. State Management
+        // State
         // ════════════════════════════════════════════════════════════
         
         let currentActiveIndex = -1;
         let isUpdating = false;
 
         // ════════════════════════════════════════════════════════════
-        // 5. Media Update Function (الصورة والنص)
+        // Update Media Function
         // ════════════════════════════════════════════════════════════
         
-        /**
-         * تحديث الصورة والنص بناءً على الكارت النشط
-         * @param {number} index - رقم الكارت
-         */
         const updateMedia = (index) => {
-            // منع التحديثات المتكررة
             if (index === currentActiveIndex || isUpdating) return;
             
             isUpdating = true;
@@ -107,21 +83,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const newTitle = card.getAttribute('data-title');
             const newDesc = card.getAttribute('data-description');
 
-            // Timeline للانتقال السلس
             const tl = gsap.timeline({
                 onComplete: () => {
                     isUpdating = false;
                 }
             });
 
-            // Fade Out
             tl.to([mediaImage, mediaTitle, mediaText], {
                 opacity: 0,
                 y: 10,
                 duration: 0.25,
                 ease: "power1.in",
                 onComplete: () => {
-                    // تحديث المحتوى
                     try {
                         if (newSrc && mediaImage && mediaImage.tagName === 'IMG') {
                             mediaImage.src = newSrc;
@@ -138,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // Fade In
             tl.to([mediaImage, mediaTitle, mediaText], {
                 opacity: 1,
                 y: 0,
@@ -149,13 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         // ════════════════════════════════════════════════════════════
-        // 6. Card Activation Function (تفعيل الكارت)
+        // Activate Card Function
         // ════════════════════════════════════════════════════════════
         
-        /**
-         * تفعيل كارت معين وإلغاء تفعيل الباقي
-         * @param {number} activeIndex - رقم الكارت المراد تفعيله
-         */
         const activateCard = (activeIndex) => {
             cards.forEach((card, index) => {
                 const isActive = (index === activeIndex);
@@ -163,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 try {
                     if (isActive) {
-                        // تفعيل الكارت
                         card.classList.add('active-service');
                         
                         gsap.to(card, { 
@@ -183,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             });
                         }
                     } else {
-                        // إلغاء التفعيل
                         card.classList.remove('active-service');
                         
                         gsap.to(card, { 
@@ -210,29 +176,20 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         // ════════════════════════════════════════════════════════════
-        // 7. ScrollTrigger Setup - Individual Cards
+        // ScrollTrigger - Card Based Only (NO SECTION SNAP)
         // ════════════════════════════════════════════════════════════
         
         cards.forEach((card, index) => {
             try {
                 ScrollTrigger.create({
-                    id: 'service-card-trigger',
+                    id: `service-card-${index}`,
                     trigger: card,
-                    start: "center center",
-                    end: "center center",
+                    start: "top center",
+                    end: "bottom center",
                     
-                    // ✅ Snap للوسط
-                    snap: {
-                        snapTo: "center",
-                        duration: 0.4,
-                        delay: 0,
-                        ease: "power2.inOut"
-                    },
+                    // ✅ لا Pin - لا Snap على القسم
+                    // فقط تفعيل/تعطيل الكارت
                     
-                    toggleClass: "is-in-view",
-                    invalidateOnRefresh: true,
-                    
-                    // Callbacks
                     onEnter: () => {
                         activateCard(index);
                         updateMedia(index);
@@ -241,7 +198,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     onEnterBack: () => {
                         activateCard(index);
                         updateMedia(index);
-                    }
+                    },
+                    
+                    // Optional: Debug
+                    // markers: true,
+                    
+                    invalidateOnRefresh: true
                 });
                 
             } catch (e) {
@@ -250,44 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // ════════════════════════════════════════════════════════════
-        // 8. ScrollTrigger Setup - Section Snap
-        // ════════════════════════════════════════════════════════════
-        
-        try {
-            ScrollTrigger.create({
-                id: 'service-section-snap',
-                trigger: section,
-                start: "top top",
-                end: "bottom bottom",
-                
-                snap: {
-                    snapTo: (progress) => {
-                        try {
-                            // حساب أقرب كارت للمنتصف
-                            const positions = Array.from(cards).map((card) => {
-                                const rect = card.getBoundingClientRect();
-                                const offset = rect.top + rect.height / 2 - window.innerHeight / 2;
-                                return Math.abs(offset);
-                            });
-                            
-                            const nearestIndex = positions.indexOf(Math.min(...positions));
-                            return nearestIndex / Math.max(1, cards.length - 1);
-                            
-                        } catch (e) {
-                            console.warn('[Services] Snap calculation error:', e.message);
-                            return progress;
-                        }
-                    },
-                    duration: { min: 0.3, max: 0.6 },
-                    ease: "power1.inOut"
-                }
-            });
-        } catch (e) {
-            console.warn('[Services] Section snap failed:', e.message);
-        }
-
-        // ════════════════════════════════════════════════════════════
-        // 9. Initial State
+        // Initial State
         // ════════════════════════════════════════════════════════════
         
         try {
@@ -298,27 +223,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ════════════════════════════════════════════════════════════
-        // 10. Refresh ScrollTrigger
+        // Safe Refresh (بعد 100ms)
         // ════════════════════════════════════════════════════════════
         
         setTimeout(() => {
             try {
                 ScrollTrigger.refresh(true);
+                console.info('[Services] Animation initialized successfully');
             } catch (e) {
-                console.warn('[Services] Refresh failed:', e.message);
+                console.warn('[Services] Refresh failed (safe to ignore):', e.message);
             }
         }, 100);
-
-        console.info('[Services] Animation initialized successfully');
     };
 
     // ════════════════════════════════════════════════════════════════
-    // 11. Safe Loading Mechanism
+    // Safe Loading
     // ════════════════════════════════════════════════════════════════
     
-    /**
-     * المحاولة 1: استخدام scrollManager (الأفضل)
-     */
     if (window.scrollManager && typeof window.scrollManager.section === 'function') {
         window.scrollManager.section('services', (gsap, ScrollTrigger) => {
             initServices(gsap, ScrollTrigger);
@@ -326,9 +247,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    /**
-     * المحاولة 2: استخدام safeScrollTrigger
-     */
     if (typeof window.safeScrollTrigger === 'function') {
         window.safeScrollTrigger((gsap, ScrollTrigger) => {
             initServices(gsap, ScrollTrigger);
@@ -336,13 +254,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    /**
-     * المحاولة 3: التحميل المباشر (Fallback)
-     */
     if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') {
-        console.warn('[Services] GSAP/ScrollTrigger unavailable, waiting for load...');
+        console.warn('[Services] GSAP/ScrollTrigger unavailable, waiting...');
         
-        // انتظار تحميل GSAP
         const checkInterval = setInterval(() => {
             if (window.gsap && window.ScrollTrigger) {
                 clearInterval(checkInterval);
@@ -350,18 +264,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, 100);
         
-        // Timeout بعد 5 ثواني
         setTimeout(() => {
             clearInterval(checkInterval);
-            console.error('[Services] GSAP/ScrollTrigger failed to load after 5 seconds');
+            console.error('[Services] GSAP/ScrollTrigger failed to load');
         }, 5000);
         
         return;
     }
 
-    /**
-     * المحاولة 4: التحميل الفوري
-     */
     try {
         initServices(window.gsap || window.GSAP, window.ScrollTrigger);
     } catch (e) {
