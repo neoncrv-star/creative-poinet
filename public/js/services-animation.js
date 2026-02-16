@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         let currentActiveIndex = -1;
         let isUpdating = false;
+        let isAnimatingCard = false;
 
         // ════════════════════════════════════════════════════════════
         // Update Media Function
@@ -174,42 +175,100 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         };
-
-        // ════════════════════════════════════════════════════════════
-        // ScrollTrigger - Card Based Only (NO SECTION SNAP)
-        // ════════════════════════════════════════════════════════════
         
-        cards.forEach((card, index) => {
-            try {
-                ScrollTrigger.create({
-                    id: `service-card-${index}`,
-                    trigger: card,
-                    start: "top center",
-                    end: "bottom center",
-                    
-                    // ✅ لا Pin - لا Snap على القسم
-                    // فقط تفعيل/تعطيل الكارت
-                    
-                    onEnter: () => {
-                        activateCard(index);
-                        updateMedia(index);
-                    },
-                    
-                    onEnterBack: () => {
-                        activateCard(index);
-                        updateMedia(index);
-                    },
-                    
-                    // Optional: Debug
-                    // markers: true,
-                    
-                    invalidateOnRefresh: true
-                });
-                
-            } catch (e) {
-                console.warn('[Services] Failed to create trigger for card', index, e.message);
+        const scrollToCardCenter = (index) => {
+            const card = cards[index];
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+            const target = window.scrollY + rect.top - (viewportHeight / 2 - rect.height / 2);
+            window.scrollTo({
+                top: target,
+                behavior: 'smooth'
+            });
+        };
+
+        const goToCard = (targetIndex, direction) => {
+            if (isAnimatingCard || isUpdating) return;
+            if (targetIndex < 0 || targetIndex >= cards.length) return;
+
+            const fromIndex = currentActiveIndex < 0 ? 0 : currentActiveIndex;
+            if (targetIndex === fromIndex) return;
+
+            isAnimatingCard = true;
+
+            const currentCard = cards[fromIndex];
+            const nextCard = cards[targetIndex];
+
+            scrollToCardCenter(targetIndex);
+
+            const outY = direction > 0 ? -120 : 120;
+            const inY = direction > 0 ? 120 : -120;
+
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    isAnimatingCard = false;
+                }
+            });
+
+            if (currentCard) {
+                tl.to(currentCard, {
+                    y: outY,
+                    opacity: 0,
+                    filter: "blur(10px)",
+                    duration: 0.45,
+                    ease: "power2.inOut"
+                }, 0);
             }
-        });
+
+            if (nextCard) {
+                tl.fromTo(nextCard, {
+                    y: inY,
+                    opacity: 0,
+                    filter: "blur(8px)"
+                }, {
+                    y: 0,
+                    opacity: 1,
+                    filter: "blur(0px)",
+                    duration: 0.55,
+                    ease: "power2.out"
+                }, currentCard ? 0.1 : 0);
+            }
+
+            tl.add(() => {
+                activateCard(targetIndex);
+                updateMedia(targetIndex);
+            }, 0.2);
+        };
+
+        const isDesktop = (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
+
+        if (isDesktop && cards.length > 1) {
+            const wheelHandler = (event) => {
+                if (isAnimatingCard || isUpdating) return;
+
+                const rect = section.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+                const centerLine = viewportHeight * 0.5;
+
+                const insideVertical = rect.top < centerLine && rect.bottom > centerLine;
+                if (!insideVertical) return;
+
+                const direction = event.deltaY > 0 ? 1 : -1;
+                const nextIndex = currentActiveIndex < 0
+                    ? (direction > 0 ? 1 : 0)
+                    : currentActiveIndex + direction;
+
+                if (nextIndex < 0 || nextIndex >= cards.length) {
+                    return;
+                }
+
+                event.preventDefault();
+                goToCard(nextIndex, direction);
+            };
+
+            section.addEventListener('wheel', wheelHandler, { passive: false });
+        }
 
         // ════════════════════════════════════════════════════════════
         // Initial State
