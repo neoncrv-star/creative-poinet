@@ -1,8 +1,9 @@
 /* =========================================
-   Services Section Styles - Corrected & Safe
+   Services Section Styles - Final Fixed Version
    ========================================= */
+
 /* =========================================
-   ✨ إضافة Smooth Scrolling للقسم
+   ✨ Smooth Scrolling & Snap Configuration
    ========================================= */
 
 .services-horizontal-section {
@@ -11,59 +12,7 @@
     padding: 0;
     position: relative;
     overflow: visible;
-    
-    /* ✅ إضافة Scroll Behavior السلس */
     scroll-behavior: smooth;
-}
-
-/* ✨ تحسين تجربة السكرول */
-.services-list-column {
-    padding: 15vh 0 15vh 0;
-    
-    /* ✅ إضافة CSS Scroll Snap كبديل احتياطي */
-    scroll-snap-type: y proximity;
-    overflow-y: visible;
-}
-
-.service-card {
-    position: relative;
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 255, 255, 0.01));
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 32px;
-    overflow: hidden;
-    
-    /* ✅ زيادة المسافة للسماح بالوصول للمنتصف */
-    margin-bottom: 40vh;
-    
-    /* ✅ إضافة Snap Point */
-    scroll-snap-align: center;
-    scroll-snap-stop: normal;
-    
-    /* الحالة الافتراضية */
-    opacity: 0.25;
-    filter: blur(5px);
-    transform: scale(0.95);
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* ✅ زيادة Scroll Padding لتحسين المحاذاة */
-.services-panel-container {
-    display: flex;
-    flex-direction: column;
-    scroll-padding: 50vh 0;
-}
-
-
-/* 1. الحاوية الرئيسية */
-.services-horizontal-section {
-    width: 100%;
-    /* خلفية متدرجة داكنة */
-    background: radial-gradient(circle at top, #111 0, #050505 55%, #000 100%);
-    padding: 0;
-    position: relative;
-    /* مهم جداً: هذا يمنع تعارض السكرول مع التثبيت */
-    overflow: visible; 
 }
 
 .services-horizontal-wrapper {
@@ -72,18 +21,22 @@
     padding-inline: clamp(16px, 5vw, 32px);
 }
 
-/* 2. الشبكة (Grid Layout) */
+/* =========================================
+   2. Grid Layout (الشبكة)
+   ========================================= */
+
 .services-layout {
     display: grid;
-    /* العمود الأول للصورة (أصغر قليلاً) - العمود الثاني للنصوص */
     grid-template-columns: 0.9fr 1.1fr; 
-    /* stretch تجعل عمود الصور يمتد لطول القائمة، مما يسمح للصورة بالحركة داخله */
     align-items: stretch; 
     gap: 60px;
     position: relative;
 }
 
-/* --- Header Section (العناوين) --- */
+/* =========================================
+   3. Header Section (العناوين)
+   ========================================= */
+
 .services-header {
     display: flex;
     justify-content: space-between;
@@ -139,29 +92,24 @@ body.lang-ar .services-header-note {
     max-width: 480px;
 }
 
-/* --- 3. عمود الصور المثبت (Sticky Image Column) --- */
+/* =========================================
+   4. Sticky Image Column (عمود الصور المثبت)
+   ========================================= */
+
 .services-media-column {
     position: relative;
-    /* لا تضع overflow: hidden هنا أبداً لأنه يوقف التثبيت */
 }
 
-/* الحاوية التي ستثبت فعلياً */
 .services-media-sticky {
-    /* استخدام sticky بدلاً من GSAP Pin */
     position: -webkit-sticky;
     position: sticky;
     top: 0;
-    
-    /* الارتفاع 100vh يجعل الصورة دائماً تتوسط الشاشة */
     height: 100vh;
     width: 100%;
-    
-    /* Flexbox لتوسيط الإطار داخل الـ vh */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
     z-index: 10;
     padding: 20px 0;
 }
@@ -169,7 +117,7 @@ body.lang-ar .services-header-note {
 .services-media-frame {
     width: 100%;
     max-width: 480px;
-    aspect-ratio: 4/5; /* الحفاظ على نسبة الطول للعرض */
+    aspect-ratio: 4/5;
     border-radius: 26px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: radial-gradient(circle at top left, rgba(255, 0, 0, 0.16), rgba(5, 5, 5, 0.98));
@@ -192,15 +140,15 @@ body.lang-ar .services-header-note {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* حركات ناعمة عند تغيير الصورة */
     transition: transform 0.7s ease, opacity 0.4s ease, filter 0.4s ease;
 }
 
 .services-media-image-placeholder {
-    background: radial-gradient(circle at 30% 20%, rgba(255, 0, 0, 0.25), transparent 55%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08), transparent 60%), linear-gradient(135deg, #141414, #050505);
+    background: radial-gradient(circle at 30% 20%, rgba(255, 0, 0, 0.25), transparent 55%), 
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08), transparent 60%), 
+                linear-gradient(135deg, #141414, #050505);
 }
 
-/* تأثير التحبيب (Grain) */
 .services-media-grain {
     position: absolute;
     inset: -1px;
@@ -212,27 +160,53 @@ body.lang-ar .services-header-note {
         radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.6) 0, transparent 55%);
 }
 
-/* النصوص التابعة للصورة (Title & Text inside sticky) */
 .services-media-copy {
     margin-top: 24px;
     text-align: center;
-    position: absolute;
-    bottom: -100px; /* إخفاؤها أو وضعها تحت الصورة */
-    opacity: 0; /* يتم التحكم بها عبر JS */
 }
 
-/* --- 4. قائمة الكروت المتحركة (Scrolling List) --- */
+.services-media-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 8px;
+}
+
+.services-media-title {
+    font-size: 1.5rem;
+    margin: 8px 0;
+    color: #fff;
+}
+
+.services-media-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* =========================================
+   5. Cards List Column (قائمة الكروت)
+   ========================================= */
+
 .services-list-column {
-    /* مسافة علوية وسفلية كبيرة للسماح بالوصول للمنتصف */
-    padding: 15vh 0 15vh 0;
+    padding: 50vh 0;
+    scroll-snap-type: y proximity;
+    overflow-y: visible;
 }
 
 .services-panel-container {
     display: flex;
     flex-direction: column;
+    scroll-padding: 50vh 0;
 }
 
-/* --- تنسيق الكرت (الوضع الافتراضي / غير النشط) --- */
+/* =========================================
+   6. Service Card Styles (تنسيق الكروت)
+   ========================================= */
+
 .service-card {
     position: relative;
     background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 255, 255, 0.01));
@@ -241,19 +215,23 @@ body.lang-ar .services-header-note {
     padding: 32px;
     overflow: hidden;
     
-    /* المسافة الكبيرة هي سر السكرول الاحترافي */
-    margin-bottom: 35vh; 
+    /* ✅ المسافة الكبيرة = سر السكرول السلس */
+    margin-bottom: 100vh;
+    min-height: 300px;
     
-    /* الحالة الافتراضية: شفاف ومغبش */
+    /* ✅ Snap Configuration */
+    scroll-snap-align: center;
+    scroll-snap-stop: normal;
+    
+    /* الحالة الافتراضية */
     opacity: 0.25;
     filter: blur(5px);
     transform: scale(0.95);
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* إزالة المسافة من آخر كرت */
 .service-card:last-child {
-    margin-bottom: 0;
+    margin-bottom: 50vh;
 }
 
 .service-card::before {
@@ -267,8 +245,7 @@ body.lang-ar .services-header-note {
     pointer-events: none;
 }
 
-/* --- تنسيق الكرت (الوضع النشط - Active State) --- */
-/* يتم إضافة هذا الكلاس بواسطة الجافاسكربت */
+/* ✅ Active State */
 .service-card.active-service {
     opacity: 1;
     filter: blur(0);
@@ -283,7 +260,10 @@ body.lang-ar .services-header-note {
     transform: translate3d(0, 0, 0);
 }
 
-/* --- عناصر داخل الكرت --- */
+/* =========================================
+   7. Card Inner Elements
+   ========================================= */
+
 .service-card-header {
     display: flex;
     align-items: center;
@@ -365,13 +345,13 @@ body.lang-ar .services-header-note {
 }
 
 /* =========================================
-   Responsive (الموبايل والتابلت)
+   8. Responsive (الموبايل والتابلت)
    ========================================= */
 
 @media screen and (max-width: 1024px) {
     .services-layout {
         display: flex;
-        flex-direction: column-reverse; /* عكس الترتيب ليظهر المحتوى بشكل منطقي */
+        flex-direction: column-reverse;
         gap: 40px;
     }
 
@@ -383,7 +363,6 @@ body.lang-ar .services-header-note {
         padding-top: 40px;
     }
 
-    /* إخفاء عمود الصور في الموبايل لتخفيف الحمل وتحسين التجربة */
     .services-media-column {
         display: none; 
     }
@@ -398,7 +377,6 @@ body.lang-ar .services-header-note {
         padding: 0;
     }
 
-    /* تنسيق الكروت للموبايل (بدون مسافات كبيرة وبدون تغبيش) */
     .service-card {
         margin-bottom: 24px;
         opacity: 1;
@@ -412,7 +390,6 @@ body.lang-ar .services-header-note {
         margin-bottom: 0;
     }
 
-    /* إلغاء تأثيرات الـ Hover/Active المعقدة في الموبايل */
     .service-card.active-service {
         transform: none;
         box-shadow: none;

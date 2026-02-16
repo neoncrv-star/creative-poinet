@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         gsap.registerPlugin(ScrollTrigger);
 
-        // إزالة ScrollTriggers القديمة
+        // تنظيف ScrollTriggers القديمة
         ScrollTrigger.getAll().forEach(t => {
             if (t.vars && t.vars.id === 'service-card-trigger') t.kill();
         });
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
 
-        // تفعيل الكرت المحدد
+        // تفعيل الكرت النشط
         const activateCard = (index) => {
             cards.forEach((c, i) => {
                 const isActive = (i === index);
@@ -72,20 +72,20 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
 
-        // ✨ الجزء الجديد: إضافة Snap و Pin
+        // ✨ الحل الأساسي: ScrollTrigger مع Snap
         cards.forEach((card, index) => {
             ScrollTrigger.create({
                 id: 'service-card-trigger',
                 trigger: card,
-                start: "top center",       // ← يبدأ عندما يصل أعلى الكرت لمنتصف الشاشة
-                end: "bottom center",      // ← ينتهي عندما يصل أسفل الكرت لمنتصف الشاشة
+                start: "center center",    // ← الكرت يبدأ التفعيل عندما يكون في المنتصف
+                end: "center center",      // ← ينتهي في نفس النقطة
                 
-                // ✅ الإضافة الأهم: Snap
+                // ✅ هذا هو المهم: تثبيت الكرت في المنتصف
                 snap: {
-                    snapTo: 0.5,           // ← يثبت الكرت في المنتصف (0.5 = 50%)
-                    duration: { min: 0.3, max: 0.6 }, // ← سرعة الانتقال
-                    delay: 0.1,            // ← تأخير بسيط للسلاسة
-                    ease: "power2.inOut"   // ← منحنى الحركة
+                    snapTo: "center",      // ← يثبت في المنتصف بالضبط
+                    duration: 0.4,         // ← مدة الحركة للوصول للمنتصف
+                    delay: 0,              // ← بدون تأخير
+                    ease: "power2.inOut"   // ← منحنى سلس
                 },
                 
                 toggleClass: "is-in-view",
@@ -102,7 +102,28 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // تفعيل أول كرت افتراضياً
+        // ✨ إضافة Snap للقسم بأكمله
+        ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: "bottom bottom",
+            snap: {
+                snapTo: (progress) => {
+                    // حساب أقرب كارت للمنتصف
+                    const positions = Array.from(cards).map((card, i) => {
+                        const rect = card.getBoundingClientRect();
+                        const offset = rect.top + rect.height / 2 - window.innerHeight / 2;
+                        return Math.abs(offset);
+                    });
+                    const nearestIndex = positions.indexOf(Math.min(...positions));
+                    return nearestIndex / (cards.length - 1);
+                },
+                duration: { min: 0.3, max: 0.6 },
+                ease: "power1.inOut"
+            }
+        });
+
+        // تفعيل أول كرت
         activateCard(0);
         updateMedia(0);
 
