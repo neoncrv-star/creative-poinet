@@ -216,6 +216,7 @@ exports.getDashboard = async (req, res) => {
     try {
         const projectCount = await Project.count();
         const postCount = await Post.count();
+        const serviceCount = await Service.count();
         // Calculate total views
         const projectViews = await Project.sum('views') || 0;
         const postViews = await Post.sum('views') || 0;
@@ -229,6 +230,7 @@ exports.getDashboard = async (req, res) => {
             title: 'لوحة التحكم | الرئيسية',
             projectCount,
             postCount,
+            serviceCount,
             partnerCount,
             newContactsCount,
             visitorCount: totalViews,
@@ -240,6 +242,7 @@ exports.getDashboard = async (req, res) => {
             title: 'لوحة التحكم | الرئيسية',
             projectCount: 0,
             postCount: 0,
+            serviceCount: 0,
             partnerCount: 0,
             newContactsCount: 0,
             visitorCount: 0,
