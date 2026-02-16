@@ -1,51 +1,145 @@
+/**
+ * ════════════════════════════════════════════════════════════════════
+ * Services Section Animation - Production Ready
+ * ════════════════════════════════════════════════════════════════════
+ * 
+ * ميزات:
+ * - Smooth scroll snapping للكروت
+ * - تغيير تلقائي للصور والنصوص
+ * - تأثيرات بصرية احترافية (blur, opacity, scale)
+ * - حماية من الأخطاء وإدارة آمنة للذاكرة
+ * - دعم كامل للموبايل
+ * 
+ * @version 2.0.0
+ * @author Creative Point
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
+    'use strict';
+    
     if (typeof window === 'undefined') return;
 
+    // ════════════════════════════════════════════════════════════════
+    // 1. Main Initialization Function
+    // ════════════════════════════════════════════════════════════════
+    
     const initServices = (gsap, ScrollTrigger) => {
-        if (!gsap || !ScrollTrigger) return;
+        if (!gsap || !ScrollTrigger) {
+            console.warn('[Services] GSAP or ScrollTrigger not available');
+            return;
+        }
 
-        gsap.registerPlugin(ScrollTrigger);
+        try {
+            gsap.registerPlugin(ScrollTrigger);
+        } catch (e) {
+            console.error('[Services] Failed to register ScrollTrigger:', e);
+            return;
+        }
 
-        // تنظيف ScrollTriggers القديمة
-        ScrollTrigger.getAll().forEach(t => {
-            if (t.vars && t.vars.id === 'service-card-trigger') t.kill();
-        });
+        // ════════════════════════════════════════════════════════════
+        // 2. Cleanup Old Triggers
+        // ════════════════════════════════════════════════════════════
+        
+        try {
+            ScrollTrigger.getAll().forEach(trigger => {
+                if (trigger.vars && trigger.vars.id === 'service-card-trigger') {
+                    trigger.kill(true); // ← true للتنظيف الكامل
+                }
+            });
+        } catch (e) {
+            console.warn('[Services] Cleanup warning:', e.message);
+        }
 
+        // ════════════════════════════════════════════════════════════
+        // 3. DOM Elements Selection
+        // ════════════════════════════════════════════════════════════
+        
         const section = document.querySelector('.services-horizontal-section');
-        if (!section) return;
+        if (!section) {
+            console.info('[Services] Section not found, skipping initialization');
+            return;
+        }
 
         const cards = section.querySelectorAll('.service-card');
         const mediaImage = section.querySelector('.services-media-image-inner');
         const mediaTitle = section.querySelector('.services-media-title');
         const mediaText = section.querySelector('.services-media-text');
 
-        if (!cards.length || !mediaImage) return;
+        if (!cards.length) {
+            console.warn('[Services] No service cards found');
+            return;
+        }
 
+        if (!mediaImage) {
+            console.warn('[Services] Media image element not found');
+            return;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // 4. State Management
+        // ════════════════════════════════════════════════════════════
+        
         let currentActiveIndex = -1;
+        let isUpdating = false;
 
-        // تحديث الصورة والنص
+        // ════════════════════════════════════════════════════════════
+        // 5. Media Update Function (الصورة والنص)
+        // ════════════════════════════════════════════════════════════
+        
+        /**
+         * تحديث الصورة والنص بناءً على الكارت النشط
+         * @param {number} index - رقم الكارت
+         */
         const updateMedia = (index) => {
-            if (index === currentActiveIndex) return;
+            // منع التحديثات المتكررة
+            if (index === currentActiveIndex || isUpdating) return;
+            
+            isUpdating = true;
             currentActiveIndex = index;
 
             const card = cards[index];
+            if (!card) {
+                isUpdating = false;
+                return;
+            }
+
             const newSrc = card.getAttribute('data-image');
             const newTitle = card.getAttribute('data-title');
             const newDesc = card.getAttribute('data-description');
 
-            const tl = gsap.timeline();
+            // Timeline للانتقال السلس
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    isUpdating = false;
+                }
+            });
 
+            // Fade Out
             tl.to([mediaImage, mediaTitle, mediaText], {
                 opacity: 0,
                 y: 10,
                 duration: 0.25,
                 ease: "power1.in",
                 onComplete: () => {
-                    if (newSrc && mediaImage.tagName === 'IMG') mediaImage.src = newSrc;
-                    if (newTitle && mediaTitle) mediaTitle.textContent = newTitle;
-                    if (newDesc && mediaText) mediaText.textContent = newDesc;
+                    // تحديث المحتوى
+                    try {
+                        if (newSrc && mediaImage && mediaImage.tagName === 'IMG') {
+                            mediaImage.src = newSrc;
+                        }
+                        if (newTitle && mediaTitle) {
+                            mediaTitle.textContent = newTitle;
+                        }
+                        if (newDesc && mediaText) {
+                            mediaText.textContent = newDesc;
+                        }
+                    } catch (e) {
+                        console.warn('[Services] Media update error:', e.message);
+                    }
                 }
-            }).to([mediaImage, mediaTitle, mediaText], {
+            });
+
+            // Fade In
+            tl.to([mediaImage, mediaTitle, mediaText], {
                 opacity: 1,
                 y: 0,
                 duration: 0.4,
@@ -54,83 +148,177 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
 
-        // تفعيل الكرت النشط
-        const activateCard = (index) => {
-            cards.forEach((c, i) => {
-                const isActive = (i === index);
-                const marker = c.querySelector('.service-card-marker');
+        // ════════════════════════════════════════════════════════════
+        // 6. Card Activation Function (تفعيل الكارت)
+        // ════════════════════════════════════════════════════════════
+        
+        /**
+         * تفعيل كارت معين وإلغاء تفعيل الباقي
+         * @param {number} activeIndex - رقم الكارت المراد تفعيله
+         */
+        const activateCard = (activeIndex) => {
+            cards.forEach((card, index) => {
+                const isActive = (index === activeIndex);
+                const marker = card.querySelector('.service-card-marker');
 
-                if (isActive) {
-                    c.classList.add('active-service');
-                    gsap.to(c, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.5 });
-                    if (marker) gsap.to(marker, { background: "#ff0000", scale: 1.2, duration: 0.3 });
-                } else {
-                    c.classList.remove('active-service');
-                    gsap.to(c, { opacity: 0.3, filter: "blur(4px)", scale: 0.95, duration: 0.5 });
-                    if (marker) gsap.to(marker, { background: "transparent", scale: 1, duration: 0.3 });
+                try {
+                    if (isActive) {
+                        // تفعيل الكارت
+                        card.classList.add('active-service');
+                        
+                        gsap.to(card, { 
+                            opacity: 1, 
+                            filter: "blur(0px)", 
+                            scale: 1, 
+                            duration: 0.5,
+                            ease: "power2.out"
+                        });
+                        
+                        if (marker) {
+                            gsap.to(marker, { 
+                                background: "#ff0000", 
+                                scale: 1.2, 
+                                duration: 0.3,
+                                ease: "back.out(1.7)"
+                            });
+                        }
+                    } else {
+                        // إلغاء التفعيل
+                        card.classList.remove('active-service');
+                        
+                        gsap.to(card, { 
+                            opacity: 0.3, 
+                            filter: "blur(4px)", 
+                            scale: 0.95, 
+                            duration: 0.5,
+                            ease: "power2.out"
+                        });
+                        
+                        if (marker) {
+                            gsap.to(marker, { 
+                                background: "transparent", 
+                                scale: 1, 
+                                duration: 0.3,
+                                ease: "power2.out"
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('[Services] Card activation error:', e.message);
                 }
             });
         };
 
-        // ✨ الحل الأساسي: ScrollTrigger مع Snap
+        // ════════════════════════════════════════════════════════════
+        // 7. ScrollTrigger Setup - Individual Cards
+        // ════════════════════════════════════════════════════════════
+        
         cards.forEach((card, index) => {
-            ScrollTrigger.create({
-                id: 'service-card-trigger',
-                trigger: card,
-                start: "center center",    // ← الكرت يبدأ التفعيل عندما يكون في المنتصف
-                end: "center center",      // ← ينتهي في نفس النقطة
+            try {
+                ScrollTrigger.create({
+                    id: 'service-card-trigger',
+                    trigger: card,
+                    start: "center center",
+                    end: "center center",
+                    
+                    // ✅ Snap للوسط
+                    snap: {
+                        snapTo: "center",
+                        duration: 0.4,
+                        delay: 0,
+                        ease: "power2.inOut"
+                    },
+                    
+                    toggleClass: "is-in-view",
+                    invalidateOnRefresh: true,
+                    
+                    // Callbacks
+                    onEnter: () => {
+                        activateCard(index);
+                        updateMedia(index);
+                    },
+                    
+                    onEnterBack: () => {
+                        activateCard(index);
+                        updateMedia(index);
+                    }
+                });
                 
-                // ✅ هذا هو المهم: تثبيت الكرت في المنتصف
-                snap: {
-                    snapTo: "center",      // ← يثبت في المنتصف بالضبط
-                    duration: 0.4,         // ← مدة الحركة للوصول للمنتصف
-                    delay: 0,              // ← بدون تأخير
-                    ease: "power2.inOut"   // ← منحنى سلس
-                },
-                
-                toggleClass: "is-in-view",
-                invalidateOnRefresh: true,
-                
-                onEnter: () => {
-                    activateCard(index);
-                    updateMedia(index);
-                },
-                onEnterBack: () => {
-                    activateCard(index);
-                    updateMedia(index);
-                }
-            });
-        });
-
-        // ✨ إضافة Snap للقسم بأكمله
-        ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: "bottom bottom",
-            snap: {
-                snapTo: (progress) => {
-                    // حساب أقرب كارت للمنتصف
-                    const positions = Array.from(cards).map((card, i) => {
-                        const rect = card.getBoundingClientRect();
-                        const offset = rect.top + rect.height / 2 - window.innerHeight / 2;
-                        return Math.abs(offset);
-                    });
-                    const nearestIndex = positions.indexOf(Math.min(...positions));
-                    return nearestIndex / (cards.length - 1);
-                },
-                duration: { min: 0.3, max: 0.6 },
-                ease: "power1.inOut"
+            } catch (e) {
+                console.warn('[Services] Failed to create trigger for card', index, e.message);
             }
         });
 
-        // تفعيل أول كرت
-        activateCard(0);
-        updateMedia(0);
+        // ════════════════════════════════════════════════════════════
+        // 8. ScrollTrigger Setup - Section Snap
+        // ════════════════════════════════════════════════════════════
+        
+        try {
+            ScrollTrigger.create({
+                id: 'service-section-snap',
+                trigger: section,
+                start: "top top",
+                end: "bottom bottom",
+                
+                snap: {
+                    snapTo: (progress) => {
+                        try {
+                            // حساب أقرب كارت للمنتصف
+                            const positions = Array.from(cards).map((card) => {
+                                const rect = card.getBoundingClientRect();
+                                const offset = rect.top + rect.height / 2 - window.innerHeight / 2;
+                                return Math.abs(offset);
+                            });
+                            
+                            const nearestIndex = positions.indexOf(Math.min(...positions));
+                            return nearestIndex / Math.max(1, cards.length - 1);
+                            
+                        } catch (e) {
+                            console.warn('[Services] Snap calculation error:', e.message);
+                            return progress;
+                        }
+                    },
+                    duration: { min: 0.3, max: 0.6 },
+                    ease: "power1.inOut"
+                }
+            });
+        } catch (e) {
+            console.warn('[Services] Section snap failed:', e.message);
+        }
 
-        ScrollTrigger.refresh();
+        // ════════════════════════════════════════════════════════════
+        // 9. Initial State
+        // ════════════════════════════════════════════════════════════
+        
+        try {
+            activateCard(0);
+            updateMedia(0);
+        } catch (e) {
+            console.warn('[Services] Initial state error:', e.message);
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // 10. Refresh ScrollTrigger
+        // ════════════════════════════════════════════════════════════
+        
+        setTimeout(() => {
+            try {
+                ScrollTrigger.refresh(true);
+            } catch (e) {
+                console.warn('[Services] Refresh failed:', e.message);
+            }
+        }, 100);
+
+        console.info('[Services] Animation initialized successfully');
     };
 
-    // التحميل الآمن
+    // ════════════════════════════════════════════════════════════════
+    // 11. Safe Loading Mechanism
+    // ════════════════════════════════════════════════════════════════
+    
+    /**
+     * المحاولة 1: استخدام scrollManager (الأفضل)
+     */
     if (window.scrollManager && typeof window.scrollManager.section === 'function') {
         window.scrollManager.section('services', (gsap, ScrollTrigger) => {
             initServices(gsap, ScrollTrigger);
@@ -138,6 +326,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    /**
+     * المحاولة 2: استخدام safeScrollTrigger
+     */
     if (typeof window.safeScrollTrigger === 'function') {
         window.safeScrollTrigger((gsap, ScrollTrigger) => {
             initServices(gsap, ScrollTrigger);
@@ -145,10 +336,35 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    /**
+     * المحاولة 3: التحميل المباشر (Fallback)
+     */
     if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') {
-        console.warn('Services Animation: GSAP/ScrollTrigger unavailable, skipping.');
+        console.warn('[Services] GSAP/ScrollTrigger unavailable, waiting for load...');
+        
+        // انتظار تحميل GSAP
+        const checkInterval = setInterval(() => {
+            if (window.gsap && window.ScrollTrigger) {
+                clearInterval(checkInterval);
+                initServices(window.gsap, window.ScrollTrigger);
+            }
+        }, 100);
+        
+        // Timeout بعد 5 ثواني
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            console.error('[Services] GSAP/ScrollTrigger failed to load after 5 seconds');
+        }, 5000);
+        
         return;
     }
 
-    initServices(window.gsap || window.GSAP, window.ScrollTrigger);
+    /**
+     * المحاولة 4: التحميل الفوري
+     */
+    try {
+        initServices(window.gsap || window.GSAP, window.ScrollTrigger);
+    } catch (e) {
+        console.error('[Services] Initialization failed:', e);
+    }
 });
