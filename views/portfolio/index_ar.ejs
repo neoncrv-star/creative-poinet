@@ -46,7 +46,7 @@
                                 <a href="/portfolio/<%= project.id %>" class="item-link">
                                     <div class="item-image-wrapper">
                                         <% if (project.image) { %>
-                                            <img src="<%= project.image %>" alt="<%= project.title %>">
+                                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title %>">
                                         <% } else { %>
                                             <div class="no-image">🖼️</div>
                                         <% } %>

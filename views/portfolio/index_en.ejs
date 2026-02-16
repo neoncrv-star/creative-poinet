@@ -49,8 +49,8 @@
                                 <a href="<%= projectLink %>" class="item-link">
                                     <div class="item-image-wrapper">
                                         <% if (project.image) { %>
-                                            <img src="<%= project.image %>" alt="<%= project.title %>">
-                                        <% } else { %>
+                                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title %>">
+                                        <% } %>
                                             <div class="no-image">🖼️</div>
                                         <% } %>
                                         <div class="item-overlay">

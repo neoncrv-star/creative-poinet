@@ -641,28 +641,29 @@ async function startServer() {
                 return;
             }
             try {
-                const rows = await Service.findAll();
-                let c = 0;
-                for (const s of rows) {
-                    const v = s.image;
-                    if (!v) continue;
-                    if (/^https?:\/\//i.test(v) || /^data:/i.test(v)) continue;
-                    let vv = String(v).trim().replace(/\/{2,}/g, '/');
-                    if (!vv.startsWith('/uploads/')) {
-                        if (vv.startsWith('uploads/')) vv = '/' + vv;
-                        else {
-                            const m = vv.match(/^([a-f0-9]{16,64})\.(webp|png|jpg|jpeg|gif|avif|svg|jfif)$/i);
-                            vv = m ? `/uploads/${m[1]}.${m[2].toLowerCase()}` : `/uploads/${vv.replace(/^\//,'')}`;
+                const normalizeImageField = async (Model, fieldName, label) => {
+                    const rows = await Model.findAll();
+                    let c = 0;
+                    for (const row of rows) {
+                        const v = row[fieldName];
+                        if (!v) continue;
+                        const filename = storageService.mapDbValueToLocal(v);
+                        if (!filename) continue;
+                        const canonical = storageService.toDbValue(filename);
+                        if (canonical !== v) {
+                            await row.update({ [fieldName]: canonical });
+                            c++;
                         }
                     }
-                    if (vv !== v) {
-                        await s.update({ image: vv });
-                        c++;
-                    }
-                }
-                if (c > 0) debugLog(`normalized Service.image ${c}`);
+                    if (c > 0) debugLog(`normalized ${label} ${c}`);
+                };
+                await normalizeImageField(Service, 'image', 'Service.image');
+                const Project = require('./models/Project');
+                const Post = require('./models/Post');
+                await normalizeImageField(Project, 'image', 'Project.image');
+                await normalizeImageField(Post, 'image', 'Post.image');
             } catch (e) {
-                debugLog('service normalize error: ' + (e && e.message));
+                debugLog('asset normalize error: ' + (e && e.message));
             }
         }, 1200);
     });

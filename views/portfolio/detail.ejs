@@ -21,9 +21,9 @@
                 <% if(project.image) { %>
                     <div class="project-featured-wrapper">
                         <% if (project.image.endsWith('.mp4') || project.image.endsWith('.webm')) { %>
-                            <video src="<%= project.image %>" class="project-featured-image" muted loop playsinline autoplay></video>
+                            <video src="<%= assetPath(project.image) %>" class="project-featured-image" muted loop playsinline autoplay></video>
                         <% } else { %>
-                            <img src="<%= project.image %>" alt="<%= project.title %>" class="project-featured-image">
+                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title %>" class="project-featured-image">
                         <% } %>
                     </div>
                 <% } %>

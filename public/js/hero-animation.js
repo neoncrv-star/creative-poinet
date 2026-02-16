@@ -46,7 +46,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrub: 1,
                 pin: true,
                 anticipatePin: 1,
-                invalidateOnRefresh: true
+                invalidateOnRefresh: true,
+                onUpdate: function (self) {
+                    if (typeof window !== 'undefined') {
+                        window.__CP_HERO_ACTIVE = self.isActive && self.progress < 1;
+                    }
+                    if (typeof ScrollTrigger === 'undefined') return;
+                    if (!stickySection || typeof Node === 'undefined') return;
+                    var all = ScrollTrigger.getAll ? ScrollTrigger.getAll() : [];
+                    for (var i = 0; i < all.length; i++) {
+                        var t = all[i];
+                        if (!t || t === self) continue;
+                        var trg = t.trigger || t.pin;
+                        if (!trg || !trg.parentNode || !trg.isConnected) continue;
+                        var rel;
+                        try {
+                            rel = stickySection.compareDocumentPosition(trg);
+                        } catch (e) {
+                            continue;
+                        }
+                        var isBelow = !!(rel & Node.DOCUMENT_POSITION_FOLLOWING);
+                        if (!isBelow) continue;
+                        if (self.isActive && self.progress < 1) {
+                            if (!t._cpHeroLocked) {
+                                t._cpHeroLocked = true;
+                                if (typeof t.disable === 'function') {
+                                    t.disable();
+                                }
+                            }
+                        } else if (t._cpHeroLocked) {
+                            t._cpHeroLocked = false;
+                            if (typeof t.enable === 'function') {
+                                t.enable();
+                            }
+                            if (typeof t.refresh === 'function') {
+                                try { t.refresh(); } catch (e) {}
+                            }
+                        }
+                    }
+                },
+                onLeave: function (self) {
+                    if (typeof window !== 'undefined') {
+                        window.__CP_HERO_ACTIVE = false;
+                        window.__CP_HERO_DONE = true;
+                    }
+                },
+                onEnterBack: function () {
+                    if (typeof window !== 'undefined') {
+                        window.__CP_HERO_ACTIVE = true;
+                    }
+                }
             }
         });
 

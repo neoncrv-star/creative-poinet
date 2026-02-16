@@ -142,7 +142,7 @@
             <div class="services-horizontal-wrapper">
                 <% 
                 var firstServiceEn = (services && services.length > 0) ? services[0] : null;
-                var firstImageEn = firstServiceEn && firstServiceEn.image ? firstServiceEn.image : '';
+                var firstImageEn = firstServiceEn && firstServiceEn.image ? assetPath(firstServiceEn.image) : '';
                 var firstTitleEn = firstServiceEn ? (firstServiceEn.title_en || firstServiceEn.title_ar || firstServiceEn.title) : 'Visual Identity';
                 var firstDescEn = firstServiceEn ? (firstServiceEn.description_en || firstServiceEn.description_ar) : 'Where every brand starts from a clear, strong visual foundation.';
                 %>
@@ -188,7 +188,7 @@
                                     <article 
                                         class="service-card" 
                                         id="service-<%= index + 1 %>"
-                                        data-image="<%= service.image || '' %>"
+                                        data-image="<%= assetPath(service.image || '') %>"
                                         data-title="<%= service.title_en || service.title_ar || service.title || '' %>"
                                         data-description="<%= service.description_en || service.description_ar || '' %>"
                                     >
@@ -325,9 +325,9 @@
                                     <div class="swiper-slide">
                                         <div class="project-card">
                                             <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
-                                                <video src="<%= project.image %>" muted loop playsinline></video>
+                                                <video src="<%= assetPath(project.image) %>" muted loop playsinline></video>
                                             <% } else if (project.image) { %>
-                                            <img src="<%= project.image %>" alt="<%= project.title_en || project.title %>" width="1200" height="800" loading="lazy" decoding="async">
+                                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title_en || project.title %>" width="1200" height="800" loading="lazy" decoding="async">
                                             <% } else { %>
                                             <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project Placeholder" width="800" height="600" loading="lazy" decoding="async">
                                             <% } %>
@@ -383,7 +383,7 @@
                     <% if (partners && partners.length > 0) { %>
                         <% partners.forEach(partner => { %>
                             <div class="partner-item" data-gsap="fade-up">
-                                <img src="<%= partner.logo %>" alt="<%= partner.name %>" title="<%= partner.name %>" loading="lazy" decoding="async" width="200" height="80">
+                                <img src="<%= assetPath(partner.logo || '') %>" alt="<%= partner.name %>" title="<%= partner.name %>" loading="lazy" decoding="async" width="200" height="80">
                             </div>
                         <% }) %>
                     <% } else { %>
@@ -419,7 +419,7 @@
                                 <article class="blog-card">
                                     <% if (post.image) { %>
                                         <div class="blog-image">
-                                            <img src="<%= post.image %>" alt="<%= post.title %>">
+                                            <img src="<%= assetPath(post.image) %>" alt="<%= post.title %>">
                                         </div>
                                     <% } %>
                                     <div class="blog-content">

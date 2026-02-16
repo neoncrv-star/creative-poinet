@@ -34,7 +34,7 @@
                     <% posts.forEach((post, index) => { %>
                         <article class="blog-card" data-gsap="fade-up">
                             <% if(post.image) { %>
-                                <img src="<%= post.image %>" alt="<%= post.title %>" class="blog-card-image">
+                                <img src="<%= assetPath(post.image) %>" alt="<%= post.title %>" class="blog-card-image">
                             <% } %>
                             <div class="blog-card-content">
                                 <span class="blog-card-date">
