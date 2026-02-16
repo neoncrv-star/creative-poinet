@@ -1137,6 +1137,20 @@ exports.postAddService = async (req, res) => {
         } = req.body;
 
         const normalizedExistingImage = normalizeAsset(existingImage);
+        let finalExistingImage = normalizedExistingImage;
+        if (finalExistingImage) {
+            try {
+                const filename = storageService.mapDbValueToLocal(finalExistingImage);
+                if (filename) {
+                    const abs = storageService.buildAbsolutePath(filename);
+                    if (!fs.existsSync(abs)) {
+                        finalExistingImage = '';
+                    }
+                }
+            } catch {
+                finalExistingImage = '';
+            }
+        }
 
         const data = {
             title_ar,
@@ -1156,8 +1170,8 @@ exports.postAddService = async (req, res) => {
             seoKeywords: seoKeywords || null
         };
 
-        if (normalizedExistingImage) {
-            data.image = normalizedExistingImage;
+        if (finalExistingImage) {
+            data.image = finalExistingImage;
         } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
@@ -1211,6 +1225,20 @@ exports.postEditService = async (req, res) => {
         } = req.body;
 
         const normalizedExistingImage = normalizeAsset(existingImage);
+        let finalExistingImage = normalizedExistingImage;
+        if (finalExistingImage) {
+            try {
+                const filename = storageService.mapDbValueToLocal(finalExistingImage);
+                if (filename) {
+                    const abs = storageService.buildAbsolutePath(filename);
+                    if (!fs.existsSync(abs)) {
+                        finalExistingImage = '';
+                    }
+                }
+            } catch {
+                finalExistingImage = '';
+            }
+        }
 
         const data = {
             title_ar,
@@ -1230,8 +1258,8 @@ exports.postEditService = async (req, res) => {
             seoKeywords: seoKeywords || null
         };
 
-        if (normalizedExistingImage) {
-            data.image = normalizedExistingImage;
+        if (finalExistingImage) {
+            data.image = finalExistingImage;
         } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
