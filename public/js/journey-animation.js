@@ -50,10 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        if (typeof window !== 'undefined') {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.journey = true;
-        }
     };
 
     // 🔥 Scroll Manager

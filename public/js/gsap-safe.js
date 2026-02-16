@@ -140,23 +140,8 @@
                 cleanup: null
             });
 
-            if (entry.inited) {
-                return {
-                    refresh: function () { scheduleRefresh(); },
-                    destroy: function () {
-                        if (entry.cleanup) {
-                            try { entry.cleanup(); } catch (e) {}
-                        }
-                        entry.inited = false;
-                        entry.cleanup = null;
-                    }
-                };
-            }
-
             if (typeof builder === "function") {
                 win.safeScrollTrigger(function (gsap, ScrollTrigger) {
-                    if (entry.inited) return;
-
                     entry.inited = true;
 
                     var cleanup = null;
@@ -174,7 +159,6 @@
                         entry.cleanup = cleanup;
                     }
 
-                    // 🔥 تأخير refresh لمنع flicker
                     setTimeout(scheduleRefresh, 60);
                 });
             }
