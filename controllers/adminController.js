@@ -14,6 +14,18 @@ const logFile = path.join(__dirname, '../debug.log');
 const pageCache = require('../utils/pageCache');
 const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
 
+let ensuredGlobalSeo = false;
+
+async function ensureGlobalSeoModelSync() {
+    if (ensuredGlobalSeo) return;
+    try {
+        await GlobalSeo.sync();
+        ensuredGlobalSeo = true;
+    } catch (e) {
+        console.error('GlobalSeo sync error:', e);
+    }
+}
+
 // Helper to delete file
 // NOTE: Intentionally disabled physical deletion to keep assets immutable.
 // Files are content-addressed and never removed to avoid accidental loss.
