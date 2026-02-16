@@ -15,6 +15,33 @@ const debugLog = (msg) => {
 };
 
 const withTimeout = require('../utils/withTimeout');
+const storageService = require('../src/storage/storage.service');
+
+const resolveServiceImageDiagnostics = () => {
+    return async (services) => {
+        try {
+            if (!Array.isArray(services) || !services.length) return;
+            services.slice(0, 12).forEach((s) => {
+                const raw = s.image || '';
+                let rel = '';
+                let abs = '';
+                let exists = false;
+                try {
+                    rel = storageService.mapDbValueToLocal(raw);
+                    if (rel) {
+                        abs = storageService.buildAbsolutePath(rel);
+                        exists = fs.existsSync(abs);
+                    }
+                } catch {}
+                debugLog(`SERVICE_IMG id=${s.id} raw="${raw}" rel="${rel}" exists=${exists} abs="${abs}"`);
+            });
+        } catch (e) {
+            debugLog(`SERVICE_IMG_DIAG_ERROR: ${e && e.message}`);
+        }
+    };
+};
+
+const diagnoseServiceImages = resolveServiceImageDiagnostics();
 
 exports.getHome = async (req, res) => {
     try {
@@ -30,6 +57,7 @@ exports.getHome = async (req, res) => {
         ]);
         const dt = Date.now() - t0;
         debugLog(`Home data fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
+        await diagnoseServiceImages(services);
         
         
         // Temporary override for video URL - using a direct MP4 link for reliability
@@ -86,6 +114,7 @@ exports.getHomeEn = async (req, res) => {
         ]);
         const dt = Date.now() - t0;
         debugLog(`Home(EN) data fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
+        await diagnoseServiceImages(services);
         
         
         // Temporary override for video URL - using a direct MP4 link for reliability
