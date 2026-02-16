@@ -585,6 +585,25 @@ async function ensureMySQLConnection(retries = 10) {
     process.exit(1);
 }
 
+async function ensureModelSchema(model) {
+    try {
+        if (!model) return;
+        const qi = sequelize.getQueryInterface();
+        const t = model.getTableName && model.getTableName();
+        const tableName = (typeof t === 'string' ? t : t && t.tableName) || model.tableName;
+        if (!tableName) return;
+        const columns = await qi.describeTable(tableName);
+        const attrs = model.rawAttributes || (model.getAttributes && model.getAttributes()) || {};
+        for (const key of Object.keys(attrs)) {
+            if (!columns[key]) {
+                await qi.addColumn(tableName, key, attrs[key]);
+            }
+        }
+    } catch (e) {
+        debugLog('ensureModelSchema error: ' + (e && e.message));
+    }
+}
+
 async function startServer() {
     const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
     if (dialect !== 'mysql') {
@@ -596,6 +615,7 @@ async function startServer() {
 
     await ensureMySQLConnection(10);
     if (!allowStartWithoutDb || app.locals.dbConnected !== false) {
+        await ensureModelSchema(GlobalSeo);
         await sequelize.sync(syncOptions);
         const msg = 'Database synced successfully (MySQL)';
         debugLog(msg);
