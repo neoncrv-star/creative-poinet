@@ -94,9 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
             gsap.registerPlugin(ScrollTrigger);
             const animateElements = document.querySelectorAll('[data-gsap]');
             if (!animateElements.length) return;
+
             const fadeUp = [];
             const fadeLeft = [];
             const fadeRight = [];
+
             animateElements.forEach(el => {
                 if (!el || !el.parentNode || !el.isConnected) return;
                 const type = el.getAttribute('data-gsap');
@@ -104,11 +106,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (type === 'fade-left') fadeLeft.push(el);
                 else if (type === 'fade-right') fadeRight.push(el);
             });
+
+            const filterForHeroState = (batch) => {
+                const hero = document.querySelector('.hero-sticky-section');
+                if (!hero) return batch;
+                const filtered = [];
+                batch.forEach(el => {
+                    if (!el || !el.parentNode || !el.isConnected) return;
+                    let isBelow = false;
+                    try {
+                        const rel = hero.compareDocumentPosition(el);
+                        isBelow = !!(rel & Node.DOCUMENT_POSITION_FOLLOWING);
+                    } catch (e) {
+                        isBelow = false;
+                    }
+                    if (!isBelow) {
+                        filtered.push(el);
+                        return;
+                    }
+                    if (typeof window !== 'undefined' && window.__CP_HERO_DONE === false) {
+                        return;
+                    }
+                    filtered.push(el);
+                });
+                return filtered;
+            };
+
+            const animateBatch = (batch, vars) => {
+                const list = filterForHeroState(batch);
+                if (!list || !list.length) return;
+                gsap.from(list, vars);
+            };
+
             if (fadeUp.length) {
                 ScrollTrigger.batch(fadeUp, {
                     start: 'top 85%',
                     onEnter: batch => {
-                        gsap.from(batch, {
+                        animateBatch(batch, {
                             y: 50,
                             opacity: 0,
                             duration: 1,
@@ -119,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     },
                     onEnterBack: batch => {
-                        gsap.from(batch, {
+                        animateBatch(batch, {
                             y: 50,
                             opacity: 0,
                             duration: 1,
@@ -131,11 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
+
             if (fadeLeft.length) {
                 ScrollTrigger.batch(fadeLeft, {
                     start: 'top 85%',
                     onEnter: batch => {
-                        gsap.from(batch, {
+                        animateBatch(batch, {
                             x: -50,
                             opacity: 0,
                             duration: 1,
@@ -146,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     },
                     onEnterBack: batch => {
-                        gsap.from(batch, {
+                        animateBatch(batch, {
                             x: -50,
                             opacity: 0,
                             duration: 1,
@@ -158,11 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
+
             if (fadeRight.length) {
                 ScrollTrigger.batch(fadeRight, {
                     start: 'top 85%',
                     onEnter: batch => {
-                        gsap.from(batch, {
+                        animateBatch(batch, {
                             x: 50,
                             opacity: 0,
                             duration: 1,
@@ -173,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     },
                     onEnterBack: batch => {
-                        gsap.from(batch, {
+                        animateBatch(batch, {
                             x: 50,
                             opacity: 0,
                             duration: 1,
