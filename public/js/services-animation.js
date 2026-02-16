@@ -1,187 +1,96 @@
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof window === 'undefined') return;
 
-    var start = function () {
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-            return;
+    var section = document.querySelector('.services-horizontal-section');
+    if (!section) return;
+
+    var serviceCards = section.querySelectorAll('.service-card');
+    var stickyImage = section.querySelector('.services-media-image-inner');
+    var stickyTitle = section.querySelector('.services-media-title');
+    var stickyDesc = section.querySelector('.services-media-text');
+
+    if (!serviceCards.length || !stickyImage || !stickyTitle || !stickyDesc) return;
+
+    function updateFromCard(card) {
+        if (!card) return;
+        serviceCards.forEach(function (c) {
+            c.classList.toggle('active-service', c === card);
+        });
+
+        var newImage = card.getAttribute('data-image') || '';
+        var newTitle = card.getAttribute('data-title') || '';
+        var newDesc = card.getAttribute('data-description') || '';
+
+        if (!newTitle) {
+            var tEl = card.querySelector('.service-card-title');
+            if (tEl) newTitle = tEl.textContent || '';
+        }
+        if (!newDesc) {
+            var dEl = card.querySelector('.service-card-desc');
+            if (dEl) newDesc = dEl.textContent || '';
         }
 
-        gsap.registerPlugin(ScrollTrigger);
+        if (stickyTitle) stickyTitle.textContent = newTitle;
+        if (stickyDesc) stickyDesc.textContent = newDesc;
 
-        var section = document.querySelector('.services-horizontal-section');
-        if (!section) {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-            return;
-        }
-
-        var mediaSticky = section.querySelector('.services-media-sticky');
-        var mediaImage = section.querySelector('.services-media-image-inner');
-        var mediaTitle = section.querySelector('.services-media-title');
-        var mediaText = section.querySelector('.services-media-text');
-        var cards = section.querySelectorAll('.service-card');
-
-        if (!mediaSticky || !mediaImage || !mediaTitle || !mediaText || !cards.length) {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-            return;
-        }
-
-        var activeIndex = -1;
-        var easing = "power3.out";
-        var inactiveOpacity = 0.35;
-        var activeOpacity = 1;
-        var inactiveBlur = 'blur(4px)';
-        var activeBlur = 'blur(0px)';
-
-        function setActive(card, index) {
-            if (!card || index === activeIndex) return;
-            activeIndex = index;
-
-            cards.forEach(function (c) {
-                if (!c) return;
-                var isActive = c === card;
-                c.classList.toggle('service-card-active', isActive);
-                var targetOpacity = isActive ? activeOpacity : inactiveOpacity;
-                var targetFilter = isActive ? activeBlur : inactiveBlur;
-                gsap.to(c, {
-                    opacity: targetOpacity,
-                    filter: targetFilter,
-                    duration: 0.4,
-                    ease: easing
-                });
-            });
-
-            var title = card.getAttribute('data-title') || '';
-            var description = card.getAttribute('data-description') || '';
-            var imageSrc = card.getAttribute('data-image') || '';
-
-            var targetTitle = title || (card.querySelector('.service-card-title') ? card.querySelector('.service-card-title').textContent : '');
-            var targetDesc = description || (card.querySelector('.service-card-desc') ? card.querySelector('.service-card-desc').textContent : '');
-
-            gsap.to([mediaTitle, mediaText], {
-                opacity: 0,
-                y: 12,
-                duration: 0.28,
-                ease: easing,
-                onComplete: function () {
-                    mediaTitle.textContent = targetTitle;
-                    mediaText.textContent = targetDesc;
-                    gsap.to([mediaTitle, mediaText], {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.42,
-                        ease: easing
-                    });
-                }
-            });
-
-            if (imageSrc && mediaImage.tagName === 'IMG') {
-                gsap.to(mediaImage, {
-                    scale: 1.03,
-                    filter: 'blur(4px)',
-                    duration: 0.28,
-                    ease: easing,
-                    onComplete: function () {
-                        mediaImage.setAttribute('src', imageSrc);
-                        gsap.to(mediaImage, {
-                            scale: 1,
-                            filter: 'blur(0px)',
-                            duration: 0.5,
-                            ease: easing
-                        });
-                    }
-                });
+        if (stickyImage && newImage) {
+            var current = stickyImage.getAttribute('src') || '';
+            if (current !== newImage) {
+                stickyImage.style.opacity = '0';
+                setTimeout(function () {
+                    stickyImage.onload = function () {
+                        stickyImage.style.opacity = '1';
+                        stickyImage.onload = null;
+                    };
+                    stickyImage.setAttribute('src', newImage);
+                }, 200);
             }
         }
+    }
 
-        if (window.innerWidth >= 900) {
-        }
-
-        cards.forEach(function (card, index) {
-            var divider = card.querySelector('.service-divider');
-
-            gsap.set(card, {
-                opacity: inactiveOpacity,
-                y: 26,
-                filter: inactiveBlur
-            });
-
-            if (divider) {
-                gsap.set(divider, {
-                    scaleX: 0,
-                    transformOrigin: "0% 50%"
+    function setupObserver() {
+        if (!('IntersectionObserver' in window)) {
+            window.addEventListener('scroll', function () {
+                var bestCard = null;
+                var bestScore = Infinity;
+                var viewportCenter = (window.innerHeight || document.documentElement.clientHeight || 0) / 2;
+                serviceCards.forEach(function (card) {
+                    var rect = card.getBoundingClientRect();
+                    var cardCenter = rect.top + rect.height / 2;
+                    var score = Math.abs(cardCenter - viewportCenter);
+                    if (score < bestScore) {
+                        bestScore = score;
+                        bestCard = card;
+                    }
                 });
-            }
-
-            ScrollTrigger.create({
-                trigger: card,
-                start: "top center",
-                end: "bottom center",
-                onEnter: function () {
-                    gsap.to(card, {
-                        y: 0,
-                        duration: 0.6,
-                        ease: easing
-                    });
-                    if (divider) {
-                        gsap.to(divider, {
-                            scaleX: 1,
-                            duration: 0.6,
-                            ease: easing
-                        });
-                    }
-                    setActive(card, index);
-                },
-                onEnterBack: function () {
-                    gsap.to(card, {
-                        y: 0,
-                        duration: 0.6,
-                        ease: easing
-                    });
-                    if (divider) {
-                        gsap.to(divider, {
-                            scaleX: 1,
-                            duration: 0.6,
-                            ease: easing
-                        });
-                    }
-                    setActive(card, index);
-                }
-            });
-        });
-
-        if (cards[0]) {
-            setActive(cards[0], 0);
+                if (bestCard) updateFromCard(bestCard);
+            }, { passive: true });
+            if (serviceCards[0]) updateFromCard(serviceCards[0]);
+            return;
         }
 
-        window.__CP_READY = window.__CP_READY || {};
-        window.__CP_READY.services = true;
-    };
+        var observerOptions = {
+            root: null,
+            rootMargin: '-40% 0px -40% 0px',
+            threshold: 0
+        };
 
-    if (window.scrollManager && typeof window.scrollManager.section === 'function') {
-        window.scrollManager.section('services', function (gsapRef, ScrollTriggerRef) {
-            if (!gsapRef || !ScrollTriggerRef) return;
-            start();
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                updateFromCard(entry.target);
+            });
+        }, observerOptions);
+
+        serviceCards.forEach(function (card) {
+            observer.observe(card);
         });
-        return;
+
+        if (serviceCards[0]) updateFromCard(serviceCards[0]);
     }
 
-    if (typeof window.safeScrollTrigger === 'function') {
-        window.safeScrollTrigger(function (gsapRef, ScrollTriggerRef) {
-            if (!gsapRef || !ScrollTriggerRef) return;
-            start();
-        });
-        return;
-    }
+    setupObserver();
 
-    if (typeof window.gsap === 'undefined' || typeof window.ScrollTrigger === 'undefined') {
-        window.__CP_READY = window.__CP_READY || {};
-        window.__CP_READY.services = true;
-        return;
-    }
-
-    start();
+    window.__CP_READY = window.__CP_READY || {};
+    window.__CP_READY.services = true;
 });
