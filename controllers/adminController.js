@@ -491,14 +491,16 @@ const collectAssetRefs = async () => {
         refs.push({ type, id, field, value, isExternal, exists, fileSize, title: title || '' });
     };
 
-    const [partners, projects, posts] = await Promise.all([
+    const [partners, projects, posts, services] = await Promise.all([
         require('../models/Partner').findAll(),
         require('../models/Project').findAll(),
-        require('../models/Post').findAll()
+        require('../models/Post').findAll(),
+        require('../models/Service').findAll()
     ]);
     partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
     projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title));
     posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title));
+    services.forEach(sv => pushRef('Service', sv.id, 'image', sv.image, sv.title_ar || sv.title_en));
     return refs;
 };
 

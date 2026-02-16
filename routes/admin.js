@@ -34,7 +34,8 @@ router.post('/account/password', adminController.postChangePassword);
 // Logs (protected)
 router.get('/logs', adminController.getLogs);
 
-// (Assets audit removed by policy; Services/Projects images are the single source of truth)
+router.get('/assets/audit', adminController.getAssetsAudit);
+router.post('/assets/upload/:filename', upload.single('file'), adminController.postAssetsUpload);
 
 // Health
 router.get('/health', adminController.getSiteHealth);
