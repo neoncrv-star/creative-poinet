@@ -13,55 +13,54 @@
             <thead>
                 <tr>
                     <th>الصورة</th>
-                    <th>العنوان (عربي)</th>
-                    <th>العنوان (إنجليزي)</th>
+                    <th>العنوان العربي</th>
+                    <th>العنوان الإنجليزي</th>
                     <th>الترتيب</th>
                     <th>الحالة</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
-                <% if (services.length > 0) { %>
-                    <% services.forEach(service => { %>
-                        <tr>
-                            <td>
-                                <% if (service.image) { %>
-                                    <img src="<%= service.image %>" alt="<%= service.title_ar %>" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; border-radius: 8px; padding: 5px; border: 1px solid #eee;">
-                                <% } else { %>
-                                    <div style="width: 50px; height: 50px; background: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-concierge-bell text-muted"></i>
-                                    </div>
-                                <% } %>
-                            </td>
-                            <td>
-                                <div style="font-weight: 600; color: var(--secondary-color);"><%= service.title_ar %></div>
-                            </td>
-                            <td>
-                                <div style="color: var(--text-muted); font-size: 0.9rem;"><%= service.title_en %></div>
-                            </td>
-                            <td>
-                                <span class="badge badge-read"><%= service.display_order %></span>
-                            </td>
-                            <td>
-                                <% if(service.is_active) { %>
-                                    <span class="badge" style="background: #dff9fb; color: #0984e3;">نشط</span>
-                                <% } else { %>
-                                    <span class="badge" style="background: #ffeaa7; color: #d35400;">غير نشط</span>
-                                <% } %>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 8px;">
-                                    <a href="/admin/services/edit/<%= service.id %>" class="btn btn-sm btn-info" title="تعديل">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="/admin/services/delete/<%= service.id %>" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')" title="حذف">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                <% services.forEach(function(service) { %>
+                    <tr>
+                        <td>
+                            <% if (service.image) { %>
+                                <img src="<%= assetPath(service.image) %>" alt="<%= service.title_ar || service.title_en %>" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            <% } else { %>
+                                <div style="width: 60px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image text-muted"></i>
                                 </div>
-                            </td>
-                        </tr>
-                    <% }) %>
-                <% } else { %>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div style="font-weight: 600; color: var(--secondary-color);"><%= service.title_ar %></div>
+                        </td>
+                        <td>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);"><%= service.title_en %></div>
+                        </td>
+                        <td>
+                            <span class="badge"><%= service.display_order %></span>
+                        </td>
+                        <td>
+                            <% if (service.is_active) { %>
+                                <span class="badge badge-read">مفعلة</span>
+                            <% } else { %>
+                                <span class="badge badge-unread">مخفية</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="/admin/services/edit/<%= service.id %>" class="btn btn-sm btn-info" title="تعديل">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/admin/services/delete/<%= service.id %>" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من حذف هذه الخدمة؟')" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+                <% if (services.length === 0) { %>
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
                             <i class="fas fa-layer-group fa-3x" style="display: block; margin-bottom: 1rem; opacity: 0.5;"></i>
@@ -75,3 +74,4 @@
 </div>
 
 <%- include('layout-footer') %>
+

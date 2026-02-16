@@ -10,112 +10,85 @@
 
     <form action="/admin/services/<%= service ? 'edit/' + service.id : 'add' %>" method="POST" enctype="multipart/form-data">
         <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-            <!-- Main Content Column -->
             <div class="form-main-col">
-                <div class="admin-card">
+                <div class="admin-card" style="margin-bottom: 1.5rem;">
                     <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-language"></i> البيانات باللغة العربية
+                        <i class="fas fa-layer-group"></i> بيانات الخدمة
                     </h3>
-                    <div class="form-group">
-                        <label>العنوان (عربي)</label>
-                        <input type="text" name="title_ar" value="<%= service ? service.title_ar : '' %>" placeholder="مثلاً: التصميم المعماري" required>
-                    </div>
-                    <div class="form-group">
-                        <label>الوصف (عربي)</label>
-                        <textarea name="description_ar" rows="4" placeholder="اكتب وصفاً تفصيلياً للخدمة باللغة العربية..." required><%= service ? service.description_ar : '' %></textarea>
-                    </div>
-                </div>
 
-                <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-globe"></i> البيانات باللغة الإنجليزية
-                    </h3>
-                    <div class="form-group">
-                        <label>العنوان (English)</label>
-                        <input type="text" name="title_en" value="<%= service ? service.title_en : '' %>" style="direction: ltr;" placeholder="e.g. Architectural Design" required>
-                    </div>
-                    <div class="form-group">
-                        <label>الوصف (English)</label>
-                        <textarea name="description_en" rows="4" style="direction: ltr;" placeholder="Write a detailed description in English..." required><%= service ? service.description_en : '' %></textarea>
-                    </div>
-                </div>
-
-                <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-tags"></i> الكلمات الدلالية للخدمة (تظهر أسفل الكرت)
-                    </h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <label>الكلمات بالعربية</label>
-                            <div class="form-group">
-                                <input type="text" name="tag1_ar" value="<%= service ? service.tag1_ar : 'استراتيجية' %>" placeholder="الكلمة الأولى">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="tag2_ar" value="<%= service ? service.tag2_ar : 'تصميم' %>" placeholder="الكلمة الثانية">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="tag3_ar" value="<%= service ? service.tag3_ar : 'تنفيذ' %>" placeholder="الكلمة الثالثة">
-                            </div>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>عنوان الخدمة (عربي)</label>
+                            <input type="text" name="title_ar" value="<%= service ? service.title_ar : '' %>" required>
                         </div>
-                        <div>
-                            <label>الكلمات بالإنجليزية</label>
-                            <div class="form-group">
-                                <input type="text" name="tag1_en" value="<%= service ? service.tag1_en : 'Strategy' %>" placeholder="First Tag" style="direction: ltr;">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="tag2_en" value="<%= service ? service.tag2_en : 'Design' %>" placeholder="Second Tag" style="direction: ltr;">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="tag3_en" value="<%= service ? service.tag3_en : 'Execution' %>" placeholder="Third Tag" style="direction: ltr;">
-                            </div>
+                        <div class="form-group">
+                            <label>Service Title (English)</label>
+                            <input type="text" name="title_en" value="<%= service ? service.title_en : '' %>" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>وصف مختصر (عربي)</label>
+                            <textarea name="description_ar" rows="4" required><%= service ? service.description_ar : '' %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Short Description (English)</label>
+                            <textarea name="description_en" rows="4" required><%= service ? service.description_en : '' %></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>كلمات تسويقية (عربي)</label>
+                            <input type="text" name="tag1_ar" value="<%= service ? service.tag1_ar : '' %>" placeholder="كلمة 1">
+                            <input type="text" name="tag2_ar" value="<%= service ? service.tag2_ar : '' %>" placeholder="كلمة 2" style="margin-top: 8px;">
+                            <input type="text" name="tag3_ar" value="<%= service ? service.tag3_ar : '' %>" placeholder="كلمة 3" style="margin-top: 8px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Marketing Keywords (English)</label>
+                            <input type="text" name="tag1_en" value="<%= service ? service.tag1_en : '' %>" placeholder="Keyword 1">
+                            <input type="text" name="tag2_en" value="<%= service ? service.tag2_en : '' %>" placeholder="Keyword 2" style="margin-top: 8px;">
+                            <input type="text" name="tag3_en" value="<%= service ? service.tag3_en : '' %>" placeholder="Keyword 3" style="margin-top: 8px;">
                         </div>
                     </div>
                 </div>
 
-                <!-- SEO Section -->
-                <div class="admin-card" style="border-right: 4px solid #00b894;">
-                    <h3 style="margin-bottom: 1.5rem; color: #00b894;">
-                        <i class="fas fa-search"></i> تحسين محركات البحث (SEO)
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-search"></i> إعدادات SEO
                     </h3>
-                    
+
                     <div class="form-group">
-                        <label>عنوان السيو (Meta Title)</label>
-                        <input type="text" name="seoTitle" value="<%= service ? service.seoTitle : '' %>" placeholder="اتركه فارغاً لاستخدام عنوان الخدمة">
+                        <label>عنوان السيو (SEO Title)</label>
+                        <input type="text" name="seoTitle" value="<%= service ? service.seoTitle : '' %>">
                     </div>
-                    
                     <div class="form-group">
                         <label>وصف السيو (Meta Description)</label>
-                        <textarea name="seoDescription" rows="3" placeholder="وصف مختصر لمحركات البحث..."><%= service ? service.seoDescription : '' %></textarea>
+                        <textarea name="seoDescription" rows="3"><%= service ? service.seoDescription : '' %></textarea>
                     </div>
-                    
                     <div class="form-group">
-                        <label>الكلمات المفتاحية (Keywords)</label>
-                        <input type="text" name="seoKeywords" value="<%= service ? service.seoKeywords : '' %>" placeholder="كلمة1, كلمة2, ...">
+                        <label>كلمات مفتاحية</label>
+                        <input type="text" name="seoKeywords" value="<%= service ? service.seoKeywords : '' %>" placeholder="كلمة1, كلمة2, كلمة3">
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar Column -->
             <div class="form-side-col">
-                <div class="admin-card">
+                <div class="admin-card" style="margin-bottom: 1.5rem;">
                     <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-cog"></i> الإعدادات
                     </h3>
-                    
                     <div class="form-group">
-                        <label><i class="fas fa-sort-numeric-down"></i> ترتيب العرض</label>
+                        <label>ترتيب العرض</label>
                         <input type="number" name="display_order" value="<%= service ? service.display_order : 0 %>">
                     </div>
-
-                    <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
-                            <input type="checkbox" name="is_active" style="width: 20px; height: 20px;" <%= (!service || service.is_active) ? 'checked' : '' %>>
-                            <span>تفعيل الخدمة (ظهور في الموقع)</span>
-                        </label>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="is_active" name="is_active" <%= !service || service.is_active ? 'checked' : '' %>>
+                        <label for="is_active">إظهار الخدمة في الموقع</label>
                     </div>
-
                     <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; padding: 1rem; margin-top: 1rem;">
-                        <i class="fas fa-save"></i> <%= service ? 'حفظ التعديلات' : 'إضافة الخدمة' %>
+                        <i class="fas fa-save"></i> <%= service ? 'حفظ التغييرات' : 'حفظ الخدمة' %>
                     </button>
                 </div>
 
@@ -123,89 +96,100 @@
                     <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-image"></i> صورة الخدمة
                     </h3>
-                    
+
                     <% if (service && service.image) { %>
-                        <div class="current-image" style="margin-bottom: 1rem; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                            <img src="<%= service.image %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
+                        <div style="margin-bottom: 1rem; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+                            <img src="<%= assetPath(service.image) %>" alt="Service Image" style="width: 100%; height: auto; display: block;">
                         </div>
                     <% } else { %>
-                        <div class="no-image" style="background: #f8f9fa; height: 150px; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; border-radius: 8px; margin-bottom: 1rem; color: var(--text-muted);">
-                            <i class="fas fa-concierge-bell fa-3x"></i>
+                        <div style="background: #f8f9fa; height: 150px; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; border-radius: 8px; margin-bottom: 1rem; color: var(--text-muted);">
+                            <i class="fas fa-image fa-3x"></i>
                         </div>
                     <% } %>
 
-                    <div class="file-upload-wrapper" style="display:flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
                         <label class="btn btn-outline" for="service-image" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center; cursor: pointer;">
-                            <i class="fas fa-cloud-upload-alt"></i> اختر صورة من جهازك
-                            <input type="file" name="image" id="service-image" accept="image/*" style="display:none" onchange="updateFileName(this)">
+                            <i class="fas fa-cloud-upload-alt"></i> اختر من جهازك
+                            <input type="file" name="image" id="service-image" accept="image/*" style="display: none" onchange="updateServiceFileName(this)">
                         </label>
-                        <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('service')" id="open-server-images-btn">
+                        <button type="button" class="btn btn-secondary" style="justify-content: center;" onclick="openUploadsBrowser('service')" id="open-server-service-btn">
                             <i class="fas fa-folder-open"></i> اختيار من الخادم
                         </button>
-                        <input type="hidden" name="existingImage" id="existingImageService">
-                        <div id="file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
+                        <input type="hidden" name="existingImage" id="existingImageService" value="<%= service && service.image ? assetPath(service.image) : '' %>">
+                        <div id="service-file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
                     </div>
-                    <small style="display: block; margin-top: 10px; color: var(--text-muted); text-align: center;">يفضل استخدام صور عالية الجودة بنسبة 4:3</small>
                 </div>
             </div>
         </div>
     </form>
 </div>
 
-<!-- Uploads Browser Modal -->
 <div id="uploadsBrowserModal" class="admin-modal">
-  <div class="modal-content" style="max-width:800px;">
-    <span class="close-modal" onclick="closeUploadsBrowser()">&times;</span>
-    <h3 style="margin-bottom:10px;color:var(--secondary-color)"><i class="fas fa-folder-open"></i> استعراض الصور على الخادم</h3>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
-        <input id="uploadsSearch" type="text" placeholder="ابحث بالاسم..." style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;">
-        <button class="btn" onclick="refreshUploads()">تحديث</button>
+    <div class="modal-content" style="max-width: 800px;">
+        <span class="close-modal" onclick="closeUploadsBrowser()">&times;</span>
+        <h3 style="margin-bottom: 10px; color: var(--secondary-color);"><i class="fas fa-folder-open"></i> استعراض الصور على الخادم</h3>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
+            <input id="uploadsSearch" type="text" placeholder="ابحث بالاسم..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+            <button class="btn" type="button" onclick="refreshUploads()">تحديث</button>
+        </div>
+        <div id="uploadsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; max-height: 60vh; overflow: auto;"></div>
     </div>
-    <div id="uploadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:60vh;overflow:auto;"></div>
-  </div>
-  <style>
-    #uploadsGrid img{width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid #eee}
-    .upload-tile{cursor:pointer;position:relative}
-    .upload-tile span{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:.75rem;padding:2px 4px;border-radius:0 0 8px 8px;direction:ltr}
-  </style>
 </div>
 
 <script>
-function updateFileName(input) {
-    const fileName = input.files[0]?.name;
-    document.getElementById('file-name').textContent = fileName ? `المجلد المختار: ${fileName}` : '';
+function updateServiceFileName(input) {
+    var fileName = input.files[0] ? input.files[0].name : '';
+    var el = document.getElementById('service-file-name');
+    if (el) {
+        el.textContent = fileName ? 'المحدد: ' + fileName : '';
+    }
 }
 
-let uploadsTarget = null;
-async function openUploadsBrowser(target){
+var uploadsTarget = null;
+async function openUploadsBrowser(target) {
     uploadsTarget = target;
-    document.getElementById('uploadsBrowserModal').style.display='block';
+    var modal = document.getElementById('uploadsBrowserModal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
     await refreshUploads();
 }
-function closeUploadsBrowser(){
-    document.getElementById('uploadsBrowserModal').style.display='none';
+function closeUploadsBrowser() {
+    var modal = document.getElementById('uploadsBrowserModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
-async function refreshUploads(){
-    const q = document.getElementById('uploadsSearch').value?.trim().toLowerCase();
-    const res = await fetch('/admin/uploads/list');
-    const json = await res.json();
-    const grid = document.getElementById('uploadsGrid');
-    grid.innerHTML='';
-    (json.files||[])
-      .filter(f => !q || f.name.toLowerCase().includes(q))
-      .forEach(f=>{
-        const div = document.createElement('div');
-        div.className='upload-tile';
-        div.onclick = ()=> selectExistingImage(f.url);
-        div.innerHTML = `<img src="${f.url}" alt="${f.name}"><span>${f.name}</span>`;
+async function refreshUploads() {
+    var qInput = document.getElementById('uploadsSearch');
+    var q = qInput && qInput.value ? qInput.value.trim().toLowerCase() : '';
+    var res = await fetch('/admin/uploads/list');
+    var json = await res.json();
+    var grid = document.getElementById('uploadsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    (json.files || []).filter(function(f) {
+        return !q || f.name.toLowerCase().includes(q);
+    }).forEach(function(f) {
+        var div = document.createElement('div');
+        div.style.cursor = 'pointer';
+        div.innerHTML = '<img src="' + f.url + '" alt="' + f.name + '" style="width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid #eee"><span style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:.75rem;padding:2px 4px;border-radius:0 0 8px 8px;direction:ltr;display:block;text-align:center;">' + f.name + '</span>';
+        div.style.position = 'relative';
+        div.onclick = function() { selectExistingImage(f.url); };
         grid.appendChild(div);
-      });
+    });
 }
-function selectExistingImage(url){
-    if(uploadsTarget==='service'){
-        document.getElementById('existingImageService').value = url;
-        // clear file input selection display
-        document.getElementById('file-name').textContent = `المحدد: ${url.split('/').pop()}`;
+function selectExistingImage(url) {
+    if (uploadsTarget === 'service') {
+        var hidden = document.getElementById('existingImageService');
+        if (hidden) {
+            hidden.value = url;
+        }
+        var el = document.getElementById('service-file-name');
+        if (el) {
+            var name = url.split('/').pop();
+            el.textContent = 'المحدد: ' + name;
+        }
     }
     closeUploadsBrowser();
 }
@@ -223,3 +207,4 @@ function selectExistingImage(url){
 </style>
 
 <%- include('layout-footer') %>
+

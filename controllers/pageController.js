@@ -20,16 +20,16 @@ exports.getHome = async (req, res) => {
     try {
         const t0 = Date.now();
         const cap = Number(process.env.HOME_QUERY_TIMEOUT_MS || 800);
-        const [projects, services, partners, posts, seo, stats] = await Promise.all([
+        const [projects, partners, posts, seo, stats, services] = await Promise.all([
             withTimeout(Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }), cap, []),
-            withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Post.findAll({ limit: 3, order: [['date', 'DESC']] }), cap, []),
             withTimeout(GlobalSeo.findOne(), cap, null),
-            withTimeout(StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, [])
+            withTimeout(StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
+            withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, [])
         ]);
         const dt = Date.now() - t0;
-        debugLog(`Home data fetched in ${dt}ms -> projects=${projects.length}, services=${services.length}, partners=${partners.length}, posts=${posts.length}`);
+        debugLog(`Home data fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
         
         
         // Temporary override for video URL - using a direct MP4 link for reliability
@@ -56,18 +56,19 @@ exports.getHome = async (req, res) => {
         res.render('home_ar', { 
             title: pageSeo.title, 
             projects,
-            services, 
             partners,
             posts,
-            seo, 
+            seo,
+            globalSeo: seo,
             pageSeo,
             stats,
+            services,
             lang: 'ar'
         });
     } catch (error) {
         console.error(error);
         debugLog(`Home data error: ${error.message}`);
-        res.render('home_ar', { title: 'الرئيسية', projects: [], services: [], partners: [], posts: [], seo: null, stats: [], lang: 'ar' });
+        res.render('home_ar', { title: 'الرئيسية', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'ar' });
     }
 };
 
@@ -75,16 +76,16 @@ exports.getHomeEn = async (req, res) => {
     try {
         const t0 = Date.now();
         const cap = Number(process.env.HOME_QUERY_TIMEOUT_MS || 800);
-        const [projects, services, partners, posts, seo, stats] = await Promise.all([
+        const [projects, partners, posts, seo, stats, services] = await Promise.all([
             withTimeout(Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }), cap, []),
-            withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Post.findAll({ limit: 3, order: [['date', 'DESC']] }), cap, []),
             withTimeout(GlobalSeo.findOne(), cap, null),
-            withTimeout(StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, [])
+            withTimeout(StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
+            withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, [])
         ]);
         const dt = Date.now() - t0;
-        debugLog(`Home(EN) data fetched in ${dt}ms -> projects=${projects.length}, services=${services.length}, partners=${partners.length}, posts=${posts.length}`);
+        debugLog(`Home(EN) data fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
         
         
         // Temporary override for video URL - using a direct MP4 link for reliability
@@ -111,18 +112,19 @@ exports.getHomeEn = async (req, res) => {
         res.render('home_en', { 
             title: pageSeo.title, 
             projects, 
-            services,
             partners,
             posts,
-            seo, 
+            seo,
+            globalSeo: seo,
             pageSeo,
             stats,
+            services,
             lang: 'en'
         });
     } catch (error) {
         console.error(error);
         debugLog(`Home(EN) data error: ${error.message}`);
-        res.render('home_en', { title: 'Home', projects: [], services: [], partners: [], posts: [], seo: null, stats: [], lang: 'en' });
+        res.render('home_en', { title: 'Home', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'en' });
     }
 };
 

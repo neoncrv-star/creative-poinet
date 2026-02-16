@@ -77,7 +77,6 @@ router.get('/blog/edit/:id', adminController.getEditPost);
 router.post('/blog/edit/:id', upload.single('image'), adminController.postEditPost);
 router.get('/blog/delete/:id', adminController.deletePost);
 
-// Service Routes
 router.get('/services', adminController.manageServices);
 router.get('/services/add', adminController.getAddService);
 router.post('/services/add', upload.single('image'), adminController.postAddService);

@@ -1,18 +1,17 @@
 <%- include('partials/header') %>
 
-<!-- Page Specific CSS (loaded asynchronously to avoid render-blocking) -->
 <link rel="preload" href="/css/hero.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="/css/journey.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<link rel="preload" href="/css/services.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="/css/services-stacked.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="/css/portfolio-slider.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
     <link rel="stylesheet" href="/css/hero.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="/css/journey.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/services.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/services-stacked.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="/css/portfolio-slider.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    </noscript>
+</noscript>
 
 <style>
     :root {
@@ -139,7 +138,6 @@
     </section>
     <% } %>
 
-    <!-- Journey Section -->
     <section id="journey" class="journey-scroll-section">
         <div class="journey-container" style="text-align: center;">
             <p class="journey-eyebrow" style="text-align: center;">شركة وكالة نقطة إبداعية</p>
@@ -157,164 +155,75 @@
         </div>
     </section>
 
-    <section id="services" class="services-horizontal-section">
-        <div class="services-horizontal-wrapper">
-            <% 
-            var firstService = (services && services.length > 0) ? services[0] : null;
-            var firstImageAr = firstService && firstService.image ? assetPath(firstService.image) : '';
-            var firstTitleAr = firstService ? (firstService.title_ar || firstService.title_en || firstService.title) : 'الهوية البصرية';
-            var firstDescAr = firstService ? (firstService.description_ar || firstService.description_en) : 'حيث تبدأ العلامة بهوية واضحة وثابتة يمكن البناء عليها.';
-            %>
-            <div class="services-layout">
-                <div class="services-media-column">
-                    <div class="services-media-sticky">
-                        <div class="services-media-frame">
-                            <div class="services-media-image">
-                                <% if (firstImageAr) { %>
-                                    <img src="<%= firstImageAr %>" alt="<%= firstTitleAr %>" class="services-media-image-inner" loading="lazy" decoding="async">
-                                <% } else { %>
-                                    <div class="services-media-image-inner services-media-image-placeholder"></div>
-                                <% } %>
-                                <div class="services-media-grain"></div>
-                            </div>
-                            <div class="services-media-copy">
-                                <p class="services-media-label">الخدمة المختارة</p>
-                                <h3 class="services-media-title"><%= firstTitleAr %></h3>
-                                <p class="services-media-text"><%= firstDescAr %></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <section id="services" class="services-stacked-section">
+        <div class="services-stacked-wrapper">
+            <div class="services-stacked-header">
+                <p class="services-stacked-eyebrow">الخدمات</p>
+                <h2 class="services-stacked-title">حلول متكاملة تبدأ من نقطة واضحة</h2>
+                <p class="services-stacked-subtitle">
+                    كل خدمة هنا مبنية حول قرار استراتيجي واحد، ثم تتحول إلى تجربة
+                    بصرية وتطبيقات ملموسة تتراكم فوق بعضها لتصنع نظاماً إبداعياً متكاملاً.
+                </p>
+            </div>
 
-                <div class="services-list-column">
-                    <div class="services-header">
-                        <div class="services-header-main">
-                            <p class="services-eyebrow">الخدمات</p>
-                            <h2 class="services-title">ما الذي نقدمه؟</h2>
-                            <p class="services-header-note">
-                                كل خدمة هنا تمثل نقطة تركيز واضحة: من بناء الهوية، مرورًا بالتصاميم الإعلانية،
-                                وصولًا إلى التجهيزات الميدانية المتكاملة.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="services-panel-container">
-                        <% if (services && services.length > 0) { %>
-                            <% services.forEach((service, index) => { %>
-                                <article 
-                                    class="service-card" 
-                                    id="service-<%= index + 1 %>"
-                                    data-image="<%= assetPath(service.image || '') %>"
-                                    data-title="<%= service.title_ar || service.title_en || service.title || '' %>"
-                                    data-description="<%= service.description_ar || service.description_en || '' %>"
-                                >
-                                    <div class="service-card-header">
-                                        <h3 class="service-card-title">
-                                            <%= service.title_ar || service.title_en || service.title || 'خدمة' %>
+            <% var servicesList = (typeof services !== 'undefined' && services) ? services : []; %>
+            <% if (servicesList.length) { %>
+                <div class="services-stacked-cards">
+                    <% servicesList.forEach(function(service, index) { %>
+                        <article class="service-stacked-card" style="--card-index:<%= index %>;">
+                            <div class="service-stacked-inner">
+                                <div class="service-stacked-copy">
+                                    <div>
+                                        <div class="service-stacked-topline">
+                                            <span class="service-stacked-label">خدمة</span>
+                                            <span class="service-stacked-index">
+                                                <%= (index + 1).toString().padStart(2, '0') %>
+                                            </span>
+                                        </div>
+                                        <h3 class="service-stacked-heading">
+                                            <%= service.title_ar || service.title_en || '' %>
                                         </h3>
-                                        <span class="service-card-index">
-                                            <%= (index + 1).toString().padStart(2, '0') %>
-                                        </span>
-                                    </div>
-                                    <div class="service-card-divider-wrap">
-                                        <div class="service-divider"></div>
-                                    </div>
-                                    <div class="service-card-body">
-                                        <% if (service.description_ar || service.description_en) { %>
-                                            <p class="service-card-desc">
-                                                <%= service.description_ar || service.description_en %>
-                                            </p>
-                                        <% } %>
-                                        <ul class="service-card-tags">
+                                        <p class="service-stacked-text">
+                                            <%= service.description_ar || service.description_en || '' %>
+                                        </p>
+                                        <ul class="service-stacked-tags">
                                             <% if (service.tag1_ar || service.tag1_en) { %>
-                                                <li class="service-card-tag"><%= service.tag1_ar || service.tag1_en %></li>
+                                                <li class="service-stacked-tag"><%= service.tag1_ar || service.tag1_en %></li>
                                             <% } %>
                                             <% if (service.tag2_ar || service.tag2_en) { %>
-                                                <li class="service-card-tag"><%= service.tag2_ar || service.tag2_en %></li>
+                                                <li class="service-stacked-tag"><%= service.tag2_ar || service.tag2_en %></li>
                                             <% } %>
                                             <% if (service.tag3_ar || service.tag3_en) { %>
-                                                <li class="service-card-tag"><%= service.tag3_ar || service.tag3_en %></li>
+                                                <li class="service-stacked-tag"><%= service.tag3_ar || service.tag3_en %></li>
                                             <% } %>
                                         </ul>
                                     </div>
-                                    <div class="service-card-footer">
-                                        <div class="service-card-marker">•</div>
+                                    <div class="service-stacked-meta">
+                                        <span>تجربة متكاملة من الفكرة حتى التنفيذ</span>
+                                        <span class="service-stacked-meta-dot"></span>
                                     </div>
-                                </article>
-                            <% }); %>
-                        <% } else { %>
-                            <article class="service-card">
-                                <div class="service-card-header">
-                                    <h3 class="service-card-title">الهوية البصرية</h3>
-                                    <span class="service-card-index">01</span>
                                 </div>
-                                <div class="service-card-divider-wrap">
-                                    <div class="service-divider"></div>
+                                <div class="service-stacked-media">
+                                    <div class="service-stacked-image-frame">
+                                        <% if (service.image) { %>
+                                            <img class="service-stacked-image" src="<%= assetPath(service.image) %>" alt="<%= service.title_ar || service.title_en || '' %>" loading="lazy" decoding="async">
+                                        <% } else { %>
+                                            <div class="service-stacked-image-placeholder"></div>
+                                        <% } %>
+                                        <div class="service-stacked-image-overlay"></div>
+                                        <div class="service-stacked-image-grain"></div>
+                                    </div>
                                 </div>
-                                <div class="service-card-body">
-                                    <p class="service-card-desc">
-                                        نصنع هوية متكاملة تجعل العلامة واضحة، ثابتة، وسهلة التذكر.
-                                    </p>
-                                    <ul class="service-card-tags">
-                                        <li class="service-card-tag">شعار</li>
-                                        <li class="service-card-tag">كتيب هوية</li>
-                                        <li class="service-card-tag">تطبيقات مطبوعة</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card-footer">
-                                    <div class="service-card-marker">•</div>
-                                </div>
-                            </article>
-
-                            <article class="service-card">
-                                <div class="service-card-header">
-                                    <h3 class="service-card-title">التصميم الإعلاني</h3>
-                                    <span class="service-card-index">02</span>
-                                </div>
-                                <div class="service-card-divider-wrap">
-                                    <div class="service-divider"></div>
-                                </div>
-                                <div class="service-card-body">
-                                    <p class="service-card-desc">
-                                        تحويل الرسائل التسويقية إلى مواد بصرية مباشرة وسهلة الفهم.
-                                    </p>
-                                    <ul class="service-card-tags">
-                                        <li class="service-card-tag">سوشيال ميديا</li>
-                                        <li class="service-card-tag">أصول حملات</li>
-                                        <li class="service-card-tag">مواد مطبوعة</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card-footer">
-                                    <div class="service-card-marker">•</div>
-                                </div>
-                            </article>
-
-                            <article class="service-card">
-                                <div class="service-card-header">
-                                    <h3 class="service-card-title">المعارض والفعاليات</h3>
-                                    <span class="service-card-index">03</span>
-                                </div>
-                                <div class="service-card-divider-wrap">
-                                    <div class="service-divider"></div>
-                                </div>
-                                <div class="service-card-body">
-                                    <p class="service-card-desc">
-                                        تجهيز أجنحة ومعارض متكاملة تعكس هوية العلامة وتجربتها.
-                                    </p>
-                                    <ul class="service-card-tags">
-                                        <li class="service-card-tag">تصميم مساحات</li>
-                                        <li class="service-card-tag">تصنيع</li>
-                                        <li class="service-card-tag">إدارة التنفيذ</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card-footer">
-                                    <div class="service-card-marker">•</div>
-                                </div>
-                            </article>
-                        <% } %>
-                    </div>
+                            </div>
+                        </article>
+                    <% }) %>
                 </div>
-            </div>
+            <% } else { %>
+                <div class="services-stacked-empty">
+                    <h3>لم يتم إضافة خدمات بعد</h3>
+                    <p>يمكنك إضافة الخدمات من لوحة التحكم، وستظهر هنا تلقائياً بنمط البطاقات المتراكمة.</p>
+                </div>
+            <% } %>
         </div>
     </section>
 
@@ -564,7 +473,6 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     <script src="/js/hero-animation.js?v=<%= assetVersion %>" defer></script>
     <script src="/js/journey-animation.js?v=<%= assetVersion %>" defer></script>
-    <script  src="/js/services-animation.js?v=<%= assetVersion %>" defer></script>
  
     <!-- Slider Config Injection -->
     <script id="slider-config-data" type="application/json">

@@ -3,10 +3,10 @@ const Project = require('../models/Project');
 const Category = require('../models/Category');
 const Post = require('../models/Post');
 const GlobalSeo = require('../models/GlobalSeo');
-const Service = require('../models/Service');
 const Partner = require('../models/Partner');
 const Contact = require('../models/Contact');
 const StatBlock = require('../models/StatBlock');
+const Service = require('../models/Service');
 const sequelize = require('../config/database');
 const fs = require('fs');
 const path = require('path');
@@ -220,7 +220,6 @@ exports.getDashboard = async (req, res) => {
         const projectViews = await Project.sum('views') || 0;
         const postViews = await Post.sum('views') || 0;
         const totalViews = projectViews + postViews;
-        const serviceCount = await Service.count();
         const partnerCount = await Partner.count();
         const newContactsCount = await Contact.count({ where: { status: 'new' } });
         
@@ -230,7 +229,6 @@ exports.getDashboard = async (req, res) => {
             title: 'لوحة التحكم | الرئيسية',
             projectCount,
             postCount,
-            serviceCount,
             partnerCount,
             newContactsCount,
             visitorCount: totalViews,
@@ -242,7 +240,6 @@ exports.getDashboard = async (req, res) => {
             title: 'لوحة التحكم | الرئيسية',
             projectCount: 0,
             postCount: 0,
-            serviceCount: 0,
             partnerCount: 0,
             newContactsCount: 0,
             visitorCount: 0,
@@ -396,8 +393,7 @@ exports.getSiteHealth = async (req, res) => {
             try { version = childProcess.execSync('git rev-parse --short HEAD').toString().trim(); } catch {}
         }
         const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
-        const [svcCount, prjCount, prtCount, postCount] = await Promise.all([
-            require('../models/Service').count(),
+        const [prjCount, prtCount, postCount] = await Promise.all([
             require('../models/Project').count(),
             require('../models/Partner').count(),
             require('../models/Post').count()
@@ -433,7 +429,7 @@ exports.getSiteHealth = async (req, res) => {
             path: '/admin/health',
             version,
             dialect,
-            counts: { services: svcCount, projects: prjCount, partners: prtCount, posts: postCount },
+            counts: { projects: prjCount, partners: prtCount, posts: postCount },
             probes
         });
     } catch (e) {
@@ -490,13 +486,11 @@ const collectAssetRefs = async () => {
         refs.push({ type, id, field, value, isExternal, exists, fileSize, title: title || '' });
     };
 
-    const [services, partners, projects, posts] = await Promise.all([
-        require('../models/Service').findAll(),
+    const [partners, projects, posts] = await Promise.all([
         require('../models/Partner').findAll(),
         require('../models/Project').findAll(),
         require('../models/Post').findAll()
     ]);
-    services.forEach(s => pushRef('Service', s.id, 'image', s.image, s.title_ar || s.title_en));
     partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
     projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title));
     posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title));
@@ -1050,60 +1044,6 @@ exports.deletePost = async (req, res) => {
     }
 };
 
-// --- Services Management ---
-exports.manageServices = async (req, res) => {
-    try {
-        const services = await Service.findAll({ order: [['display_order', 'ASC']] });
-        res.render('admin/services-manage', { title: 'إدارة الخدمات', services });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-exports.getAddService = (req, res) => {
-    res.render('admin/service-form', { title: 'إضافة خدمة', service: null });
-};
-
-exports.postAddService = async (req, res) => {
-    try {
-        const { 
-            title_ar, title_en, description_ar, description_en, 
-            display_order, is_active, seoTitle, seoDescription, seoKeywords,
-            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en,
-            existingImage
-        } = req.body;
-        let image = null;
-        if (existingImage) image = normalizeAsset(existingImage);
-        else if (req.file) image = await toHashedAsset(req.file);
-
-        await Service.create({
-            title_ar,
-            title_en,
-            description_ar,
-            description_en,
-            image,
-            display_order: display_order || 0,
-            is_active: is_active === 'on',
-            tag1_ar,
-            tag2_ar,
-            tag3_ar,
-            tag1_en,
-            tag2_en,
-            tag3_en,
-            seoTitle,
-            seoDescription,
-            seoKeywords
-        });
-
-        pageCache.invalidateRoutes(['/','/en']);
-        res.redirect('/admin/services');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
 // --- Contact Management ---
 exports.manageContacts = async (req, res) => {
     try {
@@ -1142,11 +1082,95 @@ exports.updateContactStatus = async (req, res) => {
     }
 };
 
+exports.manageServices = async (req, res) => {
+    try {
+        const services = await Service.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/services-manage', {
+            title: 'لوحة التحكم | إدارة الخدمات',
+            path: '/admin/services',
+            services
+        });
+    } catch (error) {
+        console.error(error);
+        res.render('admin/services-manage', {
+            title: 'لوحة التحكم | إدارة الخدمات',
+            path: '/admin/services',
+            services: []
+        });
+    }
+};
+
+exports.getAddService = (req, res) => {
+    res.render('admin/service-form', {
+        title: 'إضافة خدمة جديدة',
+        path: '/admin/services',
+        service: null
+    });
+};
+
+exports.postAddService = async (req, res) => {
+    try {
+        const {
+            title_ar,
+            title_en,
+            description_ar,
+            description_en,
+            tag1_ar,
+            tag2_ar,
+            tag3_ar,
+            tag1_en,
+            tag2_en,
+            tag3_en,
+            display_order,
+            is_active,
+            seoTitle,
+            seoDescription,
+            seoKeywords,
+            existingImage
+        } = req.body;
+
+        const data = {
+            title_ar,
+            title_en,
+            description_ar,
+            description_en,
+            tag1_ar: tag1_ar || null,
+            tag2_ar: tag2_ar || null,
+            tag3_ar: tag3_ar || null,
+            tag1_en: tag1_en || null,
+            tag2_en: tag2_en || null,
+            tag3_en: tag3_en || null,
+            display_order: Number(display_order) || 0,
+            is_active: is_active === 'on',
+            seoTitle: seoTitle || null,
+            seoDescription: seoDescription || null,
+            seoKeywords: seoKeywords || null
+        };
+
+        if (existingImage) {
+            data.image = existingImage;
+        } else if (req.file) {
+            data.image = await toHashedAsset(req.file);
+        }
+
+        await Service.create(data);
+        pageCache.invalidateRoutes(['/', '/en']);
+        res.redirect('/admin/services');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
 exports.getEditService = async (req, res) => {
     try {
         const service = await Service.findByPk(req.params.id);
-        if (!service) return res.status(404).send('Service not found');
-        res.render('admin/service-form', { title: 'تعديل خدمة', service });
+        if (!service) return res.redirect('/admin/services');
+        res.render('admin/service-form', {
+            title: 'تعديل الخدمة',
+            path: '/admin/services',
+            service
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -1155,42 +1179,54 @@ exports.getEditService = async (req, res) => {
 
 exports.postEditService = async (req, res) => {
     try {
-        const { 
-            title_ar, title_en, description_ar, description_en, 
-            display_order, is_active, seoTitle, seoDescription, seoKeywords,
-            tag1_ar, tag2_ar, tag3_ar, tag1_en, tag2_en, tag3_en,
-            existingImage
-        } = req.body;
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
 
-        let image = normalizeAsset(service.image);
-        if (existingImage) {
-            image = normalizeAsset(existingImage);
-        } else if (req.file) {
-            image = await toHashedAsset(req.file);
-        }
-
-        await service.update({
+        const {
             title_ar,
             title_en,
             description_ar,
             description_en,
-            image,
-            display_order: display_order || 0,
-            is_active: is_active === 'on',
             tag1_ar,
             tag2_ar,
             tag3_ar,
             tag1_en,
             tag2_en,
             tag3_en,
+            display_order,
+            is_active,
             seoTitle,
             seoDescription,
-            seoKeywords
-        });
+            seoKeywords,
+            existingImage
+        } = req.body;
 
-        pageCache.invalidateRoutes(['/','/en']);
+        const data = {
+            title_ar,
+            title_en,
+            description_ar,
+            description_en,
+            tag1_ar: tag1_ar || null,
+            tag2_ar: tag2_ar || null,
+            tag3_ar: tag3_ar || null,
+            tag1_en: tag1_en || null,
+            tag2_en: tag2_en || null,
+            tag3_en: tag3_en || null,
+            display_order: Number(display_order) || 0,
+            is_active: is_active === 'on',
+            seoTitle: seoTitle || null,
+            seoDescription: seoDescription || null,
+            seoKeywords: seoKeywords || null
+        };
+
+        if (existingImage) {
+            data.image = existingImage;
+        } else if (req.file) {
+            data.image = await toHashedAsset(req.file);
+        }
+
+        await service.update(data);
+        pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
     } catch (error) {
         console.error(error);
@@ -1205,7 +1241,7 @@ exports.deleteService = async (req, res) => {
             deleteFile(service.image);
             await service.destroy();
         }
-        pageCache.invalidateRoutes(['/','/en']);
+        pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
     } catch (error) {
         console.error(error);

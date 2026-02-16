@@ -1,16 +1,15 @@
 <% const isEn = true; %>
 <%- include('partials/header', { isEn: isEn }) %>
 
-<!-- Page Specific CSS (async to reduce render-blocking) -->
 <link rel="preload" href="/css/hero.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="/css/journey.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<link rel="preload" href="/css/services.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="/css/services-stacked.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="/css/portfolio-slider.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
     <link rel="stylesheet" href="/css/hero.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="/css/journey.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/services.css?v=<%= assetVersion %>">
+    <link rel="stylesheet" href="/css/services-stacked.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="/css/portfolio-slider.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </noscript>
@@ -138,7 +137,6 @@
         </section>
         <% } %>
 
-        <!-- Journey Section -->
         <section id="journey" class="journey-scroll-section">
             <div class="journey-container" style="text-align: center;">
                 <p class="journey-eyebrow" style="text-align: center;">Creative Point Agency</p>
@@ -156,167 +154,75 @@
             </div>
         </section>
 
-        <section id="services" class="services-horizontal-section">
-            <div class="services-horizontal-wrapper">
-                <% 
-                var firstServiceEn = (services && services.length > 0) ? services[0] : null;
-                var firstImageEn = firstServiceEn && firstServiceEn.image ? assetPath(firstServiceEn.image) : '';
-                var firstTitleEn = firstServiceEn ? (firstServiceEn.title_en || firstServiceEn.title_ar || firstServiceEn.title) : 'Visual Identity';
-                var firstDescEn = firstServiceEn ? (firstServiceEn.description_en || firstServiceEn.description_ar) : 'Where every brand starts from a clear, strong visual foundation.';
-                %>
-                <div class="services-layout">
-                    <div class="services-media-column">
-                        <div class="services-media-sticky">
-                            <div class="services-media-frame">
-                                <div class="services-media-image">
-                                    <% if (firstImageEn) { %>
-                                        <img src="<%= firstImageEn %>" alt="<%= firstTitleEn %>" class="services-media-image-inner" loading="lazy" decoding="async">
-                                    <% } else { %>
-                                        <div class="services-media-image-inner services-media-image-placeholder"></div>
-                                    <% } %>
-                                    <div class="services-media-grain"></div>
-                                </div>
-                                <div class="services-media-copy">
-                                    <p class="services-media-label">Selected service</p>
-                                    <h3 class="services-media-title"><%= firstTitleEn %></h3>
-                                    <p class="services-media-text"><%= firstDescEn %></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <section id="services" class="services-stacked-section">
+            <div class="services-stacked-wrapper">
+                <div class="services-stacked-header">
+                    <p class="services-stacked-eyebrow">Services</p>
+                    <h2 class="services-stacked-title">Stacked solutions from strategy to execution</h2>
+                    <p class="services-stacked-subtitle">
+                        Each service represents a clear point in the journey, building on the previous
+                        one to form a complete creative system that stays consistent across all touchpoints.
+                    </p>
+                </div>
 
-                    <div class="services-list-column">
-                        <div class="services-header">
-                            <div class="services-header-main">
-                                <p class="services-eyebrow">SERVICES</p>
-                                <h2 class="services-title">What We Offer</h2>
-                                <p class="services-subtitle">
-                                    Practical branding, design, and exhibition services built on one smart decision.
-                                </p>
-                            </div>
-                            <p class="services-header-note">
-                                Each service is a focused point: from clear brand foundations to campaigns
-                                and real-world exhibition setups that feel consistent and intentional.
-                            </p>
-                        </div>
-
-                        <div class="services-panel-container">
-                            <% if (services && services.length > 0) { %>
-                                <% services.forEach((service, index) => { %>
-                                    <article 
-                                        class="service-card" 
-                                        id="service-<%= index + 1 %>"
-                                        data-image="<%= assetPath(service.image || '') %>"
-                                        data-title="<%= service.title_en || service.title_ar || service.title || '' %>"
-                                        data-description="<%= service.description_en || service.description_ar || '' %>"
-                                    >
-                                        <div class="service-card-header">
-                                            <h3 class="service-card-title">
-                                                <%= service.title_en || service.title_ar || service.title || 'Service' %>
+                <% var servicesList = (typeof services !== 'undefined' && services) ? services : []; %>
+                <% if (servicesList.length) { %>
+                    <div class="services-stacked-cards">
+                        <% servicesList.forEach(function(service, index) { %>
+                            <article class="service-stacked-card" style="--card-index:<%= index %>;">
+                                <div class="service-stacked-inner">
+                                    <div class="service-stacked-copy">
+                                        <div>
+                                            <div class="service-stacked-topline">
+                                                <span class="service-stacked-label">Service</span>
+                                                <span class="service-stacked-index">
+                                                    <%= (index + 1).toString().padStart(2, '0') %>
+                                                </span>
+                                            </div>
+                                            <h3 class="service-stacked-heading">
+                                                <%= service.title_en || service.title_ar || '' %>
                                             </h3>
-                                            <span class="service-card-index">
-                                                <%= (index + 1).toString().padStart(2, '0') %>
-                                            </span>
-                                        </div>
-                                        <div class="service-card-divider-wrap">
-                                            <div class="service-divider"></div>
-                                        </div>
-                                        <div class="service-card-body">
-                                            <% if (service.description_en || service.description_ar) { %>
-                                                <p class="service-card-desc">
-                                                    <%= service.description_en || service.description_ar %>
-                                                </p>
-                                            <% } %>
-                                            <ul class="service-card-tags">
+                                            <p class="service-stacked-text">
+                                                <%= service.description_en || service.description_ar || '' %>
+                                            </p>
+                                            <ul class="service-stacked-tags">
                                                 <% if (service.tag1_en || service.tag1_ar) { %>
-                                                    <li class="service-card-tag"><%= service.tag1_en || service.tag1_ar %></li>
+                                                    <li class="service-stacked-tag"><%= service.tag1_en || service.tag1_ar %></li>
                                                 <% } %>
                                                 <% if (service.tag2_en || service.tag2_ar) { %>
-                                                    <li class="service-card-tag"><%= service.tag2_en || service.tag2_ar %></li>
+                                                    <li class="service-stacked-tag"><%= service.tag2_en || service.tag2_ar %></li>
                                                 <% } %>
                                                 <% if (service.tag3_en || service.tag3_ar) { %>
-                                                    <li class="service-card-tag"><%= service.tag3_en || service.tag3_ar %></li>
+                                                    <li class="service-stacked-tag"><%= service.tag3_en || service.tag3_ar %></li>
                                                 <% } %>
                                             </ul>
                                         </div>
-                                        <div class="service-card-footer">
-                                            <div class="service-card-marker">•</div>
+                                        <div class="service-stacked-meta">
+                                            <span>From clear idea to tangible implementation</span>
+                                            <span class="service-stacked-meta-dot"></span>
                                         </div>
-                                    </article>
-                                <% }); %>
-                            <% } else { %>
-                                <article class="service-card">
-                                    <div class="service-card-header">
-                                        <h3 class="service-card-title">Visual Identity</h3>
-                                        <span class="service-card-index">01</span>
                                     </div>
-                                    <div class="service-card-divider-wrap">
-                                        <div class="service-divider"></div>
+                                    <div class="service-stacked-media">
+                                        <div class="service-stacked-image-frame">
+                                            <% if (service.image) { %>
+                                                <img class="service-stacked-image" src="<%= assetPath(service.image) %>" alt="<%= service.title_en || service.title_ar || '' %>" loading="lazy" decoding="async">
+                                            <% } else { %>
+                                                <div class="service-stacked-image-placeholder"></div>
+                                            <% } %>
+                                            <div class="service-stacked-image-overlay"></div>
+                                            <div class="service-stacked-image-grain"></div>
+                                        </div>
                                     </div>
-                                    <div class="service-card-body">
-                                        <p class="service-card-desc">
-                                            We design a complete visual system that keeps your brand consistent and memorable.
-                                        </p>
-                                        <ul class="service-card-tags">
-                                            <li class="service-card-tag">Logo</li>
-                                            <li class="service-card-tag">Brand Book</li>
-                                            <li class="service-card-tag">Print Collateral</li>
-                                        </ul>
-                                    </div>
-                                    <div class="service-card-footer">
-                                        <div class="service-card-marker">•</div>
-                                    </div>
-                                </article>
-
-                                <article class="service-card">
-                                    <div class="service-card-header">
-                                        <h3 class="service-card-title">Campaign Design</h3>
-                                        <span class="service-card-index">02</span>
-                                    </div>
-                                    <div class="service-card-divider-wrap">
-                                        <div class="service-divider"></div>
-                                    </div>
-                                    <div class="service-card-body">
-                                        <p class="service-card-desc">
-                                            Clear, focused campaign visuals that speak directly to your audience.
-                                        </p>
-                                        <ul class="service-card-tags">
-                                            <li class="service-card-tag">Social Media</li>
-                                            <li class="service-card-tag">Campaign Assets</li>
-                                            <li class="service-card-tag">Outdoor</li>
-                                        </ul>
-                                    </div>
-                                    <div class="service-card-footer">
-                                        <div class="service-card-marker">•</div>
-                                    </div>
-                                </article>
-
-                                <article class="service-card">
-                                    <div class="service-card-header">
-                                        <h3 class="service-card-title">Exhibitions & Booths</h3>
-                                        <span class="service-card-index">03</span>
-                                    </div>
-                                    <div class="service-card-divider-wrap">
-                                        <div class="service-divider"></div>
-                                    </div>
-                                    <div class="service-card-body">
-                                        <p class="service-card-desc">
-                                            End-to-end exhibition setups that translate your brand into real spaces.
-                                        </p>
-                                        <ul class="service-card-tags">
-                                            <li class="service-card-tag">Space Design</li>
-                                            <li class="service-card-tag">Production</li>
-                                            <li class="service-card-tag">On-ground Support</li>
-                                        </ul>
-                                    </div>
-                                    <div class="service-card-footer">
-                                        <div class="service-card-marker">•</div>
-                                    </div>
-                                </article>
-                            <% } %>
-                        </div>
+                                </div>
+                            </article>
+                        <% }) %>
                     </div>
-                </div>
+                <% } else { %>
+                    <div class="services-stacked-empty">
+                        <h3>No services added yet</h3>
+                        <p>Once you add services from the dashboard, they will appear here as stacked sticky cards.</p>
+                    </div>
+                <% } %>
             </div>
         </section>
 
@@ -566,7 +472,6 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     <script src="/js/hero-animation.js?v=<%= assetVersion %>" defer></script>
     <script src="/js/journey-animation.js?v=<%= assetVersion %>" defer></script>
-    <script src="/js/services-animation.js?v=<%= assetVersion %>" defer></script>
 
     <!-- Slider Config Injection -->
     <script id="slider-config-data" type="application/json">

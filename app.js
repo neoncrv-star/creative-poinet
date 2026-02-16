@@ -306,8 +306,6 @@ const adminRoutes = require('./routes/admin');
 // Global Data Middleware with Simple Cache
 const GlobalSeo = require('./models/GlobalSeo');
 const Category = require('./models/Category');
-const Service = require('./models/Service');
-
 let globalDataCache = {
     seo: null,
     categories: [],
@@ -659,7 +657,6 @@ async function startServer() {
                     }
                     if (c > 0) debugLog(`normalized ${label} ${c}`);
                 };
-                await normalizeImageField(Service, 'image', 'Service.image');
                 const Project = require('./models/Project');
                 const Post = require('./models/Post');
                 await normalizeImageField(Project, 'image', 'Project.image');
