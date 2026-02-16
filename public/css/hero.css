@@ -10,7 +10,8 @@
     z-index: 10;
     overflow: hidden;
     contain: paint;
-
+    padding: 0;
+    border-bottom: none;
 }
 
 /* Light mode */
