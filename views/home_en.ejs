@@ -105,90 +105,164 @@
 
         <section id="services" class="services-horizontal-section">
             <div class="services-horizontal-wrapper">
-                <div class="services-header">
-                    <div class="services-header-main">
-                        <p class="services-eyebrow">SERVICES</p>
-                        <h2 class="services-title">What We Offer</h2>
-                        <p class="services-subtitle">
-                            Practical branding, design, and exhibition services built on one smart decision.
-                        </p>
+                <% 
+                var firstServiceEn = (services && services.length > 0) ? services[0] : null;
+                var firstImageEn = firstServiceEn && firstServiceEn.image ? firstServiceEn.image : '';
+                var firstTitleEn = firstServiceEn ? (firstServiceEn.title_en || firstServiceEn.title_ar || firstServiceEn.title) : 'Visual Identity';
+                var firstDescEn = firstServiceEn ? (firstServiceEn.description_en || firstServiceEn.description_ar) : 'Where every brand starts from a clear, strong visual foundation.';
+                %>
+                <div class="services-layout">
+                    <div class="services-media-column">
+                        <div class="services-media-sticky">
+                            <div class="services-media-frame">
+                                <div class="services-media-image">
+                                    <% if (firstImageEn) { %>
+                                        <img src="<%= firstImageEn %>" alt="<%= firstTitleEn %>" class="services-media-image-inner" loading="lazy" decoding="async">
+                                    <% } else { %>
+                                        <div class="services-media-image-inner services-media-image-placeholder"></div>
+                                    <% } %>
+                                    <div class="services-media-grain"></div>
+                                </div>
+                                <div class="services-media-copy">
+                                    <p class="services-media-label">Selected service</p>
+                                    <h3 class="services-media-title"><%= firstTitleEn %></h3>
+                                    <p class="services-media-text"><%= firstDescEn %></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="services-header-note">
-                        Each service is a focused point: from clear brand foundations to campaigns
-                        and real-world exhibition setups that feel consistent and intentional.
-                    </p>
-                </div>
 
-                <div class="services-panel-container">
-                    <% if (services && services.length > 0) { %>
-                        <% services.forEach((service, index) => { %>
-                            <article class="service-card" id="service-<%= index + 1 %>">
-                                <div class="service-card-header">
-                                    <h3 class="service-card-title">
-                                        <%= service.title_en || service.title_ar || service.title || 'Service' %>
-                                    </h3>
-                                    <span class="service-card-index">
-                                        <%= (index + 1).toString().padStart(2, '0') %>
-                                    </span>
-                                </div>
-                                <% if (service.description_en || service.description_ar) { %>
-                                    <p class="service-card-desc">
-                                        <%= service.description_en || service.description_ar %>
-                                    </p>
-                                <% } %>
-                                <ul class="service-card-tags">
-                                    <% if (service.tag1_en || service.tag1_ar) { %>
-                                        <li class="service-card-tag"><%= service.tag1_en || service.tag1_ar %></li>
-                                    <% } %>
-                                    <% if (service.tag2_en || service.tag2_ar) { %>
-                                        <li class="service-card-tag"><%= service.tag2_en || service.tag2_ar %></li>
-                                    <% } %>
-                                    <% if (service.tag3_en || service.tag3_ar) { %>
-                                        <li class="service-card-tag"><%= service.tag3_en || service.tag3_ar %></li>
-                                    <% } %>
-                                </ul>
-                                <div class="service-card-footer">
-                                    <div class="service-card-marker">•</div>
-                                </div>
-                            </article>
-                        <% }); %>
-                    <% } else { %>
-                        <article class="service-card">
-                            <h3 class="service-card-title">Visual Identity</h3>
-                            <p class="service-card-desc">
-                                We design a complete visual system that keeps your brand consistent and memorable.
+                    <div class="services-list-column">
+                        <div class="services-header">
+                            <div class="services-header-main">
+                                <p class="services-eyebrow">SERVICES</p>
+                                <h2 class="services-title">What We Offer</h2>
+                                <p class="services-subtitle">
+                                    Practical branding, design, and exhibition services built on one smart decision.
+                                </p>
+                            </div>
+                            <p class="services-header-note">
+                                Each service is a focused point: from clear brand foundations to campaigns
+                                and real-world exhibition setups that feel consistent and intentional.
                             </p>
-                            <ul class="service-card-tags">
-                                <li class="service-card-tag">Logo</li>
-                                <li class="service-card-tag">Brand Book</li>
-                                <li class="service-card-tag">Print Collateral</li>
-                            </ul>
-                        </article>
+                        </div>
 
-                        <article class="service-card">
-                            <h3 class="service-card-title">Campaign Design</h3>
-                            <p class="service-card-desc">
-                                Clear, focused campaign visuals that speak directly to your audience.
-                            </p>
-                            <ul class="service-card-tags">
-                                <li class="service-card-tag">Social Media</li>
-                                <li class="service-card-tag">Campaign Assets</li>
-                                <li class="service-card-tag">Outdoor</li>
-                            </ul>
-                        </article>
+                        <div class="services-panel-container">
+                            <% if (services && services.length > 0) { %>
+                                <% services.forEach((service, index) => { %>
+                                    <article 
+                                        class="service-card" 
+                                        id="service-<%= index + 1 %>"
+                                        data-image="<%= service.image || '' %>"
+                                        data-title="<%= service.title_en || service.title_ar || service.title || '' %>"
+                                        data-description="<%= service.description_en || service.description_ar || '' %>"
+                                    >
+                                        <div class="service-card-header">
+                                            <h3 class="service-card-title">
+                                                <%= service.title_en || service.title_ar || service.title || 'Service' %>
+                                            </h3>
+                                            <span class="service-card-index">
+                                                <%= (index + 1).toString().padStart(2, '0') %>
+                                            </span>
+                                        </div>
+                                        <div class="service-card-divider-wrap">
+                                            <div class="service-divider"></div>
+                                        </div>
+                                        <div class="service-card-body">
+                                            <% if (service.description_en || service.description_ar) { %>
+                                                <p class="service-card-desc">
+                                                    <%= service.description_en || service.description_ar %>
+                                                </p>
+                                            <% } %>
+                                            <ul class="service-card-tags">
+                                                <% if (service.tag1_en || service.tag1_ar) { %>
+                                                    <li class="service-card-tag"><%= service.tag1_en || service.tag1_ar %></li>
+                                                <% } %>
+                                                <% if (service.tag2_en || service.tag2_ar) { %>
+                                                    <li class="service-card-tag"><%= service.tag2_en || service.tag2_ar %></li>
+                                                <% } %>
+                                                <% if (service.tag3_en || service.tag3_ar) { %>
+                                                    <li class="service-card-tag"><%= service.tag3_en || service.tag3_ar %></li>
+                                                <% } %>
+                                            </ul>
+                                        </div>
+                                        <div class="service-card-footer">
+                                            <div class="service-card-marker">•</div>
+                                        </div>
+                                    </article>
+                                <% }); %>
+                            <% } else { %>
+                                <article class="service-card">
+                                    <div class="service-card-header">
+                                        <h3 class="service-card-title">Visual Identity</h3>
+                                        <span class="service-card-index">01</span>
+                                    </div>
+                                    <div class="service-card-divider-wrap">
+                                        <div class="service-divider"></div>
+                                    </div>
+                                    <div class="service-card-body">
+                                        <p class="service-card-desc">
+                                            We design a complete visual system that keeps your brand consistent and memorable.
+                                        </p>
+                                        <ul class="service-card-tags">
+                                            <li class="service-card-tag">Logo</li>
+                                            <li class="service-card-tag">Brand Book</li>
+                                            <li class="service-card-tag">Print Collateral</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-card-footer">
+                                        <div class="service-card-marker">•</div>
+                                    </div>
+                                </article>
 
-                        <article class="service-card">
-                            <h3 class="service-card-title">Exhibitions & Booths</h3>
-                            <p class="service-card-desc">
-                                End-to-end exhibition setups that translate your brand into real spaces.
-                            </p>
-                            <ul class="service-card-tags">
-                                <li class="service-card-tag">Space Design</li>
-                                <li class="service-card-tag">Production</li>
-                                <li class="service-card-tag">On-ground Support</li>
-                            </ul>
-                        </article>
-                    <% } %>
+                                <article class="service-card">
+                                    <div class="service-card-header">
+                                        <h3 class="service-card-title">Campaign Design</h3>
+                                        <span class="service-card-index">02</span>
+                                    </div>
+                                    <div class="service-card-divider-wrap">
+                                        <div class="service-divider"></div>
+                                    </div>
+                                    <div class="service-card-body">
+                                        <p class="service-card-desc">
+                                            Clear, focused campaign visuals that speak directly to your audience.
+                                        </p>
+                                        <ul class="service-card-tags">
+                                            <li class="service-card-tag">Social Media</li>
+                                            <li class="service-card-tag">Campaign Assets</li>
+                                            <li class="service-card-tag">Outdoor</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-card-footer">
+                                        <div class="service-card-marker">•</div>
+                                    </div>
+                                </article>
+
+                                <article class="service-card">
+                                    <div class="service-card-header">
+                                        <h3 class="service-card-title">Exhibitions & Booths</h3>
+                                        <span class="service-card-index">03</span>
+                                    </div>
+                                    <div class="service-card-divider-wrap">
+                                        <div class="service-divider"></div>
+                                    </div>
+                                    <div class="service-card-body">
+                                        <p class="service-card-desc">
+                                            End-to-end exhibition setups that translate your brand into real spaces.
+                                        </p>
+                                        <ul class="service-card-tags">
+                                            <li class="service-card-tag">Space Design</li>
+                                            <li class="service-card-tag">Production</li>
+                                            <li class="service-card-tag">On-ground Support</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-card-footer">
+                                        <div class="service-card-marker">•</div>
+                                    </div>
+                                </article>
+                            <% } %>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

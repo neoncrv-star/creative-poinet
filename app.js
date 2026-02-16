@@ -5,12 +5,16 @@ const childProcess = require('child_process');
 const os = require('os');
 const { monitorEventLoopDelay } = require('perf_hooks');
 
+const isProdEnv = (process.env.NODE_ENV || '').toLowerCase() === 'production';
+
 const logFile = path.join(__dirname, 'debug.log');
 const debugLog = (msg) => {
+    if (isProdEnv && (process.env.ENABLE_DEBUG_LOG || '').toLowerCase() !== 'true') {
+        return;
+    }
     try {
         fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
     } catch (e) {
-        // best-effort logging
         console.error('Logging error:', e);
     }
 };
@@ -18,9 +22,13 @@ const debugLog = (msg) => {
 // Event loop delay monitor (useful to diagnose event-loop stalls)
 let evLoopMonitor;
 try {
-    evLoopMonitor = monitorEventLoopDelay({ resolution: 20 });
-    evLoopMonitor.enable();
-    debugLog('EventLoopDelay monitor enabled');
+    if (!isProdEnv || (process.env.ENABLE_EVENTLOOP_MONITOR || '').toLowerCase() === 'true') {
+        evLoopMonitor = monitorEventLoopDelay({ resolution: 20 });
+        evLoopMonitor.enable();
+        debugLog('EventLoopDelay monitor enabled');
+    } else {
+        evLoopMonitor = null;
+    }
 } catch (e) {
     evLoopMonitor = null;
     debugLog(`EventLoopDelay monitor not available: ${e.message}`);
