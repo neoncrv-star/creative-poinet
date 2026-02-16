@@ -98,4 +98,12 @@ router.get('/contacts', adminController.manageContacts);
 router.get('/contacts/delete/:id', adminController.deleteContact);
 router.post('/contacts/status/:id', adminController.updateContactStatus);
 
+// Stats Routes
+router.get('/stats', adminController.manageStats);
+router.get('/stats/add', adminController.getAddStat);
+router.post('/stats/add', adminController.postAddStat);
+router.get('/stats/edit/:id', adminController.getEditStat);
+router.post('/stats/edit/:id', adminController.postEditStat);
+router.get('/stats/delete/:id', adminController.deleteStat);
+
 module.exports = router;

@@ -615,7 +615,9 @@ async function startServer() {
 
     await ensureMySQLConnection(10);
     if (!allowStartWithoutDb || app.locals.dbConnected !== false) {
+        const StatBlock = require('./models/StatBlock');
         await ensureModelSchema(GlobalSeo);
+        await ensureModelSchema(StatBlock);
         await sequelize.sync(syncOptions);
         const msg = 'Database synced successfully (MySQL)';
         debugLog(msg);

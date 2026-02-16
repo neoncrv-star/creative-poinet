@@ -6,6 +6,7 @@ const GlobalSeo = require('../models/GlobalSeo');
 const Service = require('../models/Service');
 const Partner = require('../models/Partner');
 const Contact = require('../models/Contact');
+const StatBlock = require('../models/StatBlock');
 const sequelize = require('../config/database');
 const fs = require('fs');
 const path = require('path');
@@ -223,6 +224,8 @@ exports.getDashboard = async (req, res) => {
         const partnerCount = await Partner.count();
         const newContactsCount = await Contact.count({ where: { status: 'new' } });
         
+        const statCount = await StatBlock.count();
+
         res.render('admin/dashboard', { 
             title: 'لوحة التحكم | الرئيسية',
             projectCount,
@@ -230,7 +233,8 @@ exports.getDashboard = async (req, res) => {
             serviceCount,
             partnerCount,
             newContactsCount,
-            visitorCount: totalViews // Using real view count now
+            visitorCount: totalViews,
+            statCount
         });
     } catch (error) {
         console.error(error);
@@ -239,8 +243,124 @@ exports.getDashboard = async (req, res) => {
             projectCount: 0,
             postCount: 0,
             serviceCount: 0,
-            visitorCount: 0
+            partnerCount: 0,
+            newContactsCount: 0,
+            visitorCount: 0,
+            statCount: 0
         });
+    }
+};
+
+// --- Stat Blocks Management ---
+
+exports.manageStats = async (req, res) => {
+    try {
+        const stats = await StatBlock.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/stats-manage', {
+            title: 'لوحة التحكم | أرقامنا',
+            path: '/admin/stats',
+            stats
+        });
+    } catch (error) {
+        console.error('manageStats error:', error);
+        res.render('admin/stats-manage', {
+            title: 'لوحة التحكم | أرقامنا',
+            path: '/admin/stats',
+            stats: []
+        });
+    }
+};
+
+exports.getAddStat = (req, res) => {
+    res.render('admin/stat-form', {
+        title: 'إضافة رقم جديد',
+        path: '/admin/stats/add',
+        stat: null,
+        error: null
+    });
+};
+
+exports.postAddStat = async (req, res) => {
+    try {
+        const { key, label_ar, label_en, value, suffix_ar, suffix_en, display_order, is_active } = req.body;
+        await StatBlock.create({
+            key,
+            label_ar,
+            label_en,
+            value: Number(value) || 0,
+            suffix_ar: suffix_ar || null,
+            suffix_en: suffix_en || null,
+            display_order: Number(display_order) || 0,
+            is_active: is_active === 'on'
+        });
+        res.redirect('/admin/stats');
+    } catch (error) {
+        console.error('postAddStat error:', error);
+        res.render('admin/stat-form', {
+            title: 'إضافة رقم جديد',
+            path: '/admin/stats/add',
+            stat: req.body,
+            error: 'حدث خطأ أثناء الحفظ'
+        });
+    }
+};
+
+exports.getEditStat = async (req, res) => {
+    try {
+        const stat = await StatBlock.findByPk(req.params.id);
+        if (!stat) {
+            return res.redirect('/admin/stats');
+        }
+        res.render('admin/stat-form', {
+            title: 'تعديل رقم',
+            path: '/admin/stats/edit/' + req.params.id,
+            stat,
+            error: null
+        });
+    } catch (error) {
+        console.error('getEditStat error:', error);
+        res.redirect('/admin/stats');
+    }
+};
+
+exports.postEditStat = async (req, res) => {
+    try {
+        const stat = await StatBlock.findByPk(req.params.id);
+        if (!stat) {
+            return res.redirect('/admin/stats');
+        }
+        const { key, label_ar, label_en, value, suffix_ar, suffix_en, display_order, is_active } = req.body;
+        stat.key = key;
+        stat.label_ar = label_ar;
+        stat.label_en = label_en;
+        stat.value = Number(value) || 0;
+        stat.suffix_ar = suffix_ar || null;
+        stat.suffix_en = suffix_en || null;
+        stat.display_order = Number(display_order) || 0;
+        stat.is_active = is_active === 'on';
+        await stat.save();
+        res.redirect('/admin/stats');
+    } catch (error) {
+        console.error('postEditStat error:', error);
+        res.render('admin/stat-form', {
+            title: 'تعديل رقم',
+            path: '/admin/stats/edit/' + req.params.id,
+            stat: Object.assign({}, req.body, { id: req.params.id }),
+            error: 'حدث خطأ أثناء الحفظ'
+        });
+    }
+};
+
+exports.deleteStat = async (req, res) => {
+    try {
+        const stat = await StatBlock.findByPk(req.params.id);
+        if (stat) {
+            await stat.destroy();
+        }
+        res.redirect('/admin/stats');
+    } catch (error) {
+        console.error('deleteStat error:', error);
+        res.redirect('/admin/stats');
     }
 };
 

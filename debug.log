@@ -328,3 +328,42 @@
 [2026-02-16T08:31:06.347Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-16T08:31:06.352Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-16T08:31:14.154Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:23:55.359Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:23:55.368Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:23:56.279Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:23:56.284Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:23:56.822Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:23:56.826Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:39.819Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:39.824Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:40.503Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:40.509Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.042Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.045Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.447Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.456Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.712Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.716Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.960Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:41.964Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:42.169Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:42.173Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:42.344Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:25:42.348Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:27:24.466Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:27:24.469Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:27:26.392Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:28:37.104Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:28:37.108Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:28:38.035Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:29:44.770Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:29:44.775Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:29:45.483Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:30:09.170Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:30:09.184Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:30:09.275Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:30:42.849Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:30:42.903Z] Login attempt for username: admin
+[2026-02-16T09:30:42.904Z] Current DB dialect: mysql
+[2026-02-16T09:30:42.912Z] Login error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-02-16T09:30:42.991Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306

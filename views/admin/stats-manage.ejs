@@ -1,0 +1,56 @@
+<%- include('layout-header') %>
+
+<div class="admin-content-inner">
+    <div class="admin-topbar-actions" style="margin-bottom: 2rem;">
+        <h2 style="font-weight: 700; color: var(--secondary-color);"><i class="fas fa-hashtag"></i> أرقامنا</h2>
+        <p style="color: var(--text-muted); margin-top: 5px;">تحكم في الأرقام التي تظهر في واجهة الموقع بعد قسم الهيرو.</p>
+        <a href="/admin/stats/add" class="btn btn-primary" style="margin-top: 10px;">
+            <i class="fas fa-plus"></i> إضافة رقم جديد
+        </a>
+    </div>
+
+    <div class="admin-card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>المفتاح</th>
+                    <th>الوسم (عربي)</th>
+                    <th>الوسم (إنجليزي)</th>
+                    <th>القيمة</th>
+                    <th>الترتيب</th>
+                    <th>فعال؟</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (stats && stats.length) { %>
+                    <% stats.forEach(function(stat, index) { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><code><%= stat.key %></code></td>
+                            <td><%= stat.label_ar %></td>
+                            <td><%= stat.label_en %></td>
+                            <td><%= stat.value %></td>
+                            <td><%= stat.display_order %></td>
+                            <td><%= stat.is_active ? 'نعم' : 'لا' %></td>
+                            <td>
+                                <a href="/admin/stats/edit/<%= stat.id %>" class="btn btn-sm btn-secondary">تعديل</a>
+                                <a href="/admin/stats/delete/<%= stat.id %>" class="btn btn-sm btn-danger" onclick="return confirm('حذف هذا الرقم؟');">حذف</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted);">
+                            لا توجد أرقام حالياً. اضغط على "إضافة رقم جديد" لإضافة أول رقم.
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('layout-footer') %>
+

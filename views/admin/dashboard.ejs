@@ -41,6 +41,14 @@
         <p><%= visitorCount %></p>
     </div>
     
+    <div class="stat-card">
+        <div class="stat-icon" style="color: #2d3436;">
+            <i class="fas fa-hashtag fa-2x"></i>
+        </div>
+        <h3>أرقام الواجهة</h3>
+        <p><%= typeof statCount !== 'undefined' ? statCount : 0 %></p>
+    </div>
+    
     <div class="stat-card highlight">
         <div class="stat-icon" style="color: var(--primary-color);">
             <i class="fas fa-envelope-open-text fa-2x"></i>

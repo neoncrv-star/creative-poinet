@@ -120,6 +120,24 @@
             </div>
         </section>
 
+        <% if (typeof stats !== 'undefined' && stats && stats.length) { %>
+        <section class="stats-section">
+            <div class="stats-wrapper">
+                <% stats.forEach(function(stat) { %>
+                    <article class="stat-item">
+                        <div class="stat-value">
+                            <span><%= stat.value %></span>
+                            <% if (stat.suffix_en) { %>
+                                <span class="stat-suffix"><%= stat.suffix_en %></span>
+                            <% } %>
+                        </div>
+                        <p class="stat-label"><%= stat.label_en %></p>
+                    </article>
+                <% }); %>
+            </div>
+        </section>
+        <% } %>
+
         <!-- Journey Section -->
         <section id="journey" class="journey-scroll-section">
             <div class="journey-container" style="text-align: center;">
