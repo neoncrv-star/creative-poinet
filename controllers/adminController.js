@@ -434,8 +434,29 @@ exports.postDesignSettings = async (req, res) => {
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
 
-        // Handle checkbox
         data.sliderAutoplay = req.body.sliderAutoplay === 'on';
+
+        const modeRaw = (req.body.heroVideoMode || '').toLowerCase();
+        const allowedModes = ['url', 'youtube', 'vimeo', 'file'];
+        data.heroVideoMode = allowedModes.includes(modeRaw) ? modeRaw : 'url';
+
+        let heroVideoFile = seo && seo.heroVideoFile ? seo.heroVideoFile : null;
+        if (req.file) {
+            const stored = await toHashedAsset(req.file);
+            if (stored) {
+                heroVideoFile = stored;
+            }
+        }
+
+        if (data.heroVideoMode !== 'file') {
+            heroVideoFile = null;
+        }
+
+        if (heroVideoFile) {
+            heroVideoFile = normalizeAsset(heroVideoFile);
+        }
+
+        data.heroVideoFile = heroVideoFile;
 
         if (!seo) {
             seo = await GlobalSeo.create(data);

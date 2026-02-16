@@ -46,10 +46,18 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    heroVideoMode: {
+        type: DataTypes.STRING,
+        defaultValue: 'url'
+    },
     heroVideoUrl: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
+    },
+    heroVideoFile: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     // Advanced SEO fields
     favicon: {

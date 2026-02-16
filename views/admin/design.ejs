@@ -6,7 +6,7 @@
         <p style="color: var(--text-muted); margin-top: 5px;">تحكم في العناصر البصرية وتنسيقات الأقسام المختلفة في الموقع.</p>
     </div>
 
-    <form action="/admin/design" method="POST">
+    <form action="/admin/design" method="POST" enctype="multipart/form-data">
         <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
             <!-- Main Settings Column -->
             <div class="form-main-col">
@@ -95,6 +95,44 @@
                         <i class="fas fa-check-circle"></i> حفظ إعدادات التصميم
                     </button>
                 </div>
+
+                <!-- Hero Video Card -->
+                <div class="admin-card" style="margin-top: 1.5rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-play-circle"></i> فيديو الهيرو (Hero Video)
+                    </h3>
+                    <%
+                        var heroMode = (seo && seo.heroVideoMode) ? seo.heroVideoMode : ((seo && seo.heroVideoFile) ? 'file' : 'url');
+                    %>
+                    <div class="form-group">
+                        <label>مصدر الفيديو</label>
+                        <select name="heroVideoMode" id="heroVideoMode" class="form-control">
+                            <option value="url" <%= heroMode === 'url' ? 'selected' : '' %>>رابط MP4 مباشر</option>
+                            <option value="youtube" <%= heroMode === 'youtube' ? 'selected' : '' %>>YouTube</option>
+                            <option value="vimeo" <%= heroMode === 'vimeo' ? 'selected' : '' %>>Vimeo</option>
+                            <option value="file" <%= heroMode === 'file' ? 'selected' : '' %>>رفع ملف من الخادم</option>
+                        </select>
+                    </div>
+                    <div class="form-group hero-video-url-group">
+                        <label>رابط الفيديو</label>
+                        <input type="url" name="heroVideoUrl" value="<%= seo ? (seo.heroVideoUrl || '') : '' %>" placeholder="https://example.com/video.mp4 أو رابط YouTube/Vimeo" style="direction: ltr;">
+                        <small style="display: block; margin-top: 10px; color: var(--text-muted); line-height: 1.4;">
+                            يدعم رابط MP4 مباشر، أو رابط فيديو من YouTube/Vimeo.
+                        </small>
+                    </div>
+                    <div class="form-group hero-video-file-group">
+                        <label>ملف الفيديو (MP4/WebM)</label>
+                        <% if (seo && seo.heroVideoFile) { %>
+                            <div style="margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); direction: ltr;">
+                                <%= assetPath(seo.heroVideoFile) %>
+                            </div>
+                        <% } %>
+                        <input type="file" name="heroVideoFile" accept="video/mp4,video/webm">
+                        <small style="display: block; margin-top: 10px; color: var(--text-muted); line-height: 1.4;">
+                            في وضع "رفع ملف من الخادم" يتم استخدام الملف هنا كخلفية الهيرو.
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
@@ -120,5 +158,21 @@ output {
     color: var(--primary-color);
 }
 </style>
+
+<script>
+(function () {
+    var select = document.getElementById('heroVideoMode');
+    if (!select) return;
+    var urlGroup = document.querySelector('.hero-video-url-group');
+    var fileGroup = document.querySelector('.hero-video-file-group');
+    function sync() {
+        var val = (select.value || 'url').toLowerCase();
+        if (urlGroup) urlGroup.style.display = val === 'file' ? 'none' : 'block';
+        if (fileGroup) fileGroup.style.display = val === 'file' ? 'block' : 'none';
+    }
+    select.addEventListener('change', sync);
+    sync();
+})();
+</script>
 
 <%- include('layout-footer') %>

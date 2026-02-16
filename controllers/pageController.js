@@ -44,7 +44,7 @@ exports.getHome = async (req, res) => {
             'https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&mute=1&controls=0&loop=1&playlist=M7FIvfx5J10&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1&origin=http://localhost:3000'
         ];
         
-        if (seo && (!seo.heroVideoUrl || oldDefaultUrls.includes(seo.heroVideoUrl) || seo.heroVideoUrl.includes('youtube.com/embed/M7FIvfx5J10'))) {
+        if (seo && (!seo.heroVideoUrl || (!seo.heroVideoMode || seo.heroVideoMode === 'url') && (oldDefaultUrls.includes(seo.heroVideoUrl) || seo.heroVideoUrl.includes('youtube.com/embed/M7FIvfx5J10')))) {
             console.log('Replacing Hero Video URL:', seo.heroVideoUrl, 'with', defaultVideoUrl);
             seo.heroVideoUrl = defaultVideoUrl;
         }
@@ -97,7 +97,7 @@ exports.getHomeEn = async (req, res) => {
             'https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&mute=1&controls=0&loop=1&playlist=M7FIvfx5J10&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1&origin=http://localhost:3000'
         ];
         
-        if (seo && (!seo.heroVideoUrl || oldDefaultUrls.includes(seo.heroVideoUrl) || seo.heroVideoUrl.includes('youtube.com/embed/M7FIvfx5J10'))) {
+        if (seo && (!seo.heroVideoUrl || (!seo.heroVideoMode || seo.heroVideoMode === 'url') && (oldDefaultUrls.includes(seo.heroVideoUrl) || seo.heroVideoUrl.includes('youtube.com/embed/M7FIvfx5J10')))) {
             console.log('Replacing EN Hero Video URL:', seo.heroVideoUrl, 'with', defaultVideoUrl);
             seo.heroVideoUrl = defaultVideoUrl;
         }
