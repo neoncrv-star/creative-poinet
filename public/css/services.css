@@ -1,11 +1,16 @@
 /* =========================================
-   Services Section Styles - Corrected
+   Services Section Styles - Corrected & Safe
    ========================================= */
 
+/* 1. الحاوية الرئيسية */
 .services-horizontal-section {
     width: 100%;
+    /* خلفية متدرجة داكنة */
     background: radial-gradient(circle at top, #111 0, #050505 55%, #000 100%);
-    padding: 0; /* تم إزالة البادينج للسماح بالتحكم الكامل في الارتفاع */
+    padding: 0;
+    position: relative;
+    /* مهم جداً: هذا يمنع تعارض السكرول مع التثبيت */
+    overflow: visible; 
 }
 
 .services-horizontal-wrapper {
@@ -14,24 +19,24 @@
     padding-inline: clamp(16px, 5vw, 32px);
 }
 
-/* --- Layout Grid --- */
+/* 2. الشبكة (Grid Layout) */
 .services-layout {
     display: grid;
-    /* تعديل النسب: الصورة تأخذ مساحة أقل قليلاً لترك مساحة للنصوص */
+    /* العمود الأول للصورة (أصغر قليلاً) - العمود الثاني للنصوص */
     grid-template-columns: 0.9fr 1.1fr; 
-    /* stretch ضروري جداً ليعمل الـ Sticky */
+    /* stretch تجعل عمود الصور يمتد لطول القائمة، مما يسمح للصورة بالحركة داخله */
     align-items: stretch; 
     gap: 60px;
     position: relative;
 }
 
-/* --- Header Section --- */
+/* --- Header Section (العناوين) --- */
 .services-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 32px;
-    padding-top: 80px; /* مسافة علوية للهيدر */
+    padding-top: 80px;
     margin-bottom: 40px;
 }
 
@@ -66,6 +71,7 @@
     line-height: 1.7;
 }
 
+/* تنسيق اللغة العربية */
 body.lang-ar .services-header {
     flex-direction: column;
     align-items: flex-end;
@@ -80,30 +86,37 @@ body.lang-ar .services-header-note {
     max-width: 480px;
 }
 
-/* --- Sticky Image Column --- */
+/* --- 3. عمود الصور المثبت (Sticky Image Column) --- */
 .services-media-column {
     position: relative;
-    /* لا تضع overflow: hidden هنا */
+    /* لا تضع overflow: hidden هنا أبداً لأنه يوقف التثبيت */
 }
 
+/* الحاوية التي ستثبت فعلياً */
 .services-media-sticky {
+    /* استخدام sticky بدلاً من GSAP Pin */
     position: -webkit-sticky;
     position: sticky;
     top: 0;
-    height: 100vh; /* الارتفاع الكامل للشاشة لتتمكن الصورة من التوسط */
+    
+    /* الارتفاع 100vh يجعل الصورة دائماً تتوسط الشاشة */
+    height: 100vh;
     width: 100%;
+    
+    /* Flexbox لتوسيط الإطار داخل الـ vh */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* توسيط عمودي */
-    align-items: center; /* توسيط أفقي */
+    justify-content: center;
+    align-items: center;
+    
     z-index: 10;
     padding: 20px 0;
 }
 
 .services-media-frame {
     width: 100%;
-    max-width: 480px; /* تحديد عرض أقصى للصورة لتبقى أنيقة */
-    aspect-ratio: 4/5; /* نسبة أبعاد ثابتة للصورة */
+    max-width: 480px;
+    aspect-ratio: 4/5; /* الحفاظ على نسبة الطول للعرض */
     border-radius: 26px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: radial-gradient(circle at top left, rgba(255, 0, 0, 0.16), rgba(5, 5, 5, 0.98));
@@ -111,6 +124,7 @@ body.lang-ar .services-header-note {
     box-shadow: 0 26px 60px rgba(0, 0, 0, 0.85);
     overflow: hidden;
     transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
 }
 
 .services-media-image {
@@ -125,13 +139,15 @@ body.lang-ar .services-header-note {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.7s ease, opacity 0.4s ease;
+    /* حركات ناعمة عند تغيير الصورة */
+    transition: transform 0.7s ease, opacity 0.4s ease, filter 0.4s ease;
 }
 
 .services-media-image-placeholder {
     background: radial-gradient(circle at 30% 20%, rgba(255, 0, 0, 0.25), transparent 55%), radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08), transparent 60%), linear-gradient(135deg, #141414, #050505);
 }
 
+/* تأثير التحبيب (Grain) */
 .services-media-grain {
     position: absolute;
     inset: -1px;
@@ -143,47 +159,27 @@ body.lang-ar .services-header-note {
         radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.6) 0, transparent 55%);
 }
 
+/* النصوص التابعة للصورة (Title & Text inside sticky) */
 .services-media-copy {
     margin-top: 24px;
     text-align: center;
-    /* التسميات تتحرك مع الصورة */
+    position: absolute;
+    bottom: -100px; /* إخفاؤها أو وضعها تحت الصورة */
+    opacity: 0; /* يتم التحكم بها عبر JS */
 }
 
-.services-media-label {
-    font-size: 0.78rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 6px;
-}
-
-.services-media-title {
-    font-size: clamp(1.4rem, 2.2vw, 1.8rem);
-    margin: 0 0 8px;
-    transition: opacity 0.3s ease;
-}
-
-.services-media-text {
-    font-size: 0.94rem;
-    color: rgba(255, 255, 255, 0.76);
-    line-height: 1.8;
-    margin: 0;
-    transition: opacity 0.3s ease;
-}
-
-/* --- Scrolling List Column --- */
+/* --- 4. قائمة الكروت المتحركة (Scrolling List) --- */
 .services-list-column {
-    /* مسافة علوية وسفلية للسماح بأول وآخر كرت بالوصول للمنتصف */
+    /* مسافة علوية وسفلية كبيرة للسماح بالوصول للمنتصف */
     padding: 15vh 0 15vh 0;
 }
 
 .services-panel-container {
     display: flex;
     flex-direction: column;
-    /* لا نستخدم gap هنا، نستخدم margin في الكرت */
 }
 
-/* --- Service Card Styles (Default / Inactive) --- */
+/* --- تنسيق الكرت (الوضع الافتراضي / غير النشط) --- */
 .service-card {
     position: relative;
     background: linear-gradient(135deg, rgba(255, 0, 0, 0.05), rgba(255, 255, 255, 0.01));
@@ -192,17 +188,17 @@ body.lang-ar .services-header-note {
     padding: 32px;
     overflow: hidden;
     
-    /* المسافة الكبيرة للسكرول */
+    /* المسافة الكبيرة هي سر السكرول الاحترافي */
     margin-bottom: 35vh; 
     
-    /* الحالة غير النشطة (Inactive State) */
+    /* الحالة الافتراضية: شفاف ومغبش */
     opacity: 0.25;
-    filter: blur(4px);
+    filter: blur(5px);
     transform: scale(0.95);
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* إزالة المارجن من آخر كرت */
+/* إزالة المسافة من آخر كرت */
 .service-card:last-child {
     margin-bottom: 0;
 }
@@ -218,7 +214,8 @@ body.lang-ar .services-header-note {
     pointer-events: none;
 }
 
-/* --- Service Card (Active State - Added via JS) --- */
+/* --- تنسيق الكرت (الوضع النشط - Active State) --- */
+/* يتم إضافة هذا الكلاس بواسطة الجافاسكربت */
 .service-card.active-service {
     opacity: 1;
     filter: blur(0);
@@ -233,7 +230,7 @@ body.lang-ar .services-header-note {
     transform: translate3d(0, 0, 0);
 }
 
-/* --- Card Inner Elements --- */
+/* --- عناصر داخل الكرت --- */
 .service-card-header {
     display: flex;
     align-items: center;
@@ -311,17 +308,17 @@ body.lang-ar .services-header-note {
     height: 1px;
     background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.5), rgba(255,255,255,0.1));
     transform-origin: 0 50%;
-    transform: scaleX(0); /* سيتم تحريكه بالجافاسكربت */
+    transform: scaleX(0); 
 }
 
 /* =========================================
-   Responsive Media Queries
+   Responsive (الموبايل والتابلت)
    ========================================= */
 
 @media screen and (max-width: 1024px) {
     .services-layout {
         display: flex;
-        flex-direction: column-reverse; /* الصور فوق (أو تخفى) والقائمة تحت */
+        flex-direction: column-reverse; /* عكس الترتيب ليظهر المحتوى بشكل منطقي */
         gap: 40px;
     }
 
@@ -333,9 +330,9 @@ body.lang-ar .services-header-note {
         padding-top: 40px;
     }
 
-    /* إلغاء التثبيت في الشاشات المتوسطة والصغيرة */
+    /* إخفاء عمود الصور في الموبايل لتخفيف الحمل وتحسين التجربة */
     .services-media-column {
-        display: none; /* إخفاء عمود الصور الجانبي في الموبايل */
+        display: none; 
     }
 
     .services-media-sticky {
@@ -348,7 +345,7 @@ body.lang-ar .services-header-note {
         padding: 0;
     }
 
-    /* إعادة تنسيق الكروت لتصبح طبيعية بدون مسافات ضخمة */
+    /* تنسيق الكروت للموبايل (بدون مسافات كبيرة وبدون تغبيش) */
     .service-card {
         margin-bottom: 24px;
         opacity: 1;
@@ -360,6 +357,12 @@ body.lang-ar .services-header-note {
     
     .service-card:last-child {
         margin-bottom: 0;
+    }
+
+    /* إلغاء تأثيرات الـ Hover/Active المعقدة في الموبايل */
+    .service-card.active-service {
+        transform: none;
+        box-shadow: none;
     }
 }
 

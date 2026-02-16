@@ -1,180 +1,120 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // التحقق من بيئة العمل
-    if (typeof window === 'undefined') return;
-
-    var start = function () {
-        // التحقق من تحميل مكتبات GSAP
-        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-            console.warn('GSAP or ScrollTrigger not loaded');
-            // تعيين علامة الجاهزية لتجنب التعليق
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-            return;
+    
+    // دالة التشغيل الرئيسية
+    const initServices = () => {
+        // 1. التحقق من البيئة
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') { 
+            console.warn('GSAP Libraries not loaded yet.'); 
+            return; 
         }
 
         gsap.registerPlugin(ScrollTrigger);
 
-        // 1. تحديد العناصر
-        var section = document.querySelector('.services-horizontal-section');
-        if (!section) {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-            return;
-        }
+        // 2. تنظيف أي تريجر قديم لتجنب التضارب (حل المشكلة القاتلة)
+        ScrollTrigger.getAll().forEach(t => {
+            if (t.vars && t.vars.id === 'service-card-trigger') t.kill();
+        });
 
-        var mediaImage = section.querySelector('.services-media-image-inner');
-        var mediaTitle = section.querySelector('.services-media-title');
-        var mediaText = section.querySelector('.services-media-text');
-        var cards = section.querySelectorAll('.service-card');
+        // 3. تحديد العناصر
+        const section = document.querySelector('.services-horizontal-section');
+        if (!section) return;
 
-        // التحقق من وجود العناصر الأساسية
-        if (!mediaImage || !cards.length) {
-            window.__CP_READY = window.__CP_READY || {};
-            window.__CP_READY.services = true;
-            return;
-        }
+        const cards = section.querySelectorAll('.service-card');
+        const mediaImage = section.querySelector('.services-media-image-inner');
+        const mediaTitle = section.querySelector('.services-media-title');
+        const mediaText = section.querySelector('.services-media-text');
 
-        var activeIndex = -1; // لتتبع الكرت الحالي
+        if (!cards.length || !mediaImage) return;
 
-        // 2. دالة تحديث الصورة والنصوص (القسم الثابت)
-        function updateStickyContent(card, index) {
-            if (index === activeIndex) return; // منع التكرار إذا نفس الكرت
-            activeIndex = index;
+        // متغير لتجنب التكرار
+        let currentActiveIndex = -1;
 
-            // جلب البيانات
-            var newImageSrc = card.getAttribute('data-image');
-            var newTitle = card.getAttribute('data-title') || card.querySelector('.service-card-title')?.textContent;
-            var newDesc = card.getAttribute('data-description') || card.querySelector('.service-card-desc')?.textContent;
+        // دالة تحديث المحتوى (تأثيرات بصرية فقط)
+        const updateMedia = (index) => {
+            if (index === currentActiveIndex) return;
+            currentActiveIndex = index;
 
-            // إنشاء Timeline لتزامن خروج القديم ودخول الجديد
-            var tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+            const card = cards[index];
+            const newSrc = card.getAttribute('data-image');
+            const newTitle = card.getAttribute('data-title');
+            const newDesc = card.getAttribute('data-description');
 
-            // أ) إخفاء العناصر الحالية (Fade Out & Move Up)
+            // Timeline لتبديل المحتوى بنعومة
+            const tl = gsap.timeline();
+
+            // إخفاء
             tl.to([mediaImage, mediaTitle, mediaText], {
                 opacity: 0,
-                y: -15,
-                filter: 'blur(5px)',
-                duration: 0.3
-            })
-            // ب) تغيير المحتوى فعلياً
-            .call(function () {
-                if (mediaTitle) mediaTitle.textContent = newTitle;
-                if (mediaText) mediaText.textContent = newDesc;
-                if (mediaImage && newImageSrc && mediaImage.tagName === 'IMG') {
-                    mediaImage.setAttribute('src', newImageSrc);
+                y: 10,
+                duration: 0.25,
+                ease: "power1.in",
+                onComplete: () => {
+                    // تبديل البيانات
+                    if (newSrc && mediaImage.tagName === 'IMG') mediaImage.src = newSrc;
+                    if (newTitle && mediaTitle) mediaTitle.textContent = newTitle;
+                    if (newDesc && mediaText) mediaText.textContent = newDesc;
                 }
             })
-            // ج) إعادة تهيئة الموقع (set) ثم الإظهار (Fade In)
-            .set([mediaImage, mediaTitle, mediaText], { y: 15 }) // نبدأ من الأسفل قليلاً
+            // إظهار
             .to([mediaImage, mediaTitle, mediaText], {
                 opacity: 1,
                 y: 0,
-                filter: 'blur(0px)',
                 duration: 0.4,
-                stagger: 0.05 // تأخير بسيط بين الصورة والنصوص لجمالية الحركة
+                ease: "power2.out",
+                stagger: 0.05
             });
-        }
+        };
 
-        // 3. دالة تفعيل الكرت (القائمة المتحركة)
-        function activateCard(index) {
-            cards.forEach(function (c, i) {
-                var isActive = (i === index);
-                var divider = c.querySelector('.service-divider');
-                var marker = c.querySelector('.service-card-marker');
-
-                // إضافة/إزالة الكلاس للتحكم بالـ CSS أيضاً
-                if (isActive) {
-                    c.classList.add('service-card-active');
-                } else {
-                    c.classList.remove('service-card-active');
-                }
-
-                // حركة GSAP للكروت (التركيز vs التغبيش)
-                gsap.to(c, {
-                    opacity: isActive ? 1 : 0.25, // الكرت غير النشط شفاف
-                    filter: isActive ? 'blur(0px)' : 'blur(4px)', // الكرت غير النشط مغبش
-                    scale: isActive ? 1 : 0.95, // الكرت النشط أكبر قليلاً
-                    duration: 0.5,
-                    overwrite: true
-                });
-
-                // حركة الخط الفاصل (Divider)
-                if (divider) {
-                    gsap.to(divider, {
-                        scaleX: isActive ? 1 : 0,
-                        transformOrigin: "left center",
-                        duration: 0.5,
-                        overwrite: true
-                    });
-                }
-
-                // حركة النقطة (Marker)
-                if (marker) {
-                    gsap.to(marker, {
-                        backgroundColor: isActive ? "#ff0000" : "transparent",
-                        borderColor: isActive ? "#ff0000" : "rgba(255,255,255,0.2)",
-                        scale: isActive ? 1.1 : 1,
-                        duration: 0.3
-                    });
-                }
-            });
-        }
-
-        // 4. إعداد مراقب السكرول (ScrollTrigger)
-        cards.forEach(function (card, index) {
-            ScrollTrigger.create({
-                trigger: card,
-                // يبدأ التفعيل عندما يصل أعلى الكرت إلى 55% من ارتفاع الشاشة (المنتصف تقريباً)
-                start: "top 55%", 
-                // ينتهي عندما يغادر
-                end: "bottom 55%",
+        // دالة تفعيل الكرت
+        const activateCard = (index) => {
+            cards.forEach((c, i) => {
+                const isActive = (i === index);
+                const marker = c.querySelector('.service-card-marker');
                 
-                onEnter: function () {
+                if (isActive) {
+                    c.classList.add('active-service');
+                    gsap.to(c, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.5 });
+                    if(marker) gsap.to(marker, { background: "#ff0000", scale: 1.2, duration: 0.3 });
+                } else {
+                    c.classList.remove('active-service');
+                    gsap.to(c, { opacity: 0.3, filter: "blur(4px)", scale: 0.95, duration: 0.5 });
+                    if(marker) gsap.to(marker, { background: "transparent", scale: 1, duration: 0.3 });
+                }
+            });
+        };
+
+        // إنشاء ScrollTrigger لكل كرت
+        cards.forEach((card, index) => {
+            ScrollTrigger.create({
+                id: 'service-card-trigger', // معرف للتنظيف لاحقاً
+                trigger: card,
+                // المنطقة الحساسة: عندما يكون منتصف الكرت في منتصف الشاشة
+                start: "top center+=10%", 
+                end: "bottom center-=10%",
+                toggleClass: "is-in-view", // كلاس مؤقت للمساعدة
+                
+                onEnter: () => {
                     activateCard(index);
-                    updateStickyContent(card, index);
+                    updateMedia(index);
                 },
-                onEnterBack: function () {
+                onEnterBack: () => {
                     activateCard(index);
-                    updateStickyContent(card, index);
+                    updateMedia(index);
                 }
             });
         });
 
-        // 5. التهيئة الأولية (تفعيل أول كرت عند التحميل)
-        if (cards.length > 0) {
-            activateCard(0);
-            // ملاحظة: لا نستدعي updateStickyContent هنا لتجنب وميض الصورة عند تحميل الصفحة
-            // نفترض أن الـ HTML يحتوي بالفعل على صورة ونصوص الكرت الأول
-        }
-
-        // إشعار اكتمال التحميل
+        // تفعيل الأول يدوياً عند التحميل
+        activateCard(0);
+        
+        // إشعار الجاهزية
         window.__CP_READY = window.__CP_READY || {};
         window.__CP_READY.services = true;
+
+        // تحديث الحسابات بعد تحميل الصور لضمان الدقة
+        ScrollTrigger.refresh();
     };
 
-    // ==========================================
-    // منطق التحميل الآمن (تكامل مع النظام لديك)
-    // ==========================================
-    
-    // 1. محاولة استخدام scrollManager إذا وجد
-    if (window.scrollManager && typeof window.scrollManager.section === 'function') {
-        window.scrollManager.section('services', function (gsapRef, ScrollTriggerRef) {
-            if (!gsapRef || !ScrollTriggerRef) return;
-            start();
-        });
-        return;
-    }
-
-    // 2. محاولة استخدام safeScrollTrigger إذا وجد
-    if (typeof window.safeScrollTrigger === 'function') {
-        window.safeScrollTrigger(function (gsapRef, ScrollTriggerRef) {
-            if (!gsapRef || !ScrollTriggerRef) return;
-            start();
-        });
-        return;
-    }
-
-    // 3. التشغيل المباشر
-    start();
+    // تشغيل الدالة مع تأخير بسيط جداً لضمان استقرار الـ DOM
+    setTimeout(initServices, 100);
 });
-  
