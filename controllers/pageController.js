@@ -13,10 +13,7 @@ const debugLog = (msg) => {
     } catch {}
 };
 
-const withTimeout = (p, ms, fallback) => Promise.race([
-    p,
-    new Promise(resolve => setTimeout(() => resolve(fallback), ms))
-]);
+const withTimeout = require('../utils/withTimeout');
 
 exports.getHome = async (req, res) => {
     try {

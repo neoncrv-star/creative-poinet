@@ -110,6 +110,7 @@
 
 .services-media-copy {
     margin-top: 18px;
+    display: none;
 }
 
 .services-media-label {

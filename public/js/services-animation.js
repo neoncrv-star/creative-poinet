@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var activeIndex = -1;
         var easing = "power3.out";
+        var inactiveOpacity = 0.35;
+        var activeOpacity = 1;
+        var inactiveBlur = 'blur(4px)';
+        var activeBlur = 'blur(0px)';
 
         function setActive(card, index) {
             if (!card || index === activeIndex) return;
@@ -38,7 +42,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
             cards.forEach(function (c) {
                 if (!c) return;
-                c.classList.toggle('service-card-active', c === card);
+                var isActive = c === card;
+                c.classList.toggle('service-card-active', isActive);
+                var targetOpacity = isActive ? activeOpacity : inactiveOpacity;
+                var targetFilter = isActive ? activeBlur : inactiveBlur;
+                gsap.to(c, {
+                    opacity: targetOpacity,
+                    filter: targetFilter,
+                    duration: 0.4,
+                    ease: easing
+                });
             });
 
             var title = card.getAttribute('data-title') || '';
@@ -111,9 +124,9 @@ document.addEventListener('DOMContentLoaded', function () {
             var divider = card.querySelector('.service-divider');
 
             gsap.set(card, {
-                opacity: 0.35,
+                opacity: inactiveOpacity,
                 y: 26,
-                filter: 'blur(4px)'
+                filter: inactiveBlur
             });
 
             if (divider) {
@@ -129,9 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 end: "top 40%",
                 onEnter: function () {
                     gsap.to(card, {
-                        opacity: 1,
                         y: 0,
-                        filter: 'blur(0px)',
                         duration: 0.6,
                         ease: easing
                     });
@@ -146,9 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 onEnterBack: function () {
                     gsap.to(card, {
-                        opacity: 1,
                         y: 0,
-                        filter: 'blur(0px)',
                         duration: 0.6,
                         ease: easing
                     });
