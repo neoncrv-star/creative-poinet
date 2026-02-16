@@ -228,6 +228,7 @@ exports.getDashboard = async (req, res) => {
 
         res.render('admin/dashboard', { 
             title: 'لوحة التحكم | الرئيسية',
+            path: '/admin',
             projectCount,
             postCount,
             serviceCount,
@@ -240,6 +241,7 @@ exports.getDashboard = async (req, res) => {
         console.error(error);
         res.render('admin/dashboard', { 
             title: 'لوحة التحكم | الرئيسية',
+            path: '/admin',
             projectCount: 0,
             postCount: 0,
             serviceCount: 0,
