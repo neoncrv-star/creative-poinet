@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ScrollTrigger.create({
                 id: 'service-card-trigger',
                 trigger: card,
-                start: "top center+=10%",
-                end: "bottom center-=10%",
+                start: "center center",
+                end: "center center+=1",
                 toggleClass: "is-in-view",
                 invalidateOnRefresh: true,
                 onEnter: () => {
