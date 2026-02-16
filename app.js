@@ -677,8 +677,49 @@ async function startServer() {
                 };
                 const Project = require('./models/Project');
                 const Post = require('./models/Post');
+                const Service = require('./models/Service');
+                const Partner = require('./models/Partner');
                 await normalizeImageField(Project, 'image', 'Project.image');
                 await normalizeImageField(Post, 'image', 'Post.image');
+                await normalizeImageField(Service, 'image', 'Service.image');
+                await normalizeImageField(Partner, 'logo', 'Partner.logo');
+
+                const ensureServicePlaceholders = async () => {
+                    const placeholderName = 'service-default.png';
+                    const placeholderAbs = storageService.buildAbsolutePath(placeholderName);
+                    try {
+                        if (!fs.existsSync(placeholderAbs)) {
+                            const src = path.join(__dirname, 'views', '4433444.png');
+                            if (fs.existsSync(src)) {
+                                fs.copyFileSync(src, placeholderAbs);
+                            }
+                        }
+                    } catch (e) {
+                        debugLog('service placeholder copy error: ' + (e && e.message));
+                    }
+                    const placeholderDb = storageService.toDbValue(placeholderName);
+                    let fixed = 0;
+                    const rows = await Service.findAll();
+                    for (const s of rows) {
+                        const raw = s.image;
+                        let filename = '';
+                        let exists = false;
+                        if (raw) {
+                            filename = storageService.mapDbValueToLocal(raw);
+                            if (filename) {
+                                const abs = storageService.buildAbsolutePath(filename);
+                                exists = fs.existsSync(abs);
+                            }
+                        }
+                        if (!raw || !filename || !exists) {
+                            await s.update({ image: placeholderDb });
+                            fixed++;
+                        }
+                    }
+                    if (fixed > 0) debugLog(`service placeholders applied: ${fixed}`);
+                };
+
+                await ensureServicePlaceholders();
             } catch (e) {
                 debugLog('asset normalize error: ' + (e && e.message));
             }
