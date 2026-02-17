@@ -44,7 +44,7 @@
 
 .service-stacked-card {
     position: sticky;
-    top: 96px;
+    top: 110px;
     height: 50vh;
     width: min(80vw, 1100px);
     margin-inline: auto;
@@ -60,8 +60,6 @@
 
 [data-theme="light"] .service-stacked-card {
     background: radial-gradient(circle at top, rgba(0, 0, 0, 0.02), transparent 55%), #ffffff;
-    border-color: rgba(0, 0, 0, 0.06);
-    box-shadow: none;
 }
 
 .service-stacked-inner {
@@ -244,3 +242,4 @@
         padding: 22px 20px;
     }
 }
+
