@@ -554,11 +554,8 @@ exports.getMediaLibrary = async (req, res) => {
 
 exports.postMediaDelete = async (req, res) => {
     try {
-        const { type, id, field, value, filter } = req.body;
-        const entityType = String(type || '').trim();
-        const fieldName = String(field || '').trim();
-        const rawValue = String(value || '').trim();
-        const filterRaw = String(filter || '').trim();
+        const body = req.body || {};
+        const filterRaw = String(body.filter || '').trim();
 
         const models = {
             Partner,
@@ -568,40 +565,80 @@ exports.postMediaDelete = async (req, res) => {
             GlobalSeo
         };
 
-        const Model = models[entityType];
-        if (!Model || !fieldName) {
+        const ops = [];
+
+        if (body.items) {
+            const arr = Array.isArray(body.items) ? body.items : [body.items];
+            arr.forEach((item) => {
+                const s = String(item || '').trim();
+                if (!s) return;
+                const parts = s.split('|');
+                if (parts.length < 3) return;
+                const entityType = parts[0];
+                const id = parts[1];
+                const fieldName = parts[2];
+                if (!entityType || !fieldName) return;
+                ops.push({ entityType, id, fieldName });
+            });
+        } else if (body.type && body.id && body.field) {
+            const entityType = String(body.type || '').trim();
+            const id = String(body.id || '').trim();
+            const fieldName = String(body.field || '').trim();
+            if (entityType && fieldName) {
+                ops.push({ entityType, id, fieldName });
+            }
+        }
+
+        if (!ops.length) {
             const qs = filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : '';
             return res.redirect('/admin/media' + qs);
         }
 
-        let record = null;
-        if (entityType === 'GlobalSeo') {
-            const numericId = parseInt(id, 10);
-            if (!Number.isNaN(numericId)) {
-                record = await Model.findByPk(numericId);
+        const affectedValues = [];
+
+        for (const op of ops) {
+            const Model = models[op.entityType];
+            if (!Model || !op.fieldName) continue;
+
+            let record = null;
+            if (op.entityType === 'GlobalSeo') {
+                const numericId = parseInt(op.id, 10);
+                if (!Number.isNaN(numericId)) {
+                    record = await Model.findByPk(numericId);
+                }
+                if (!record) {
+                    record = await Model.findOne();
+                }
+            } else {
+                const numericId = parseInt(op.id, 10);
+                if (!Number.isNaN(numericId)) {
+                    record = await Model.findByPk(numericId);
+                }
             }
-            if (!record) {
-                record = await Model.findOne();
-            }
-        } else {
-            const numericId = parseInt(id, 10);
-            if (!Number.isNaN(numericId)) {
-                record = await Model.findByPk(numericId);
+
+            if (record && Object.prototype.hasOwnProperty.call(record.dataValues || {}, op.fieldName)) {
+                const prev = record[op.fieldName];
+                if (prev) {
+                    affectedValues.push(String(prev));
+                }
+                const data = {};
+                data[op.fieldName] = null;
+                await record.update(data);
             }
         }
 
-        if (record) {
-            const data = {};
-            data[fieldName] = null;
-            await record.update(data);
-        }
-
-        if (rawValue) {
+        if (affectedValues.length) {
+            const uniqueValues = Array.from(new Set(affectedValues));
             const refs = await collectMediaRefs();
-            const stillUsed = refs.filter(r => !r.isExternal && r.value === rawValue);
-            if (stillUsed.length === 0) {
-                deleteFile(rawValue);
-            }
+            uniqueValues.forEach((val) => {
+                const v = String(val || '').trim();
+                if (!v) return;
+                if (/^https?:\/\//i.test(v)) return;
+                const stillUsed = refs.filter(r => !r.isExternal && r.value === v);
+                if (stillUsed.length === 0) {
+                    deleteFile(v);
+                }
+            });
         }
 
         pageCache.invalidateRoutes(['/', '/en']);

@@ -23,23 +23,39 @@
         <% if (!refs || !refs.length) { %>
             <p style="padding:16px;">لا توجد وسائط مسجلة حالياً في قاعدة البيانات.</p>
         <% } else { %>
-            <table style="width:100%; border-collapse: collapse; font-size:0.9rem;">
-                <thead>
-                    <tr style="border-bottom:1px solid #222;">
-                        <th style="text-align:right; padding:8px;">النوع</th>
-                        <th style="text-align:right; padding:8px;">الكيان</th>
-                        <th style="text-align:right; padding:8px;">المعرف</th>
-                        <th style="text-align:right; padding:8px;">الحقل</th>
-                        <th style="text-align:right; padding:8px;">المعاينة</th>
-                        <th style="text-align:right; padding:8px;">المسار / الرابط</th>
-                        <th style="text-align:right; padding:8px;">الحالة</th>
-                        <th style="text-align:right; padding:8px;">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% refs.forEach(function(r){ %>
-                        <tr style="border-bottom:1px solid #111;">
-                            <td style="padding:8px;">
+            <form id="mediaBulkForm" action="/admin/media/delete" method="POST">
+                <input type="hidden" name="filter" value="<%= currentFilter %>">
+                <div style="margin-bottom:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleSelectAllMedia()">تحديد / إلغاء تحديد الكل</button>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('سيتم إزالة الوسائط المحددة من الكيانات، وحذف الملفات من الخادم إذا لم تكن مستخدمة في مكان آخر. هل أنت متأكد؟');">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>حذف الوسائط المحددة</span>
+                    </button>
+                </div>
+                <table style="width:100%; border-collapse: collapse; font-size:0.9rem;">
+                    <thead>
+                        <tr style="border-bottom:1px solid #222;">
+                            <th style="text-align:center; padding:8px; width:40px;">تحديد</th>
+                            <th style="text-align:right; padding:8px;">النوع</th>
+                            <th style="text-align:right; padding:8px;">الكيان</th>
+                            <th style="text-align:right; padding:8px;">المعرف</th>
+                            <th style="text-align:right; padding:8px;">الحقل</th>
+                            <th style="text-align:right; padding:8px;">المعاينة</th>
+                            <th style="text-align:right; padding:8px;">المسار / الرابط</th>
+                            <th style="text-align:right; padding:8px;">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% refs.forEach(function(r){ %>
+                            <tr style="border-bottom:1px solid #111;">
+                                <td style="padding:8px; text-align:center;">
+                                    <% if (!r.isExternal) { %>
+                                        <input type="checkbox" class="media-select" name="items[]" value="<%= r.type %>|<%= r.entityId %>|<%= r.field %>">
+                                    <% } else { %>
+                                        <span style="color:#636e72;">—</span>
+                                    <% } %>
+                                </td>
+                                <td style="padding:8px;">
                                 <% if (r.mediaKind === 'image') { %>
                                     <span style="color:#00b894;">صورة</span>
                                 <% } else if (r.mediaKind === 'video') { %>
@@ -83,30 +99,22 @@
                                     <span style="color:#ff5555;">ملف مفقود</span>
                                 <% } %>
                             </td>
-                            <td style="padding:8px;">
-                                <% if (r.isExternal) { %>
-                                    <span style="color:#666;">—</span>
-                                <% } else { %>
-                                    <form action="/admin/media/delete" method="POST" onsubmit="return confirm('سيتم إزالة هذا المسار من الكيان، وحذف الملف من الخادم إذا لم يكن مستخدماً في مكان آخر. هل أنت متأكد؟');" style="display:inline-flex; gap:6px; align-items:center;">
-                                        <input type="hidden" name="type" value="<%= r.type %>">
-                                        <input type="hidden" name="id" value="<%= r.entityId %>">
-                                        <input type="hidden" name="field" value="<%= r.field %>">
-                                        <input type="hidden" name="value" value="<%= r.value %>">
-                                        <input type="hidden" name="filter" value="<%= currentFilter %>">
-                                        <button type="submit" class="btn btn-danger" style="padding:4px 10px; font-size:0.8rem;">
-                                            <i class="fas fa-trash-alt"></i>
-                                            <span>حذف الوسيط</span>
-                                        </button>
-                                    </form>
-                                <% } %>
-                            </td>
                         </tr>
                     <% }) %>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </form>
         <% } %>
     </div>
 </div>
 
-<%- include('layout-footer') %>
+<script>
+function toggleSelectAllMedia(){
+    var boxes = document.querySelectorAll('.media-select');
+    if (!boxes.length) return;
+    var allChecked = Array.prototype.every.call(boxes, function(b){ return b.checked; });
+    Array.prototype.forEach.call(boxes, function(b){ b.checked = !allChecked; });
+}
+</script>
 
+<%- include('layout-footer') %>
