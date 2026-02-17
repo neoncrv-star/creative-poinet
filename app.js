@@ -704,16 +704,7 @@ async function startServer() {
                     const rows = await Service.findAll();
                     for (const s of rows) {
                         const raw = s.image;
-                        let filename = '';
-                        let exists = false;
-                        if (raw) {
-                            filename = storageService.mapDbValueToLocal(raw);
-                            if (filename) {
-                                const abs = storageService.buildAbsolutePath(filename);
-                                exists = fs.existsSync(abs);
-                            }
-                        }
-                        if (!raw || !filename || !exists) {
+                        if (!raw) {
                             await s.update({ image: placeholderDb });
                             fixed++;
                         }
