@@ -449,6 +449,170 @@ exports.listUploads = async (req, res) => {
     }
 };
 
+// --- Media Library (Images / Video / Audio) ---
+const classifyMediaKind = (value, field) => {
+    const v = String(value || '').toLowerCase();
+    const match = v.match(/\.([a-z0-9]+)(?:[?#].*)?$/);
+    const ext = match ? `.${match[1]}` : '';
+    const imageExts = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.avif', '.jfif']);
+    const videoExts = new Set(['.mp4', '.webm', '.ogg', '.ogv', '.m4v']);
+    const audioExts = new Set(['.mp3', '.wav', '.ogg', '.oga', '.m4a']);
+    if (ext && imageExts.has(ext)) return 'image';
+    if (ext && videoExts.has(ext)) return 'video';
+    if (ext && audioExts.has(ext)) return 'audio';
+    const f = String(field || '').toLowerCase();
+    if (f.includes('video')) return 'video';
+    if (f.includes('audio') || f.includes('voice') || f.includes('sound')) return 'audio';
+    return 'image';
+};
+
+const collectMediaRefs = async () => {
+    const refs = [];
+    const pushRef = (type, entityId, field, value, title) => {
+        if (!value) return;
+        const raw = String(value).trim();
+        if (!raw) return;
+        const isExternal = /^https?:\/\//i.test(raw);
+        let rel = raw;
+        if (!isExternal) {
+            const filename = storageService.mapDbValueToLocal(raw);
+            rel = filename ? filename : raw;
+        }
+        let exists = true;
+        let fileSize = 0;
+        if (!isExternal) {
+            const abs = storageService.buildAbsolutePath(rel);
+            exists = fs.existsSync(abs);
+            if (exists) {
+                try { fileSize = fs.statSync(abs).size; } catch {}
+            }
+        }
+        const mediaKind = classifyMediaKind(raw, field);
+        refs.push({
+            type,
+            entityId,
+            field,
+            value: raw,
+            rel,
+            isExternal,
+            exists,
+            fileSize,
+            mediaKind,
+            title: title || ''
+        });
+    };
+
+    const [partners, projects, posts, services, seo] = await Promise.all([
+        Partner.findAll(),
+        Project.findAll(),
+        Post.findAll(),
+        Service.findAll(),
+        GlobalSeo.findOne()
+    ]);
+
+    partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
+    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title));
+    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title));
+    services.forEach(sv => pushRef('Service', sv.id, 'image', sv.image, sv.title_ar || sv.title_en));
+    if (seo) {
+        pushRef('GlobalSeo', seo.id, 'favicon', seo.favicon, 'Favicon');
+        pushRef('GlobalSeo', seo.id, 'ogImage', seo.ogImage, 'OG Image');
+        pushRef('GlobalSeo', seo.id, 'heroVideoFile', seo.heroVideoFile, 'Hero Video File');
+    }
+
+    return refs;
+};
+
+exports.getMediaLibrary = async (req, res) => {
+    try {
+        const refs = await collectMediaRefs();
+        const filterRaw = String(req.query.type || '').toLowerCase();
+        const allowed = new Set(['image', 'video', 'audio']);
+        const currentFilter = allowed.has(filterRaw) ? filterRaw : '';
+        let filteredRefs = refs;
+        if (currentFilter) {
+            filteredRefs = refs.filter(r => r.mediaKind === currentFilter);
+        }
+        const stats = {
+            total: refs.length,
+            images: refs.filter(r => r.mediaKind === 'image').length,
+            videos: refs.filter(r => r.mediaKind === 'video').length,
+            audios: refs.filter(r => r.mediaKind === 'audio').length
+        };
+        res.render('admin/media-library', {
+            title: 'لوحة التحكم | الوسائط',
+            path: '/admin/media',
+            refs: filteredRefs,
+            stats,
+            currentFilter
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postMediaDelete = async (req, res) => {
+    try {
+        const { type, id, field, value, filter } = req.body;
+        const entityType = String(type || '').trim();
+        const fieldName = String(field || '').trim();
+        const rawValue = String(value || '').trim();
+        const filterRaw = String(filter || '').trim();
+
+        const models = {
+            Partner,
+            Project,
+            Post,
+            Service,
+            GlobalSeo
+        };
+
+        const Model = models[entityType];
+        if (!Model || !fieldName) {
+            const qs = filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : '';
+            return res.redirect('/admin/media' + qs);
+        }
+
+        let record = null;
+        if (entityType === 'GlobalSeo') {
+            const numericId = parseInt(id, 10);
+            if (!Number.isNaN(numericId)) {
+                record = await Model.findByPk(numericId);
+            }
+            if (!record) {
+                record = await Model.findOne();
+            }
+        } else {
+            const numericId = parseInt(id, 10);
+            if (!Number.isNaN(numericId)) {
+                record = await Model.findByPk(numericId);
+            }
+        }
+
+        if (record) {
+            const data = {};
+            data[fieldName] = null;
+            await record.update(data);
+        }
+
+        if (rawValue) {
+            const refs = await collectMediaRefs();
+            const stillUsed = refs.filter(r => !r.isExternal && r.value === rawValue);
+            if (stillUsed.length === 0) {
+                deleteFile(rawValue);
+            }
+        }
+
+        pageCache.invalidateRoutes(['/', '/en']);
+        const qs = filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : '';
+        res.redirect('/admin/media' + qs);
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
+
 // --- Assets Audit & Sync ---
 const collectAssetRefs = async () => {
     const refs = [];

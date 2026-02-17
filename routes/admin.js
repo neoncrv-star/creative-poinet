@@ -34,6 +34,9 @@ router.post('/account/password', adminController.postChangePassword);
 // Logs (protected)
 router.get('/logs', adminController.getLogs);
 
+router.get('/media', adminController.getMediaLibrary);
+router.post('/media/delete', adminController.postMediaDelete);
+
 router.get('/assets/audit', adminController.getAssetsAudit);
 router.post('/assets/upload/:filename', upload.single('file'), adminController.postAssetsUpload);
 
