@@ -50,6 +50,32 @@ const normalizeAsset = (value) => {
     return storageService.toDbValue(filename);
 };
 
+const checkAssetExists = (rel) => {
+    let exists = false;
+    let fileSize = 0;
+    const clean = String(rel || '').replace(/^\/+/, '');
+    if (!clean) return { exists, fileSize };
+    try {
+        const primaryAbs = storageService.buildAbsolutePath(clean);
+        if (fs.existsSync(primaryAbs) && fs.statSync(primaryAbs).isFile()) {
+            try { fileSize = fs.statSync(primaryAbs).size; } catch {}
+            return { exists: true, fileSize };
+        }
+        const basename = path.basename(clean, path.extname(clean));
+        if (!basename) return { exists, fileSize };
+        const exts = ['.webp', '.png', '.jpg', '.jpeg', '.gif', '.avif', '.svg', '.jfif'];
+        for (const ext of exts) {
+            const altAbs = storageService.buildAbsolutePath(basename + ext);
+            if (fs.existsSync(altAbs) && fs.statSync(altAbs).isFile()) {
+                try { fileSize = fs.statSync(altAbs).size; } catch {}
+                return { exists: true, fileSize };
+            }
+        }
+    } catch {
+    }
+    return { exists, fileSize };
+};
+
 // Content-addressed storage: move uploaded file to <sha256>.<ext> and return canonical storage URL without format conversion
 const toHashedAsset = async (file) => {
     if (!file) return null;
@@ -481,11 +507,9 @@ const collectMediaRefs = async () => {
         let exists = true;
         let fileSize = 0;
         if (!isExternal) {
-            const abs = storageService.buildAbsolutePath(rel);
-            exists = fs.existsSync(abs);
-            if (exists) {
-                try { fileSize = fs.statSync(abs).size; } catch {}
-            }
+            const result = checkAssetExists(rel);
+            exists = result.exists;
+            fileSize = result.fileSize;
         }
         const mediaKind = classifyMediaKind(raw, field);
         refs.push({
@@ -664,11 +688,9 @@ const collectAssetRefs = async () => {
         let exists = true;
         let fileSize = 0;
         if (!isExternal) {
-            const abs = storageService.buildAbsolutePath(rel);
-            exists = fs.existsSync(abs);
-            if (exists) {
-                try { fileSize = fs.statSync(abs).size; } catch {}
-            }
+            const result = checkAssetExists(rel);
+            exists = result.exists;
+            fileSize = result.fileSize;
         }
         refs.push({ type, id, field, value, isExternal, exists, fileSize, title: title || '' });
     };
