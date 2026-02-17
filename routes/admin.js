@@ -84,6 +84,7 @@ router.post('/services/add', upload.single('image'), adminController.postAddServ
 router.get('/services/edit/:id', adminController.getEditService);
 router.post('/services/edit/:id', upload.single('image'), adminController.postEditService);
 router.get('/services/delete/:id', adminController.deleteService);
+router.get('/services/fix-images', adminController.fixServiceImages);
 
 // Partner Routes
 router.get('/partners', adminController.managePartners);

@@ -1107,6 +1107,45 @@ exports.manageServices = async (req, res) => {
     }
 };
 
+exports.fixServiceImages = async (req, res) => {
+    try {
+        const services = await Service.findAll();
+        let fixed = 0;
+        let total = services.length;
+
+        for (const service of services) {
+            const raw = service.image || '';
+            if (!raw) continue;
+
+            let filename = null;
+            let exists = false;
+            try {
+                filename = storageService.mapDbValueToLocal(raw);
+                if (filename) {
+                    const abs = storageService.buildAbsolutePath(filename);
+                    exists = fs.existsSync(abs);
+                }
+            } catch {
+                exists = false;
+            }
+
+            if (!exists) {
+                await service.update({ image: null });
+                fixed++;
+            }
+        }
+
+        try {
+            pageCache.invalidateRoutes(['/', '/en']);
+        } catch {}
+
+        res.send(`Service images fix completed. Total services: ${total}, cleaned: ${fixed}.`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
 exports.getAddService = (req, res) => {
     res.render('admin/service-form', {
         title: 'إضافة خدمة جديدة',
