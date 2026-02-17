@@ -206,7 +206,7 @@
                                 <div class="service-stacked-media">
                                     <div class="service-stacked-image-frame">
                                         <% if (service.image) { %>
-                                            <img class="service-stacked-image" src="<%= assetPath(service.image) %>" alt="<%= service.title_ar || service.title_en || '' %>" loading="lazy" decoding="async">
+                                            <img class="service-stacked-image" src="<%= assetPath(service.image) %>" alt="<%= service.imageAlt_ar || service.title_ar || service.title_en || '' %>" loading="lazy" decoding="async">
                                         <% } else { %>
                                             <div class="service-stacked-image-placeholder"></div>
                                         <% } %>

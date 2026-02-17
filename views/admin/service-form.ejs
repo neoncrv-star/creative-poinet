@@ -115,8 +115,22 @@
                         <button type="button" class="btn btn-secondary" style="justify-content: center;" onclick="openUploadsBrowser('service')" id="open-server-service-btn">
                             <i class="fas fa-folder-open"></i> اختيار من الخادم
                         </button>
-                        <input type="hidden" name="existingImage" id="existingImageService" value="<%= service && service.image ? assetPath(service.image) : '' %>">
+                        <input type="hidden" name="existingImage" id="existingImageService" value="<%= service && service.image ? service.image : '' %>">
                         <div id="service-file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-align-left"></i> نص بديل للصورة (ALT)
+                    </h3>
+                    <div class="form-group">
+                        <label>النص البديل (عربي)</label>
+                        <input type="text" name="imageAlt_ar" value="<%= service && service.imageAlt_ar ? service.imageAlt_ar : '' %>" placeholder="وصف قصير للصورة يظهر لمحركات البحث والقارئات">
+                    </div>
+                    <div class="form-group">
+                        <label>النص البديل (إنجليزي)</label>
+                        <input type="text" name="imageAlt_en" value="<%= service && service.imageAlt_en ? service.imageAlt_en : '' %>" placeholder="Short English alt text for the service image">
                     </div>
                 </div>
             </div>

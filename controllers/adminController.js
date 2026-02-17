@@ -50,7 +50,7 @@ const normalizeAsset = (value) => {
     return storageService.toDbValue(filename);
 };
 
-// Content-addressed storage: move uploaded file to <sha256>.<ext> and return canonical storage URL
+// Content-addressed storage: move uploaded file to <sha256>.<ext> and return canonical storage URL without format conversion
 const toHashedAsset = async (file) => {
     if (!file) return null;
     const tmpPath = file.path; // absolute or relative from process cwd
@@ -62,28 +62,9 @@ const toHashedAsset = async (file) => {
     const uploadsDir = storageService.UPLOAD_PATH;
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
     const finalAbs = path.join(uploadsDir, finalName);
-    // Write original hashed if not exists
     if (!fs.existsSync(finalAbs)) fs.renameSync(absTmp, finalAbs);
     else { try { fs.unlinkSync(absTmp); } catch {} }
-    // Try to produce WebP variant
-    try {
-        // Lazy require to tolerate environments without sharp
-        // If sharp is missing or fails, we fallback to original path
-        const sharp = require('sharp');
-        const webpName = `${sha}.webp`;
-        const finalWebpAbs = path.join(uploadsDir, webpName);
-        if (!fs.existsSync(finalWebpAbs)) {
-            try {
-                await sharp(finalAbs).webp({ effort: 4, quality: 82 }).toFile(finalWebpAbs);
-                debugLog(`ASSET WEBP: ${webpName} created`);
-            } catch (e) {
-                return storageService.toDbValue(finalName);
-            }
-        }
-        return storageService.toDbValue(webpName);
-    } catch (e) {
-        return storageService.toDbValue(finalName);
-    }
+    return storageService.toDbValue(finalName);
 };
 
 exports.getLogin = (req, res) => {
@@ -1169,6 +1150,8 @@ exports.postAddService = async (req, res) => {
             tag3_en,
             display_order,
             is_active,
+            imageAlt_ar,
+            imageAlt_en,
             seoTitle,
             seoDescription,
             seoKeywords,
@@ -1204,6 +1187,8 @@ exports.postAddService = async (req, res) => {
             tag3_en: tag3_en || null,
             display_order: Number(display_order) || 0,
             is_active: is_active === 'on',
+            imageAlt_ar: imageAlt_ar || null,
+            imageAlt_en: imageAlt_en || null,
             seoTitle: seoTitle || null,
             seoDescription: seoDescription || null,
             seoKeywords: seoKeywords || null
@@ -1257,6 +1242,8 @@ exports.postEditService = async (req, res) => {
             tag3_en,
             display_order,
             is_active,
+            imageAlt_ar,
+            imageAlt_en,
             seoTitle,
             seoDescription,
             seoKeywords,
@@ -1292,6 +1279,8 @@ exports.postEditService = async (req, res) => {
             tag3_en: tag3_en || null,
             display_order: Number(display_order) || 0,
             is_active: is_active === 'on',
+            imageAlt_ar: imageAlt_ar || null,
+            imageAlt_en: imageAlt_en || null,
             seoTitle: seoTitle || null,
             seoDescription: seoDescription || null,
             seoKeywords: seoKeywords || null

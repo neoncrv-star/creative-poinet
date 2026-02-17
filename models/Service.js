@@ -22,6 +22,14 @@ const Service = sequelize.define('Service', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    imageAlt_ar: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    imageAlt_en: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     display_order: {
         type: DataTypes.INTEGER,
         defaultValue: 0

@@ -306,6 +306,7 @@ const adminRoutes = require('./routes/admin');
 // Global Data Middleware with Simple Cache
 const GlobalSeo = require('./models/GlobalSeo');
 const Category = require('./models/Category');
+const ServiceModel = require('./models/Service');
 let globalDataCache = {
     seo: null,
     categories: [],
@@ -634,6 +635,7 @@ async function startServer() {
         const StatBlock = require('./models/StatBlock');
         await ensureModelSchema(GlobalSeo);
         await ensureModelSchema(StatBlock);
+        await ensureModelSchema(ServiceModel);
         await sequelize.sync(syncOptions);
         const msg = 'Database synced successfully (MySQL)';
         debugLog(msg);
