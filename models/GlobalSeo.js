@@ -138,6 +138,43 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     sliderSpaceBetween: {
         type: DataTypes.INTEGER,
         defaultValue: 30
+    },
+    // Hero Section Customization
+    heroSmallTitleAr: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    heroSmallTitleEn: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    heroMainTitleAr: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    heroMainTitleEn: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    heroDescriptionAr: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    heroDescriptionEn: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    heroBtnTextAr: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    heroBtnTextEn: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    heroBackgroundImage: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 

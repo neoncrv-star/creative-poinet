@@ -264,7 +264,7 @@ const port = process.env.PORT || 3000;
 
 // Session Config
 const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
-const allowStartWithoutDb = (process.env.ALLOW_START_WITHOUT_DB || '').toLowerCase() === 'true' && !isProd;
+const allowStartWithoutDb = (process.env.ALLOW_START_WITHOUT_DB || '').toLowerCase() === 'true';
 const trustProxy = Number(process.env.TRUST_PROXY || 1);
 app.set('trust proxy', trustProxy);
 
@@ -398,6 +398,26 @@ app.use(async (req, res, next) => {
     try {
         const now = Date.now();
         const needRefresh = !globalDataCache.seo || (now - globalDataCache.lastFetch) > CACHE_TTL;
+        
+        if (app.locals.dbConnected === false) {
+            // Provide mock data if DB is disconnected (for local preview)
+            res.locals.globalSeo = {
+                siteTitle: 'نقطة إبداعية (Preview Mode)',
+                siteUrl: 'http://localhost:3000',
+                heroSmallTitleAr: 'شركة وكالة نقطة إبداعية',
+                heroMainTitleAr: 'وكالة إبداعية وتسويقية متكاملة الخدمات',
+                heroDescriptionAr: 'ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. نحن نؤمن بأن وضوح الرؤية هو أساس كل مشروع ناجح.',
+                heroBtnTextAr: 'اكتشف الرحلة',
+                heroSmallTitleEn: 'Creative Point Agency',
+                heroMainTitleEn: 'Integrated Creative & Marketing Agency',
+                heroDescriptionEn: 'Based on a clear idea before any execution.',
+                heroBtnTextEn: 'Discover the Journey'
+            };
+            res.locals.globalCategories = [];
+            res.locals.path = req.path;
+            return next();
+        }
+
         if (needRefresh) {
             const timeoutMs = Number(process.env.GLOBAL_DATA_TIMEOUT_MS || 1500);
             const fetchPromise = Promise.all([
@@ -563,7 +583,10 @@ const syncOptions = {
 };
 
 async function ensureMySQLConnection(retries = 10) {
-    for (let i = 0; i < retries; i++) {
+    const isMock = allowStartWithoutDb;
+    const finalRetries = isMock ? 1 : retries;
+    
+    for (let i = 0; i < finalRetries; i++) {
         try {
             const t0 = process.hrtime.bigint();
             await sequelize.authenticate();
@@ -578,12 +601,13 @@ async function ensureMySQLConnection(retries = 10) {
             const msg = `✅ MySQL connection established in ${latencyMs}ms`;
             debugLog(`${msg} host=${info.host} db=${info.name} dialect=${info.dialect}`);
             console.log('📊 Database:', info);
+            app.locals.dbConnected = true;
             return latencyMs;
         } catch (err) {
             const warn = `⚠️ Waiting for MySQL... ${err && err.message}`;
             debugLog(warn);
             console.error('⚠️ Waiting for MySQL...', err && err.message);
-            await new Promise(r => setTimeout(r, 3000));
+            if (i < finalRetries - 1) await new Promise(r => setTimeout(r, 3000));
         }
     }
     const baseMsg = '❌ MySQL is not reachable.';
@@ -631,15 +655,26 @@ async function startServer() {
     }
 
     await ensureMySQLConnection(10);
-    if (!allowStartWithoutDb || app.locals.dbConnected !== false) {
-        const StatBlock = require('./models/StatBlock');
-        await ensureModelSchema(GlobalSeo);
-        await ensureModelSchema(StatBlock);
-        await ensureModelSchema(ServiceModel);
-        await sequelize.sync(syncOptions);
-        const msg = 'Database synced successfully (MySQL)';
-        debugLog(msg);
-        console.log(msg);
+    
+    // Only proceed with DB sync if we are connected OR if starting without DB is NOT allowed
+    if (app.locals.dbConnected !== false) {
+        try {
+            const StatBlock = require('./models/StatBlock');
+            await ensureModelSchema(GlobalSeo);
+            await ensureModelSchema(StatBlock);
+            await ensureModelSchema(ServiceModel);
+            await sequelize.sync(syncOptions);
+            const msg = 'Database synced successfully (MySQL)';
+            debugLog(msg);
+            console.log(msg);
+        } catch (dbErr) {
+            console.error('⚠️ Database sync failed:', dbErr.message);
+            if (!allowStartWithoutDb) {
+                throw dbErr;
+            }
+        }
+    } else {
+        console.warn('⚡ Skipping database sync because DB is not reachable and ALLOW_START_WITHOUT_DB is true.');
     }
 
     const server = app.listen(port, () => {

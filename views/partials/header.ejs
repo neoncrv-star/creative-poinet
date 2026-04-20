@@ -6,7 +6,6 @@
     
     <% 
         // Logic to determine SEO tags
-        // Using globalSeo from res.locals if available
         let activeSeo = (typeof globalSeo !== 'undefined' && globalSeo) ? globalSeo : (typeof seo !== 'undefined' ? seo : null);
         
         let siteTitle = 'نقطة إبداعية';
@@ -27,14 +26,11 @@
             defaultOgImage = activeSeo.ogImage;
         }
 
-        // Ensure siteUrl doesn't have trailing slash for consistency
         if (siteUrl && siteUrl.endsWith('/')) siteUrl = siteUrl.slice(0, -1);
-        // Ensure favicon is absolute if provided as relative file name
         if (favicon && !favicon.startsWith('http') && !favicon.startsWith('/')) {
             favicon = '/' + favicon;
         }
 
-        // Page specific overrides
         let pageTitle = (typeof title !== 'undefined') ? title : '';
         let pageDescription = description;
         let pageKeywords = keywords;
@@ -43,17 +39,11 @@
         if (typeof pageSeo !== 'undefined' && pageSeo) {
             if (pageSeo.seoTitle) pageTitle = pageSeo.seoTitle;
             else if (pageSeo.title) pageTitle = pageSeo.title;
-
             if (pageSeo.seoDescription) pageDescription = pageSeo.seoDescription;
-            else if (pageSeo.description) pageDescription = pageSeo.description;
-            else if (pageSeo.excerpt) pageDescription = pageSeo.excerpt;
-            
             if (pageSeo.seoKeywords) pageKeywords = pageSeo.seoKeywords;
-
             if (pageSeo.image) pageImage = pageSeo.image;
         }
         
-        // Final Title Construction
         let finalTitle = pageTitle;
         if (pageTitle && pageTitle !== siteTitle) {
             finalTitle = `${pageTitle} ${separator} ${siteTitle}`;
@@ -61,7 +51,6 @@
             finalTitle = siteTitle;
         }
 
-        // Prepare Absolute Image URL
         if (pageImage && !pageImage.startsWith('http')) {
             pageImage = siteUrl + (pageImage.startsWith('/') ? '' : '/') + pageImage;
         }
@@ -84,184 +73,108 @@
         <meta property="og:image" content="<%= pageImage %>">
     <% } %>
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="<%= siteUrl %><%= typeof path !== 'undefined' ? path : '' %>">
-    <meta property="twitter:title" content="<%= finalTitle %>">
-    <meta property="twitter:description" content="<%= pageDescription %>">
-    <% if (pageImage) { %>
-        <meta property="twitter:image" content="<%= pageImage %>">
-    <% } %>
-    <% if (activeSeo && activeSeo.twitterHandle) { %>
-        <meta name="twitter:site" content="<%= activeSeo.twitterHandle %>">
-    <% } %>
-
-    <!-- Tracking Scripts -->
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KGK4GMVF');</script>
-    <!-- End Google Tag Manager -->
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2H9SC1RQB"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-F2H9SC1RQB');
-    </script>
-
-    <% if (activeSeo && activeSeo.googleAnalyticsId) { %>
-        <!-- Google Analytics (Dynamic) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=<%= activeSeo.googleAnalyticsId %>"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '<%= activeSeo.googleAnalyticsId %>');
-        </script>
-    <% } %>
-
-    <% if (activeSeo && activeSeo.facebookPixelId) { %>
-        <!-- Facebook Pixel -->
-        <script>
-            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-            document,'script','https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '<%= activeSeo.facebookPixelId %>');
-            fbq('track', 'PageView');
-        </script>
-    <% } %>
-
-    <!-- Custom Scripts Header -->
-    <% if (activeSeo && activeSeo.customScriptsHeader) { %>
-        <%- activeSeo.customScriptsHeader %>
-    <% } %>
-
-    <!-- Structured Data (JSON-LD) -->
-    <% if (activeSeo && activeSeo.organizationSchema) { %>
-        <script type="application/ld+json">
-            <%- activeSeo.organizationSchema %>
-        </script>
-    <% } %>
-
-    <% if (typeof pageSeo !== 'undefined' && pageSeo) { %>
-        <% if (typeof post !== 'undefined' && post) { %>
-            <!-- Blog Post Schema -->
-            <script type="application/ld+json">
-            {
-              "@context": "https://schema.org",
-              "@type": "BlogPosting",
-              "headline": "<%= finalTitle %>",
-              "image": "<%= pageImage %>",
-              "datePublished": "<%= post.date || post.createdAt %>",
-              "author": {
-                "@type": "Organization",
-                "name": "<%= siteTitle %>"
-              },
-              "publisher": {
-                "@type": "Organization",
-                "name": "<%= siteTitle %>",
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": "<%= siteUrl %><%= favicon %>"
-                }
-              },
-              "description": "<%= pageDescription %>"
-            }
-            </script>
-        <% } else if (typeof project !== 'undefined' && project) { %>
-            <!-- Project Schema -->
-            <script type="application/ld+json">
-            {
-              "@context": "https://schema.org",
-              "@type": "CreativeWork",
-              "name": "<%= project.title %>",
-              "description": "<%= pageDescription %>",
-              "image": "<%= pageImage %>",
-              "author": {
-                "@type": "Organization",
-                "name": "<%= siteTitle %>"
-              }
-            }
-            </script>
-        <% } %>
-    <% } %>
-
     <link rel="preload" href="/css/style.css?v=<%= assetVersion %>" as="style">
     <link rel="preload" href="/css/menu.css?v=<%= assetVersion %>" as="style">
     <link rel="stylesheet" href="/css/style.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="/css/menu.css?v=<%= assetVersion %>">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://www.youtube.com" crossorigin>
-    <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
+    
     <link rel="preload" href="/fonts/TheSansArabic-Plain.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="/fonts/TheSansArabic-Bold.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="/fonts/TheSansArabic-Light.otf" as="font" type="font/otf" crossorigin>
     
-    <!-- Core Animation Libraries (loaded early with defer to preserve order) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
-    <script src="/js/gsap-safe.js?v=<%= assetVersion %>" defer></script>
+    <!-- Simplified modern header without GSAP -->
 </head>
 <body class="<%= typeof isEn !== 'undefined' && isEn ? 'lang-en' : 'lang-ar' %>">
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGK4GMVF"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    
     <div id="cpoint-preloader">
         <div class="cpoint-spinner">
             <img src="/preloader-spinner.png" alt="Creative Point Loading">
         </div>
     </div>
-    <header>
-        <div class="container header-container">
-            <% if(typeof isEn !== 'undefined' && isEn) { %>
-                <div class="logo">
-                    <a href="/en" style="text-decoration: none; color: inherit;">
-                        <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="64" height="64" decoding="async" fetchpriority="high">
-                    </a>
-                </div>
-                <button class="menu-dot" aria-expanded="false" aria-label="Toggle Menu">
-                    <span class="dot"></span>
-                </button>
-            <% } else { %>
-                <button class="menu-dot" aria-expanded="false" aria-label="Toggle Menu">
-                    <span class="dot"></span>
-                </button>
-                <div class="logo">
-                    <a href="/" style="text-decoration: none; color: inherit;">
-                        <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="64" height="64" decoding="async" fetchpriority="high">
-                    </a>
-                </div>
-            <% } %>
 
-            <nav class="header-menu">
-                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
-                    <i class="ri-moon-line"></i>
-                </button>
+    <header class="main-header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="<%= typeof isEn !== 'undefined' && isEn ? '/en' : '/' %>" style="text-decoration: none; color: inherit;">
+                    <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="60" decoding="async" fetchpriority="high">
+                </a>
+            </div>
+
+            <nav class="header-nav">
                 <% if(typeof isEn !== 'undefined' && isEn) { %>
-                    <a href="/en#journey">Journey</a>
-                    <a href="/en/portfolio">Our Work</a>
-                    <a href="/en#partners">Partners</a>
-                    <a href="/en#contact">Contact</a>
+                    <a href="/en#journey" class="nav-link active">Her Journey <span class="nav-dot"></span></a>
+                    <a href="/en#philosophy" class="nav-link">Philosophy</a>
+                    <a href="/en/portfolio" class="nav-link">Our Work</a>
+                    <a href="/en#contact" class="nav-link">Be Creative Partner</a>
                     <a href="/" class="lang-switch">العربية</a>
                 <% } else { %>
-                    <a href="/#journey">رحلتنا</a>
-                    <a href="/portfolio">أعمالنا</a>
-                    <a href="/#partners">شركاؤنا</a>
-                    <a href="/#contact">تواصل معنا</a>
+                    <a href="/#journey" class="nav-link active">رحلتها <span class="nav-dot"></span></a>
+                    <a href="/#philosophy" class="nav-link">فلسفتها</a>
+                    <a href="/portfolio" class="nav-link">أعمالها</a>
+                    <a href="/#contact" class="nav-link">كن شريك إبداعي</a>
                     <a href="/en" class="lang-switch">English</a>
                 <% } %>
             </nav>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+                    <i class="ri-moon-line"></i>
+                </button>
+            </div>
         </div>
     </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Hide Preloader
+            const preloader = document.getElementById('cpoint-preloader');
+            if (preloader) {
+                const hidePreloader = () => {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                };
+                if (document.readyState === 'complete') hidePreloader();
+                else window.addEventListener('load', hidePreloader);
+                setTimeout(hidePreloader, 3000); // Safety fallback
+            }
+
+            // 2. Header Scroll Effect
+            const header = document.querySelector('.main-header');
+            const handleScroll = () => {
+                if (window.scrollY > 50) header.classList.add('scrolled');
+                else header.classList.remove('scrolled');
+            };
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            handleScroll();
+
+            // 3. Theme Toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = themeToggle ? themeToggle.querySelector('i') : null;
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.toggle('light-theme', currentTheme === 'light');
+            if (themeIcon) themeIcon.className = currentTheme === 'light' ? 'ri-sun-line' : 'ri-moon-line';
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const isLight = document.body.classList.toggle('light-theme');
+                    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+                    if (themeIcon) themeIcon.className = isLight ? 'ri-sun-line' : 'ri-moon-line';
+                });
+            }
+
+            // 4. Smooth Anchor Scrolling
+            document.querySelectorAll('a[href^="#"], a[href^="/#"], a[href^="/en#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    const hash = href.includes('#') ? href.split('#')[1] : null;
+                    if (!hash) return;
+                    const target = document.getElementById(hash);
+                    if (target) {
+                        e.preventDefault();
+                        window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+    </script>
     <main>

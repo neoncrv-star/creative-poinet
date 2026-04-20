@@ -1,4 +1,5 @@
-<%- include('partials/header') %>
+<% const isEn = false; %>
+<%- include('partials/header', { isEn: isEn }) %>
 
 <link rel="preload" href="/css/hero.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="/css/journey.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -19,15 +20,15 @@
         --service-image-brightness: <%= (globalSeo && globalSeo.serviceImageBrightness !== undefined) ? globalSeo.serviceImageBrightness : 0.5 %>;
         --slider-height: <%= (globalSeo && globalSeo.sliderHeight) ? globalSeo.sliderHeight : '500px' %>;
     }
-    
+     
     .portfolio-swiper {
         height: var(--slider-height) !important;
-    }
+    } 
     
     .project-card {
         height: 100% !important;
     }
-
+ 
     .project-card img, .project-card video {
         height: 100% !important;
         object-fit: cover !important;
@@ -38,85 +39,82 @@
 <main>
 
     <!-- =========================
-         Sticky Mask Hero Section
+         Modern Hero Section
     ========================== -->
-    <section class="hero-sticky-section">
-        <div class="hero-sticky-wrapper">
+    <% 
+        var seo = globalSeo;
+        var heroBgStyle = (seo && seo.heroBackgroundImage) ? `style="background-image: url('${assetPath(seo.heroBackgroundImage)}');"` : "";
+    %>
+    <section class="hero-modern-section" <%- heroBgStyle %>>
+        <% 
+            var mode = seo && seo.heroVideoMode ? seo.heroVideoMode.toLowerCase() : 'none';
+            var rawUrl = seo && seo.heroVideoUrl ? seo.heroVideoUrl.trim() : '';
+            var fileVal = seo && seo.heroVideoFile ? seo.heroVideoFile : '';
+            var heroType = 'none';
+            var heroSrc = '';
+            var heroEmbed = '';
             
-            <!-- The Mask/Reveal Container -->
-            <div class="hero-mask-container">
-                <div class="hero-video-wrapper">
-                    <%
-                    var defaultHero = 'https://cdn.coverr.co/videos/coverr-red-smoke-5374/1080p.mp4';
-                    var mode = seo && seo.heroVideoMode ? seo.heroVideoMode.toLowerCase() : 'url';
-                    var rawUrl = seo && seo.heroVideoUrl ? seo.heroVideoUrl.trim() : '';
-                    var fileVal = seo && seo.heroVideoFile ? seo.heroVideoFile : '';
-                    var heroType = 'video';
-                    var heroSrc = '';
-                    var heroEmbed = '';
-                    var ytMatch = rawUrl ? rawUrl.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/) : null;
-                    var vMatch = rawUrl ? rawUrl.match(/vimeo\.com\/(\d+)/) : null;
-                    if (mode === 'file' && fileVal) {
-                        heroType = 'video';
-                        heroSrc = assetPath(fileVal);
-                    } else if ((mode === 'youtube' || (mode === 'url' && ytMatch && ytMatch[1])) && rawUrl) {
-                        var ytId = ytMatch && ytMatch[1] ? ytMatch[1] : null;
-                        if (ytId) {
-                            heroType = 'embed';
-                            heroEmbed = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + ytId + '&showinfo=0&rel=0&modestbranding=1&playsinline=1';
-                        }
-                    } else if ((mode === 'vimeo' || (mode === 'url' && vMatch && vMatch[1])) && rawUrl) {
-                        var vId = vMatch && vMatch[1] ? vMatch[1] : null;
-                        if (vId) {
-                            heroType = 'embed';
-                            heroEmbed = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&background=1&loop=1&title=0&byline=0&portrait=0';
-                        }
-                    } else if (rawUrl) {
-                        heroType = 'video';
-                        heroSrc = rawUrl;
+            if (mode !== 'none') {
+                var ytMatch = rawUrl ? rawUrl.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/) : null;
+                var vMatch = rawUrl ? rawUrl.match(/vimeo\.com\/(\d+)/) : null;
+                if (mode === 'file' && fileVal) {
+                    heroType = 'video';
+                    heroSrc = assetPath(fileVal);
+                } else if ((mode === 'youtube' || (mode === 'url' && ytMatch && ytMatch[1])) && rawUrl) {
+                    var ytId = ytMatch && ytMatch[1] ? ytMatch[1] : null;
+                    if (ytId) {
+                        heroType = 'embed';
+                        heroEmbed = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + ytId + '&showinfo=0&rel=0&modestbranding=1&playsinline=1';
                     }
-                    if (!heroSrc && !heroEmbed) {
-                        heroType = 'video';
-                        heroSrc = defaultHero;
+                } else if ((mode === 'vimeo' || (mode === 'url' && vMatch && vMatch[1])) && rawUrl) {
+                    var vId = vMatch && vMatch[1] ? vMatch[1] : null;
+                    if (vId) {
+                        heroType = 'embed';
+                        heroEmbed = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&background=1&loop=1&title=0&byline=0&portrait=0';
                     }
-                    %>
-                    <% if (heroType === 'embed') { %>
-                        <iframe class="hero-video hero-video-embed" src="<%= heroEmbed %>" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-                    <% } else { %>
-                        <video class="hero-video" playsinline muted loop autoplay preload="metadata" poster="/210.png">
-                            <source src="<%= heroSrc %>" type="video/mp4">
-                        </video>
-                    <% } %>
-                    <div class="hero-video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2;"></div>
-                </div>
-                
-                <!-- Content revealed inside the video -->
-                <div class="hero-content-overlay">
-                    <h1 class="hero-title">كل إبداع يبدأ<br>بنقطة</h1>
-                    <p class="hero-subtitle">
-                        هذا الشعار لا يختصر رؤيتنا فحسب، بل يعكس منهجنا
-                        الاستراتيجي في بناء علامات لا تُنسى.
-                    </p>
-                    <a href="#journey" class="hero-btn">اكتشف الرحلة</a>
-                </div>
-            </div>
+                } else if (rawUrl) {
+                    heroType = 'video';
+                    heroSrc = rawUrl;
+                }
+            }
+        %>
 
-            <!-- Initial Elements (Visible before scroll) -->
-            <div class="hero-initial-point">
-                <div class="dots-wrapper">
-                    <div class="point-dot-white"></div>
-                    <div class="point-dot-red"></div>
-                </div>
-                <div class="hero-initial-text">ابداع يبدأ بنقطة</div>
+        <% if (heroType !== 'none') { %>
+            <div class="hero-video-bg">
+                <% if (heroType === 'embed') { %>
+                    <iframe class="hero-video-el" src="<%= heroEmbed %>" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                <% } else { %>
+                    <video class="hero-video-el" playsinline muted loop autoplay preload="metadata">
+                        <source src="<%= heroSrc %>" type="video/mp4">
+                    </video>
+                <% } %>
+                <div class="hero-overlay"></div>
             </div>
+        <% } %>
 
-            <div class="scroll-mouse-icon">
-                <div class="mouse-shape">
-                    <div class="mouse-wheel"></div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <p class="hero-eyebrow fade-in"><%= seo ? (seo.heroSmallTitleAr || 'إبداع يبدأ بنقطة') : 'إبداع يبدأ بنقطة' %></p>
+                <h1 class="hero-title fade-in">
+                    <%- seo ? (seo.heroMainTitleAr || 'وكالة إبداعية وتسويقية<br>متكاملة الخدمات').replace(/\n/g, '<br>') : 'وكالة إبداعية وتسويقية<br>متكاملة الخدمات' %>
+                </h1>
+                <p class="hero-description fade-in">
+                    <%= seo ? (seo.heroDescriptionAr || 'ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. نحن نؤمن بأن وضوح الرؤية هو أساس كل مشروع ناجح.') : 'ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. نحن نؤمن بأن وضوح الرؤية هو أساس كل مشروع ناجح.' %>
+                </p>
+                <div class="hero-actions fade-in">
+                    <a href="#journey" class="btn-hero-pill">
+                        <%= seo ? (seo.heroBtnTextAr || 'اكتشف الرحلة') : 'اكتشف الرحلة' %>
+                        <i class="ri-arrow-left-line"></i>
+                    </a>
                 </div>
-                <span class="scroll-text">تصفح</span>
             </div>
-            
+        </div>
+
+        <div class="hero-scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span>تصفح</span>
         </div>
     </section>
 
@@ -140,17 +138,17 @@
 
     <section id="journey" class="journey-scroll-section">
         <div class="journey-container" style="text-align: center;">
-            <p class="journey-eyebrow" style="text-align: center;">شركة وكالة نقطة إبداعية</p>
+            <p class="journey-eyebrow" style="text-align: center;">وكالة نقطة إبداعية</p>
             <div class="journey-text-content" style="text-align: center;">
                 <span class="journey-line">وكالة إبداعية وتسويقية متكاملة الخدمات</span>
-                <span class="journey-line">ترتكز على فكرة واضحة قبل البدء بأي تنفيذ</span>
+                <span class="journey-line">ترتكز على فكرة واحدة واضحة قبل البدء بأي تنفيذ</span>
                 <span class="journey-line">في عالم مزدحم بالضجيج البصري والإعلاني</span>
                 <span class="journey-line">لا نبدأ بالزخرفة</span>
                 <span class="journey-line">بل نبدأ بقرار استراتيجي ذكي وموحد</span>
                 <span class="journey-line">من هذه النقطة، نعيد الإبداع إلى جوهره الحقيقي</span>
                 <span class="journey-line">هوية بصرية راسخة</span>
                 <span class="journey-line">حلول تصميم احترافية</span>
-                <span class="journey-line">وتجهيزات عالية الجودة</span>
+                <span class="journey-line">وتجهيزات معارض ومؤتمرات عالية الجودة</span>
             </div>
         </div>
     </section>
@@ -159,10 +157,9 @@
         <div class="services-stacked-wrapper">
             <div class="services-stacked-header">
                 <p class="services-stacked-eyebrow">الخدمات</p>
-                <h2 class="services-stacked-title">حلول متكاملة تبدأ من نقطة واضحة</h2>
+                <h2 class="services-stacked-title">حلول متراكمة من الاستراتيجية إلى التنفيذ</h2>
                 <p class="services-stacked-subtitle">
-                    كل خدمة هنا مبنية حول قرار استراتيجي واحد، ثم تتحول إلى تجربة
-                    بصرية وتطبيقات ملموسة تتراكم فوق بعضها لتصنع نظاماً إبداعياً متكاملاً.
+                    كل خدمة تمثل نقطة واضحة في المسار، تبني على ما قبلها لتشكل نظاماً إبداعياً متكاملاً يحافظ على ثباته في كل نقاط التماس.
                 </p>
             </div>
 
@@ -175,7 +172,7 @@
                                 <div class="service-stacked-copy">
                                     <div>
                                         <div class="service-stacked-topline">
-                                            <span class="service-stacked-label">خدمة</span>
+                                            <span class="service-stacked-label">الخدمة</span>
                                             <span class="service-stacked-index">
                                                 <%= (index + 1).toString().padStart(2, '0') %>
                                             </span>
@@ -199,7 +196,7 @@
                                         </ul>
                                     </div>
                                     <div class="service-stacked-meta">
-                                        <span>تجربة متكاملة من الفكرة حتى التنفيذ</span>
+                                        <span>من الفكرة الواضحة إلى التنفيذ الملموس</span>
                                         <span class="service-stacked-meta-dot"></span>
                                     </div>
                                 </div>
@@ -220,8 +217,8 @@
                 </div>
             <% } else { %>
                 <div class="services-stacked-empty">
-                    <h3>لم يتم إضافة خدمات بعد</h3>
-                    <p>يمكنك إضافة الخدمات من لوحة التحكم، وستظهر هنا تلقائياً بنمط البطاقات المتراكمة.</p>
+                    <h3>لا توجد خدمات مضافة حالياً</h3>
+                    <p>بمجرد إضافة خدمات من لوحة التحكم، ستظهر هنا كبطاقات متراكمة.</p>
                 </div>
             <% } %>
         </div>
@@ -231,8 +228,8 @@
     <section id="portfolio" class="portfolio-section">
         <div class="container">
             <div class="portfolio-header" data-gsap="fade-up" style="text-align: center;">
-                <h2 class="portfolio-title">آخر المشاريع</h2>
-                <p style="text-align: center;">نحول الأفكار إلى واقع ملموس... شاهد أعمالنا</p>
+                <h2 class="portfolio-title">أحدث المشاريع</h2>
+                <p style="text-align: center;">تحويل الأفكار إلى واقع... استكشف أعمالنا</p>
             </div>
 
             <div class="portfolio-container" data-gsap="fade-up">
@@ -241,20 +238,20 @@
                 </button>
                 <button class="portfolio-nav-btn next-btn">
                     <i class="ri-arrow-left-line"></i>
-                </button> 
-    
-                <div         class="swiper portfolio-swiper">
+                </button>
+
+                <div class="swiper portfolio-swiper">
                     <div class="swiper-wrapper">
                         <% if (projects && projects.length > 0) { %>
                             <% projects.forEach(project => { %>
                                 <div class="swiper-slide">
                                     <div class="project-card">
                                         <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
-                                            <video src="<%= assetPath(project.image) %>" muted loop playsinline autoplay></video>
+                                            <video src="<%= assetPath(project.image) %>" muted loop playsinline></video>
                                         <% } else if (project.image) { %>
-                                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title_ar || project.title %>" width="1200" height="800" loading="lazy" decoding="async">
+                                        <img src="<%= assetPath(project.image) %>" alt="<%= project.title_ar || project.title %>" width="1200" height="800" loading="lazy" decoding="async">
                                         <% } else { %>
-                                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project Placeholder" width="800" height="600" loading="lazy" decoding="async">
+                                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project Placeholder" width="800" height="600" loading="lazy" decoding="async">
                                         <% } %>
                                         
                                         <div class="project-overlay">
@@ -262,7 +259,7 @@
                                                 <h3><%= project.title_ar || project.title %></h3>
                                                 <p><%= project.description_ar || project.description %></p>
                                                 <a href="<%= project.externalLink || '/portfolio/' + project.id %>" class="project-link" <%= project.externalLink ? 'target="_blank"' : '' %>>
-                                                    <span>عرض المشروع</span>
+                                                    <span>مشاهدة المشروع</span>
                                                     <i class="ri-arrow-left-line"></i>
                                                 </a>
                                             </div>
@@ -279,9 +276,9 @@
                                         <div class="project-overlay">
                                             <div class="project-info">
                                                 <h3>مشروع إبداعي <%= i %></h3>
-                                                <p>وصف مختصر للمشروع وكيف ساعدنا العميل في تحقيق أهدافه.</p>
+                                                <p>وصف قصير للمشروع وكيف ساعدنا العميل في تحقيق أهدافه.</p>
                                                 <a href="#" class="project-link">
-                                                    <span>عرض المشروع</span>
+                                                    <span>مشاهدة المشروع</span>
                                                     <i class="ri-arrow-left-line"></i>
                                                 </a>
                                             </div>
@@ -302,7 +299,7 @@
     <section id="partners" class="partners-section">
         <div class="container">
             <div class="partners-header" data-gsap="fade-up">
-                <h2 class="partners-title">نحن فخورون بعملنا، وأكثر فخراً بالشراكات التي تعاونا معهم.</h2>
+                <h2 class="partners-title">نفخر بأعمالنا ونعتز أكثر بالشراكات التي أسسناها.</h2>
             </div>
             <div class="partners-grid">
                 <% if (partners && partners.length > 0) { %>
@@ -313,16 +310,16 @@
                     <% }) %>
                 <% } else { %>
                     <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" alt="Saudi Aramco" loading="lazy" decoding="async" width="200" height="80">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" alt="أرامكو السعودية" loading="lazy" decoding="async" width="200" height="80">
                     </div>
                     <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/8/82/Misk_Foundation_logo.svg/1200px-Misk_Foundation_logo.svg.png" alt="Misk" loading="lazy" decoding="async" width="200" height="80">
+                        <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/8/82/Misk_Foundation_logo.svg/1200px-Misk_Foundation_logo.svg.png" alt="مسك" loading="lazy" decoding="async" width="200" height="80">
                     </div>
                     <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROSHN_Logo.svg/1200px-ROSHN_Logo.svg.png" alt="ROSHN" loading="lazy" decoding="async" width="200" height="80">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROSHN_Logo.svg/1200px-ROSHN_Logo.svg.png" alt="روشن" loading="lazy" decoding="async" width="200" height="80">
                     </div>
                     <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/e/e0/Diriyah_Gate_Development_Authority_logo.svg/1200px-Diriyah_Gate_Development_Authority_logo.svg.png" alt="DGDA" loading="lazy" decoding="async" width="200" height="80">
+                        <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/e/e0/Diriyah_Gate_Development_Authority_logo.svg/1200px-Diriyah_Gate_Development_Authority_logo.svg.png" alt="هيئة تطوير بوابة الدرعية" loading="lazy" decoding="async" width="200" height="80">
                     </div>
                 <% } %>
             </div>
@@ -335,7 +332,7 @@
             <div class="blog-section-inner" data-gsap="fade-up">
                 <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
                     <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">آخر المقالات</h2>
-                    <p style="color: #888; font-size: 1.1rem;">أفكار ورؤى في عالم التصميم والتكنولوجيا</p>
+                    <p style="color: #888; font-size: 1.1rem;">رؤى وأفكار في عالم التصميم والتقنية</p>
                 </div>
                 
                 <div class="blog-grid">
@@ -360,13 +357,13 @@
                         <% }) %>
                     <% } else { %>
                         <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #0a0a0a; border-radius: 20px; border: 1px solid #1a1a1a;">
-                            <p style="color: #666;">لا توجد مقالات حالياً.</p>
+                            <p style="color: #666;">لا توجد مقالات متوفرة حالياً.</p>
                         </div>
                     <% } %>
                 </div>
                 
                 <div class="view-all-container">
-                    <a href="/blog" class="view-all-btn">مشاهدة جميع المقالات</a>
+                    <a href="/blog" class="view-all-btn">عرض كل المقالات</a>
                 </div>
             </div>
         </div>
@@ -376,17 +373,17 @@
     <section id="contact" class="contact-section">
         <div class="marquee-wrapper contact-marquee">
             <div class="marquee-content">
-                <h1 class="finale-text">لم ينتهي الإبداع</h1>
-                <h1 class="finale-text">لم ينتهي الإبداع</h1>
-                <h1 class="finale-text">لم ينتهي الإبداع</h1>
-                <h1 class="finale-text">لم ينتهي الإبداع</h1>
+                <h1 class="finale-text">CREATIVE POINT</h1>
+                <h1 class="finale-text">CREATIVE POINT</h1>
+                <h1 class="finale-text">CREATIVE POINT</h1>
+                <h1 class="finale-text">CREATIVE POINT</h1>
             </div>
         </div>
         <div class="container">
             <div class="contact-grid">
-                <div class="contact-info" data-gsap="fade-left">
-                    <h2 class="contact-title">لنبدأ رحلة<br>إبداعية جديدة</h2>
-                    <p class="contact-subtitle">نحن هنا لنسمع أفكارك ونحولها إلى استراتيجية بصرية مؤثرة. تواصل معنا اليوم.</p>
+                <div class="contact-info" data-gsap="fade-right">
+                    <h2 class="contact-title">ابدأ رحلة<br>إبداعية جديدة</h2>
+                    <p class="contact-subtitle">نحن هنا لنستمع لأفكارك ونحولها إلى استراتيجية بصرية مؤثرة. اتصل بنا اليوم.</p>
                     
                     <div class="contact-details">
                         <div class="contact-item">
@@ -407,7 +404,7 @@
                             <i class="ri-map-pin-line"></i>
                             <div>
                                 <span>الموقع</span>
-                                <p>المملكة العربية السعودية، الرياض</p>
+                                <p>الرياض، المملكة العربية السعودية</p>
                             </div>
                         </div>
                     </div>
@@ -419,7 +416,7 @@
                     </div>
                 </div>
 
-                <div class="contact-form-wrapper" data-gsap="fade-right">
+                <div class="contact-form-wrapper" data-gsap="fade-left">
                     <form action="/contact" method="POST" class="contact-form">
                         <div class="form-group">
                             <input type="text" name="name" placeholder="الاسم الكامل" required>
@@ -428,11 +425,11 @@
                             <input type="email" name="email" placeholder="البريد الإلكتروني" required>
                         </div>
                         <div class="form-group">
-                            <input type="tel" name="phone" placeholder="رقم الجوال">
+                            <input type="tel" name="phone" placeholder="رقم الهاتف">
                         </div>
                         <div class="form-group">
                             <select name="service">
-                                <option value="" disabled selected>نوع الخدمة المطلوبة</option>
+                                <option value="" disabled selected>اختر الخدمة</option>
                                 <option value="branding">الهوية البصرية</option>
                                 <option value="marketing">التسويق الرقمي</option>
                                 <option value="web">تطوير المواقع</option>
@@ -442,12 +439,12 @@
                         <div class="form-group">
                             <textarea name="message" rows="5" placeholder="تفاصيل المشروع" required></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">
+                        <button type="submit" class="submit-btn" id="contact-submit-btn">
                             <span>إرسال الطلب</span>
                             <i class="ri-send-plane-fill"></i>
                         </button>
                     </form>
-                    
+
                     <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
                         <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-left: 10px;"></i>
                         تم إرسال طلبك بنجاح! سنتواصل معك قريباً.
@@ -456,33 +453,30 @@
             </div>
         </div>
     </section>
-  
-    <script>
-        // Check for success/error query params
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('success')) {
-            document.getElementById('contact-success').style.display = 'block';
-            const contactForm = document.querySelector('.contact-form');
-            if (contactForm) contactForm.style.display = 'none';
-        }
-    </script>
 
 </main>
 
-    <!-- Page Specific Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="/js/hero-animation.js?v=<%= assetVersion %>" defer></script>
-    <script src="/js/journey-animation.js?v=<%= assetVersion %>" defer></script>
- 
-    <!-- Slider Config Injection -->
-    <script id="slider-config-data" type="application/json">
-        <%- JSON.stringify({
-            effect: (seo && seo.sliderEffect) ? seo.sliderEffect : "slide",
-            autoplay: (seo && seo.sliderAutoplay) ? true : false,
-            autoplayDelay: (seo && seo.sliderAutoplayDelay) ? seo.sliderAutoplayDelay : 3000,
-            slidesPerView: (seo && seo.sliderSlidesPerView) ? seo.sliderSlidesPerView : 3,
-            spaceBetween: (seo && seo.sliderSpaceBetween) ? seo.sliderSpaceBetween : 30
-        }) %>
-    </script> 
-    <%- include('partials/footer') %>
- 
+<script>
+    // Check for success/error query params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('success')) {
+        document.getElementById('contact-success').style.display = 'block';
+        const contactForm = document.querySelector('.contact-form');
+        if (contactForm) contactForm.style.display = 'none';
+    }
+</script>
+
+<!-- Page Specific Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+
+<!-- Slider Config Injection -->
+<script id="slider-config-data" type="application/json">
+    <%- JSON.stringify({
+        effect: (seo && seo.sliderEffect) ? seo.sliderEffect : "slide",
+        autoplay: (seo && seo.sliderAutoplay) ? true : false,
+        autoplayDelay: (seo && seo.sliderAutoplayDelay) ? seo.sliderAutoplayDelay : 3000,
+        slidesPerView: (seo && seo.sliderSlidesPerView) ? seo.sliderSlidesPerView : 3,
+        spaceBetween: (seo && seo.sliderSpaceBetween) ? seo.sliderSpaceBetween : 30
+    }) %>
+</script>
+<%- include('partials/footer', { isEn: isEn }) %>

@@ -80,7 +80,67 @@
                     </div>
                 </div>
 
-                <!-- Future Design Settings can be added here -->
+                <!-- Hero Section Customization Card -->
+                <div class="admin-card" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-desktop"></i> تخصيص قسم الهيرو (Hero Section)
+                    </h3>
+                    
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>العنوان الصغير (Arabic)</label>
+                            <input type="text" name="heroSmallTitleAr" class="form-control" value="<%= seo.heroSmallTitleAr %>" placeholder="مثال: شركة وكالة نقطة إبداعية">
+                        </div>
+                        <div class="form-group">
+                            <label>Small Title (English)</label>
+                            <input type="text" name="heroSmallTitleEn" class="form-control" value="<%= seo.heroSmallTitleEn %>" placeholder="Example: Creative Point Agency">
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>العنوان الرئيسي (Arabic)</label>
+                            <textarea name="heroMainTitleAr" class="form-control" rows="3"><%= seo.heroMainTitleAr %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Main Title (English)</label>
+                            <textarea name="heroMainTitleEn" class="form-control" rows="3"><%= seo.heroMainTitleEn %></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>الوصف (Arabic)</label>
+                            <textarea name="heroDescriptionAr" class="form-control" rows="4"><%= seo.heroDescriptionAr %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Description (English)</label>
+                            <textarea name="heroDescriptionEn" class="form-control" rows="4"><%= seo.heroDescriptionEn %></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>نص الزر (Arabic)</label>
+                            <input type="text" name="heroBtnTextAr" class="form-control" value="<%= seo.heroBtnTextAr %>" placeholder="اكتشف الرحلة">
+                        </div>
+                        <div class="form-group">
+                            <label>Button Text (English)</label>
+                            <input type="text" name="heroBtnTextEn" class="form-control" value="<%= seo.heroBtnTextEn %>" placeholder="Discover the Journey">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>صورة خلفية الهيرو (Background Image)</label>
+                        <% if (seo && seo.heroBackgroundImage) { %>
+                            <div style="margin-bottom: 10px;">
+                                <img src="<%= assetPath(seo.heroBackgroundImage) %>" style="max-width: 200px; border-radius: 8px; border: 1px solid #ddd;">
+                            </div>
+                        <% } %>
+                        <input type="file" name="heroBackgroundImage" accept="image/*" class="form-control">
+                        <small class="text-muted">هذه الصورة ستكون الخلفية الأساسية لقسم الهيرو (يفضل أن تكون بنمط الخطوط الإشعاعية كما في التصميم المطلوب).</small>
+                    </div>
+                </div>
             </div>
 
             <!-- Sidebar Column -->
@@ -96,10 +156,10 @@
                     </button>
                 </div>
 
-                <!-- Hero Video Card -->
+                <!-- Hero Video Card (Optional Fallback) -->
                 <div class="admin-card" style="margin-top: 1.5rem;">
                     <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-play-circle"></i> فيديو الهيرو (Hero Video)
+                        <i class="fas fa-play-circle"></i> فيديو الهيرو (اختياري)
                     </h3>
                     <%
                         var heroMode = (seo && seo.heroVideoMode) ? seo.heroVideoMode : ((seo && seo.heroVideoFile) ? 'file' : 'url');
@@ -111,26 +171,16 @@
                             <option value="youtube" <%= heroMode === 'youtube' ? 'selected' : '' %>>YouTube</option>
                             <option value="vimeo" <%= heroMode === 'vimeo' ? 'selected' : '' %>>Vimeo</option>
                             <option value="file" <%= heroMode === 'file' ? 'selected' : '' %>>رفع ملف من الخادم</option>
+                            <option value="none" <%= heroMode === 'none' ? 'selected' : '' %>>تعطيل الفيديو (استخدام الصورة فقط)</option>
                         </select>
                     </div>
                     <div class="form-group hero-video-url-group">
                         <label>رابط الفيديو</label>
-                        <input type="url" name="heroVideoUrl" value="<%= seo ? (seo.heroVideoUrl || '') : '' %>" placeholder="https://example.com/video.mp4 أو رابط YouTube/Vimeo" style="direction: ltr;">
-                        <small style="display: block; margin-top: 10px; color: var(--text-muted); line-height: 1.4;">
-                            يدعم رابط MP4 مباشر، أو رابط فيديو من YouTube/Vimeo.
-                        </small>
+                        <input type="url" name="heroVideoUrl" value="<%= seo ? (seo.heroVideoUrl || '') : '' %>" placeholder="https://example.com/video.mp4" style="direction: ltr;">
                     </div>
                     <div class="form-group hero-video-file-group">
-                        <label>ملف الفيديو (MP4/WebM)</label>
-                        <% if (seo && seo.heroVideoFile) { %>
-                            <div style="margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); direction: ltr;">
-                                <%= assetPath(seo.heroVideoFile) %>
-                            </div>
-                        <% } %>
+                        <label>ملف الفيديو</label>
                         <input type="file" name="heroVideoFile" accept="video/mp4,video/webm">
-                        <small style="display: block; margin-top: 10px; color: var(--text-muted); line-height: 1.4;">
-                            في وضع "رفع ملف من الخادم" يتم استخدام الملف هنا كخلفية الهيرو.
-                        </small>
                     </div>
                 </div>
             </div>

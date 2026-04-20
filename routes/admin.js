@@ -86,7 +86,10 @@ router.post('/seo', upload.fields([
 
 // Design Routes
 router.get('/design', adminController.getDesignSettings);
-router.post('/design', upload.single('heroVideoFile'), adminController.postDesignSettings);
+router.post('/design', upload.fields([
+    { name: 'heroVideoFile', maxCount: 1 },
+    { name: 'heroBackgroundImage', maxCount: 1 }
+]), adminController.postDesignSettings);
 
 // Portfolio Routes
 router.get('/portfolio', adminController.managePortfolio);

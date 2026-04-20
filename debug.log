@@ -647,3 +647,132 @@
 [2026-02-17T04:21:03.922Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-17T04:21:03.934Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
 [2026-02-17T04:21:03.966Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:34.970Z] EventLoopDelay monitor enabled
+[2026-04-20T10:21:37.145Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:40.153Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:43.158Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:46.176Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:49.189Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:52.196Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:55.203Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:21:58.218Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:01.224Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:04.234Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:07.249Z] ❌ MySQL is not reachable.
+[2026-04-20T10:22:07.251Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-04-20T10:22:07.257Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-04-20T10:22:07.258Z] Server is running at http://localhost:3000
+[2026-04-20T10:22:07.293Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:07.296Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:07.297Z] Global data fetch error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:07.312Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:22:07.344Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:44:56.836Z] EventLoopDelay monitor enabled
+[2026-04-20T10:44:58.111Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:44:58.112Z] ❌ MySQL is not reachable.
+[2026-04-20T10:44:58.114Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-04-20T10:44:58.118Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-04-20T10:44:58.120Z] Server is running at http://localhost:3000
+[2026-04-20T10:44:58.175Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:44:58.180Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:44:58.200Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:47:55.976Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:52:32.889Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:52:33.825Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:52:34.274Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:09.412Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:10.049Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:10.664Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:11.038Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:11.274Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:11.503Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:11.712Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:11.896Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:50.955Z] EventLoopDelay monitor enabled
+[2026-04-20T10:57:52.147Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:52.149Z] ❌ MySQL is not reachable.
+[2026-04-20T10:57:52.151Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-04-20T10:57:52.155Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-04-20T10:57:52.157Z] Server is running at http://localhost:3000
+[2026-04-20T10:57:52.205Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:52.210Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:52.232Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:57:54.030Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:59:04.351Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:59:05.084Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T10:59:41.555Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:02:24.428Z] Login attempt for username: admin
+[2026-04-20T11:02:24.430Z] Current DB dialect: mysql
+[2026-04-20T11:02:24.434Z] Login error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:09.599Z] EventLoopDelay monitor enabled
+[2026-04-20T11:03:10.555Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:13.562Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:16.581Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:19.586Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:22.593Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:25.598Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:28.603Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:31.620Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:34.633Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:37.637Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:03:37.639Z] ❌ MySQL is not reachable.
+[2026-04-20T11:03:37.640Z] ❌ MySQL is not reachable. Server stopped.
+[2026-04-20T11:04:01.953Z] EventLoopDelay monitor enabled
+[2026-04-20T11:04:02.982Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:05.988Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:09.000Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:12.006Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:15.020Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:18.033Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:21.037Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:24.052Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:27.070Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:30.084Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:04:30.085Z] ❌ MySQL is not reachable.
+[2026-04-20T11:04:30.086Z] ❌ MySQL is not reachable. Server stopped.
+[2026-04-20T11:06:29.166Z] EventLoopDelay monitor enabled
+[2026-04-20T11:06:30.162Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:33.169Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:36.179Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:39.187Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:42.199Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:45.216Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:48.220Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:51.233Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:54.243Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:57.265Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:06:57.267Z] ❌ MySQL is not reachable.
+[2026-04-20T11:06:57.269Z] ❌ MySQL is not reachable. Server stopped.
+[2026-04-20T11:08:56.205Z] EventLoopDelay monitor enabled
+[2026-04-20T11:08:57.324Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:00.341Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:03.346Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:06.363Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:09.370Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:12.384Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:15.393Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:18.405Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:21.422Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:24.440Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:09:24.441Z] ❌ MySQL is not reachable.
+[2026-04-20T11:09:24.442Z] ❌ MySQL is not reachable. Server stopped.
+[2026-04-20T11:11:26.818Z] EventLoopDelay monitor enabled
+[2026-04-20T11:11:27.850Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:11:27.852Z] ❌ MySQL is not reachable.
+[2026-04-20T11:11:27.853Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-04-20T11:11:27.858Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-04-20T11:11:27.859Z] Server is running at http://localhost:3000
+[2026-04-20T11:11:27.903Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:11:27.907Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:11:27.926Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:11:48.090Z] Login attempt for username: admin
+[2026-04-20T11:11:48.091Z] Using fallback dev login. Redirecting to /admin...
+[2026-04-20T11:13:02.466Z] EventLoopDelay monitor enabled
+[2026-04-20T11:13:03.540Z] ⚠️ Waiting for MySQL... connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:13:03.542Z] ❌ MySQL is not reachable.
+[2026-04-20T11:13:03.543Z] ⚠️ ALLOW_START_WITHOUT_DB=true, starting server without active MySQL connection.
+[2026-04-20T11:13:03.548Z] Server timeouts set: keepAlive=65000 headers=70000 request=15000
+[2026-04-20T11:13:03.549Z] Server is running at http://localhost:3000
+[2026-04-20T11:13:03.593Z] DB health check failed: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:13:03.599Z] FRONT: Home data error: connect ECONNREFUSED 127.0.0.1:3306
+[2026-04-20T11:13:03.620Z] FRONT: Home(EN) data error: connect ECONNREFUSED 127.0.0.1:3306
