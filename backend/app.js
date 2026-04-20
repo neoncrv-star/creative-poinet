@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const childProcess = require('child_process');
 const os = require('os');
 const { monitorEventLoopDelay } = require('perf_hooks');
 
@@ -57,30 +56,10 @@ const app = express();
 app.disable('x-powered-by');
 app.set('etag', 'strong');
 app.use(compression({ level: 6, threshold: 1024 })); // Compress responses efficiently
-let computedVersion = process.env.APP_VERSION;
-if (!computedVersion) {
-    try {
-        const hasGit = childProcess.execSync('git --version', { stdio: 'ignore' });
-        if (hasGit) {
-            const baseHash = childProcess.execSync('git rev-parse --short HEAD', { timeout: 1000 }).toString().trim();
-            let dirtySuffix = '';
-            try {
-                const status = childProcess.execSync('git status --porcelain', { timeout: 1000 }).toString().trim();
-                if (status) {
-                    dirtySuffix = '-' + Date.now().toString(36);
-                }
-            } catch {}
-            computedVersion = (baseHash + dirtySuffix);
-        }
-    } catch (e) {
-        // Git not available or not a repository
-    }
-    if (!computedVersion) {
-        computedVersion = 'prod-' + Date.now().toString(36);
-    }
-}
-app.locals.assetVersion = (computedVersion || '').toString().replace(/\s+/g, '');
-console.log(`App version: ${app.locals.assetVersion} - Performance Optimized`);
+
+// Hardcoded version to avoid system calls (Fixed for production stability)
+app.locals.assetVersion = process.env.APP_VERSION || '2.0.1';
+console.log(`App version: ${app.locals.assetVersion} - Stabilized`);
 app.locals.bootTime = Date.now();
 
 // Version header for deployment traceability
