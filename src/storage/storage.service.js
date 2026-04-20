@@ -2,19 +2,22 @@ const fs = require('fs');
 const path = require('path');
 
 const UPLOAD_PATH = process.env.UPLOAD_PATH || path.join(__dirname, '..', '..', 'public', 'uploads');
-const UPLOAD_URL = (process.env.UPLOAD_URL || '').replace(/\/+$/, '') || '';
+const RAW_UPLOAD_URL = (process.env.UPLOAD_URL || '').trim();
 
+let UPLOAD_URL = '';
 let localHost = null;
 let localPrefix = '/uploads/';
-if (UPLOAD_URL) {
+if (RAW_UPLOAD_URL) {
     try {
-        const u = new URL(UPLOAD_URL);
+        const u = new URL(RAW_UPLOAD_URL);
+        UPLOAD_URL = (u.origin + (u.pathname || '')).replace(/\/+$/, '');
         localHost = u.host.toLowerCase();
         const p = (u.pathname || '/uploads').replace(/\/+$/, '');
         localPrefix = p + (p.endsWith('/') ? '' : '/');
     } catch {
         localHost = null;
         localPrefix = '/uploads/';
+        UPLOAD_URL = '';
     }
 }
 

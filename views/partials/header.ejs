@@ -70,6 +70,8 @@
     <title><%= finalTitle %></title>
     <meta name="description" content="<%= pageDescription %>">
     <meta name="keywords" content="<%= pageKeywords %>">
+    <meta name="google-site-verification" content="Izv6vGiM2Q6DdG2XUi7hFsUhgJsuZK7zv8vlX7ofHo4" />
+    <meta name="facebook-domain-verification" content="tsxnzbotoeh4bqd5os0nvrzmz7rf6l" />
     
     <link rel="icon" type="image/x-icon" href="<%= favicon %>">
 
@@ -95,8 +97,26 @@
     <% } %>
 
     <!-- Tracking Scripts -->
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KGK4GMVF');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2H9SC1RQB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-F2H9SC1RQB');
+    </script>
+
     <% if (activeSeo && activeSeo.googleAnalyticsId) { %>
-        <!-- Google Analytics -->
+        <!-- Google Analytics (Dynamic) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=<%= activeSeo.googleAnalyticsId %>"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
@@ -193,6 +213,10 @@
     <script src="/js/gsap-safe.js?v=<%= assetVersion %>" defer></script>
 </head>
 <body class="<%= typeof isEn !== 'undefined' && isEn ? 'lang-en' : 'lang-ar' %>">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KGK4GMVF"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="cpoint-preloader">
         <div class="cpoint-spinner">
             <img src="/preloader-spinner.png" alt="Creative Point Loading">

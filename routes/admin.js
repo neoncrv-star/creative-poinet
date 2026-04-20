@@ -6,7 +6,6 @@ const multer = require('multer');
 const path = require('path');
 const storageService = require('../src/storage/storage.service');
 
-// Multer Config
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, storageService.UPLOAD_PATH);
@@ -15,7 +14,39 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+    try {
+        const mime = (file.mimetype || '').toLowerCase();
+        const ext = (path.extname(file.originalname || '') || '').toLowerCase();
+        const allowedExts = new Set([
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.gif',
+            '.svg',
+            '.webp',
+            '.avif',
+            '.jfif',
+            '.mp4',
+            '.webm'
+        ]);
+        const isImageOrVideo = mime.startsWith('image/') || mime.startsWith('video/');
+        const isAllowedExt = allowedExts.has(ext);
+        if (!isImageOrVideo && !isAllowedExt) {
+            return cb(null, false);
+        }
+        return cb(null, true);
+    } catch {
+        return cb(null, false);
+    }
+};
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: Number(process.env.UPLOAD_MAX_BYTES || 10 * 1024 * 1024)
+    }
+});
 
 // Public Admin Routes (Login)
 router.get('/login', adminController.getLogin);
