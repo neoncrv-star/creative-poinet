@@ -60,17 +60,23 @@ app.use(compression({ level: 6, threshold: 1024 })); // Compress responses effic
 let computedVersion = process.env.APP_VERSION;
 if (!computedVersion) {
     try {
-        const baseHash = childProcess.execSync('git rev-parse --short HEAD').toString().trim();
-        let dirtySuffix = '';
-        try {
-            const status = childProcess.execSync('git status --porcelain').toString().trim();
-            if (status) {
-                dirtySuffix = '-' + Date.now().toString(36);
-            }
-        } catch {}
-        computedVersion = (baseHash + dirtySuffix) || String(Date.now());
+        const hasGit = childProcess.execSync('git --version', { stdio: 'ignore' });
+        if (hasGit) {
+            const baseHash = childProcess.execSync('git rev-parse --short HEAD', { timeout: 1000 }).toString().trim();
+            let dirtySuffix = '';
+            try {
+                const status = childProcess.execSync('git status --porcelain', { timeout: 1000 }).toString().trim();
+                if (status) {
+                    dirtySuffix = '-' + Date.now().toString(36);
+                }
+            } catch {}
+            computedVersion = (baseHash + dirtySuffix);
+        }
     } catch (e) {
-        computedVersion = String(Date.now());
+        // Git not available or not a repository
+    }
+    if (!computedVersion) {
+        computedVersion = 'prod-' + Date.now().toString(36);
     }
 }
 app.locals.assetVersion = (computedVersion || '').toString().replace(/\s+/g, '');
