@@ -94,17 +94,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Temporary Debug Route - REMOVE AFTER FIX
-app.get('/debug-system-logs', (req, res) => {
-    try {
-        const logs = tailDebugLog(100);
-        res.header('Content-Type', 'text/plain; charset=utf-8');
-        res.send(`--- APP DEBUG LOGS ---\nVersion: ${app.locals.assetVersion}\nTime: ${new Date().toISOString()}\n\n${logs}`);
-    } catch (e) {
-        res.status(500).send('Error reading logs: ' + e.message);
-    }
-});
-
 // Serve uploads from persistent path if configured, then apply fallback/self-heal
 app.use('/uploads', express.static(storageService.UPLOAD_PATH, {
     maxAge: '365d',
@@ -661,7 +650,7 @@ async function startServer() {
         const msg = `❌ Invalid DB dialect at runtime: ${dialect}`;
         debugLog(msg);
         console.error(msg);
-        // process.exit(1); // Allow booting for debug logs
+        process.exit(1);
     }
 
     await ensureMySQLConnection(10);
