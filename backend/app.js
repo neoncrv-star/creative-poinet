@@ -165,23 +165,27 @@ async function initDatabase() {
             connected = true;
             break;
         } catch (err) {
-            console.error(`⚠️ DB Connection Failed (Attempt ${i + 1}/5):`, err.message);
+            console.error(`⚠️ DB Connection Failed:`, err.message);
             await new Promise(res => setTimeout(res, 3000));
         }
     }
 
-    if (!connected) {
-        console.error('❌ FATAL: Could not connect to MySQL. Check Hostinger DB credentials.');
-        // لا نغلق التطبيق هنا حتى لا يظهر 503، بل نتركه يعمل ليعرض أخطاء برمجية واضحة
-        return;
-    }
+    if (!connected) return;
+
+    // استدعاء جميع النماذج لضمان إنشائها في MySQL
+    const Project = require('./models/Project');
+    const Post = require('./models/Post');
+    const Partner = require('./models/Partner');
+    const StatBlock = require('./models/StatBlock');
+    const User = require('./models/User');
+    const Contact = require('./models/Contact');
+
+    // مزامنة جميع الجداول (سيقوم بإنشاء الجداول الناقصة فوراً)
     try {
-        await GlobalSeo.sync({ alter: false });
-        await ServiceModel.sync({ alter: false });
-        await Category.sync({ alter: false });
-        console.log('✅ Database Models Synced.');
+        await sequelize.sync({ alter: true });
+        console.log('✅ All Database Tables Synced Successfully.');
     } catch (e) {
-        debugLog('Sync Warning: ' + e.message);
+        console.error('Sync Warning: ' + e.message);
     }
 }
 
