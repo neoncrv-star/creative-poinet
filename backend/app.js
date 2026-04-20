@@ -661,7 +661,7 @@ async function startServer() {
         const msg = `❌ Invalid DB dialect at runtime: ${dialect}`;
         debugLog(msg);
         console.error(msg);
-        process.exit(1);
+        // process.exit(1); // Allow booting for debug logs
     }
 
     await ensureMySQLConnection(10);

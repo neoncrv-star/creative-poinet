@@ -20,8 +20,8 @@ loadEnv();
 const isSQLite = (process.env.DB_DIALECT || '').toLowerCase() === 'sqlite';
 
 if (!isSQLite && (!process.env.DB_NAME || !process.env.DB_HOST || !process.env.DB_USER)) {
-    console.error('❌ Missing MySQL environment variables. Server stopped.');
-    process.exit(1);
+    console.error('⚠️ Missing MySQL environment variables. Server running in degraded mode for debugging.');
+    // Do not exit, allow debug route to work
 }
 
 const SLOW_DB_MS = Number(process.env.SLOW_DB_MS || 300);
