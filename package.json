@@ -1,33 +1,16 @@
 {
-  "name": "creative-poinet",
-  "version": "2.1.0",
-  "description": "",
-  "main": "app.js",
-  "engines": {
-    "node": "20.x"
-  },
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon backend/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "fix:assets": "node backend/scripts/fix-assets.js"
+    "dev": "nodemon app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "compression": "^1.8.1",
-    "dotenv": "^17.4.2",
-    "ejs": "^4.0.1",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "lodash": "^4.17.21",
-    "multer": "^2.0.2",
-    "mysql2": "^3.22.1",
-    "sequelize": "^6.37.7",
-    "session-file-store": "^1.5.0",
-    "sharp": "^0.33.3"
+    "compression": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mysql2": "^3.9.7",
+    "sequelize": "^6.37.3",
+    "session-file-store": "^1.5.0"
   }
 }
