@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const UPLOAD_PATH = process.env.UPLOAD_PATH || path.join(__dirname, '..', '..', 'public', 'uploads');
+const UPLOAD_PATH = process.env.UPLOAD_PATH || path.join(__dirname, '..', '..', '..', 'frontend', 'public', 'uploads');
 const RAW_UPLOAD_URL = (process.env.UPLOAD_URL || '').trim();
 
 let UPLOAD_URL = '';

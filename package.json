@@ -2,11 +2,11 @@
   "name": "creative-poinet",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "backend/app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node backend/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fix:assets": "node scripts/fix-assets.js"
+    "fix:assets": "node backend/scripts/fix-assets.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +23,7 @@
     "mysql2": "^3.16.3",
     "sequelize": "^6.37.7",
     "session-file-store": "^1.5.0",
-    "sharp": "^0.33.3"
+    "sharp": "^0.33.3",
+    "sqlite3": "^6.0.1"
   }
 }

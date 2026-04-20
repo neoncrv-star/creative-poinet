@@ -167,10 +167,10 @@ app.use((req, res, next) => {
 });
 
 
-// Dedicated route for preloader spinner asset (stored under /views)
+// Dedicated route for preloader spinner asset (stored under /frontend/views)
 app.get('/preloader-spinner.png', (req, res) => {
     try {
-        const imgPath = path.join(__dirname, 'views', '4433444.png');
+        const imgPath = path.join(__dirname, '..', 'frontend', 'views', '4433444.png');
         return res.sendFile(imgPath);
     } catch (e) {
         return res.status(404).end();
@@ -178,7 +178,7 @@ app.get('/preloader-spinner.png', (req, res) => {
 });
 
 // Serve static files FIRST to avoid running middleware for assets (after uploads handling)
-app.use(express.static(path.join(__dirname, 'public'), {
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'public'), {
     maxAge: '30d',
     etag: true,
     setHeaders: (res, filePath) => {
@@ -254,8 +254,7 @@ app.get('/health/db', async (req, res) => {
 });
 
 // Ensure necessary directories exist
-['public/uploads', 'sessions'].forEach(dir => {
-    const fullPath = path.join(__dirname, dir);
+[path.join(__dirname, '..', 'frontend', 'public', 'uploads'), path.join(__dirname, 'sessions')].forEach(fullPath => {
     if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
     }
@@ -447,7 +446,7 @@ app.use(async (req, res, next) => {
 
 // Set view engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '..', 'frontend', 'views'));
 
 // Parse body
 app.use(express.urlencoded({ extended: true }));
@@ -647,7 +646,7 @@ async function ensureModelSchema(model) {
 
 async function startServer() {
     const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
-    if (dialect !== 'mysql') {
+    if (dialect !== 'mysql' && dialect !== 'sqlite') {
         const msg = `❌ Invalid DB dialect at runtime: ${dialect}`;
         debugLog(msg);
         console.error(msg);
@@ -663,8 +662,8 @@ async function startServer() {
             await ensureModelSchema(GlobalSeo);
             await ensureModelSchema(StatBlock);
             await ensureModelSchema(ServiceModel);
-            await sequelize.sync(syncOptions);
-            const msg = 'Database synced successfully (MySQL)';
+            const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
+            const msg = `Database synced successfully (${dialect})`;
             debugLog(msg);
             console.log(msg);
         } catch (dbErr) {
@@ -726,7 +725,7 @@ async function startServer() {
                     const placeholderAbs = storageService.buildAbsolutePath(placeholderName);
                     try {
                         if (!fs.existsSync(placeholderAbs)) {
-                            const src = path.join(__dirname, 'views', '4433444.png');
+                            const src = path.join(__dirname, '..', 'frontend', 'views', '4433444.png');
                             if (fs.existsSync(src)) {
                                 fs.copyFileSync(src, placeholderAbs);
                             }

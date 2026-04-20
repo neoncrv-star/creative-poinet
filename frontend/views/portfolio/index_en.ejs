@@ -50,7 +50,7 @@
                                     <div class="item-image-wrapper">
                                         <% if (project.image) { %>
                                             <img src="<%= assetPath(project.image) %>" alt="<%= project.title %>">
-                                        <% } %>
+                                        <% } else { %>
                                             <div class="no-image">🖼️</div>
                                         <% } %>
                                         <div class="item-overlay">
