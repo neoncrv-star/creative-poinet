@@ -53,22 +53,32 @@ const sequelizeOptions = {
 };
 
 if (!isSQLite) {
-    sequelizeOptions.timezone = '+03:00'; // Matches Saudi Arabia / Arab World standard
+    sequelizeOptions.timezone = '+03:00';
 }
 
 if (isSQLite) {
-    // SQLite specific configuration
-    sequelizeOptions.storage = path.join(__dirname, '..', process.env.DB_STORAGE || 'data/database.sqlite');
-    // Ensure data directory exists
-    const dbDir = path.dirname(sequelizeOptions.storage);
-    if (!fs.existsSync(dbDir)) {
-        fs.mkdirSync(dbDir, { recursive: true });
+    try {
+        require.resolve('sqlite3');
+        // SQLite specific configuration
+        sequelizeOptions.storage = path.join(__dirname, '..', process.env.DB_STORAGE || 'data/database.sqlite');
+        const dbDir = path.dirname(sequelizeOptions.storage);
+        if (!fs.existsSync(dbDir)) {
+            fs.mkdirSync(dbDir, { recursive: true });
+        }
+    } catch (e) {
+        console.error('⚠️ SQLite driver missing. Falling back to MySQL logic.');
+        sequelizeOptions.dialect = 'mysql';
+        // Force isSQLite to false so we use the database credentials
+        process.env.DB_DIALECT = 'mysql';
     }
-} else {
+}
+
+if (sequelizeOptions.dialect === 'mysql') {
     // MySQL specific options
-    sequelizeOptions.host = process.env.DB_HOST;
+    sequelizeOptions.host = process.env.DB_HOST || '127.0.0.1';
+    sequelizeOptions.port = Number(process.env.DB_PORT || 3306);
     sequelizeOptions.dialectOptions = {
-        connectTimeout: Number(process.env.DB_CONNECT_TIMEOUT || 5000),
+        connectTimeout: Number(process.env.DB_CONNECT_TIMEOUT || 10000),
         charset: 'utf8mb4'
     };
     sequelizeOptions.define = {
@@ -78,7 +88,9 @@ if (isSQLite) {
     };
 }
 
-const sequelize = isSQLite
+const finalIsSQLite = (process.env.DB_DIALECT || '').toLowerCase() === 'sqlite';
+
+const sequelize = finalIsSQLite
     ? new Sequelize(sequelizeOptions)
     : new Sequelize(
         process.env.DB_NAME,
