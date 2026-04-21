@@ -1,16 +1,10 @@
+--- START OF FILE Paste April 21, 2026 - 3:29PM ---
+
 <% const isEn = true; %>
 <%- include('partials/header', { isEn: isEn }) %>
 
-<link rel="preload" href="/css/hero.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<link rel="preload" href="/css/journey.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<link rel="preload" href="/css/services-stacked.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<link rel="preload" href="/css/portfolio-slider.css?v=<%= assetVersion %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
-    <link rel="stylesheet" href="/css/hero.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/journey.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/services-stacked.css?v=<%= assetVersion %>">
-    <link rel="stylesheet" href="/css/portfolio-slider.css?v=<%= assetVersion %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </noscript>
 
@@ -19,20 +13,530 @@
         --service-overlay-opacity: <%= (globalSeo && globalSeo.serviceOverlayOpacity !== undefined) ? globalSeo.serviceOverlayOpacity : 0.8 %>;
         --service-image-brightness: <%= (globalSeo && globalSeo.serviceImageBrightness !== undefined) ? globalSeo.serviceImageBrightness : 0.5 %>;
         --slider-height: <%= (globalSeo && globalSeo.sliderHeight) ? globalSeo.sliderHeight : '500px' %>;
+        --hero-bg: #030303;
+        --hero-accent: #ff3131;
+        --hero-text: #ffffff;
+        --hero-muted: rgba(255, 255, 255, 0.7);
+        --hero-font-main: 'TheSansArabic', sans-serif;
     }
 
-    .portfolio-swiper {
-        height: var(--slider-height) !important;
+    /* ================= Hero Section ================= */
+    .hero-modern-section {
+        position: relative;
+        min-height: 100vh;
+        width: 100%;
+        background-color: var(--hero-bg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        color: var(--hero-text);
+        padding: 120px 0 80px;
+    }
+    
+    .hero-modern-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(255, 49, 49, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .hero-container {
+        position: relative;
+        z-index: 5;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+    
+    .hero-content {
+        max-width: 800px;
+    }
+    
+    .hero-eyebrow {
+        color: var(--hero-accent);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        line-height: 1.1;
+        font-weight: 800;
+        margin-bottom: 30px;
+        color: #fff;
+    }
+    
+    .hero-description {
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        line-height: 1.6;
+        color: var(--hero-muted);
+        margin-bottom: 40px;
+        max-width: 650px;
+    }
+    
+    .btn-hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+        background-color: var(--hero-accent);
+        color: #fff;
+        padding: 16px 40px;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 30px rgba(255, 49, 49, 0.3);
+    }
+    
+    .btn-hero-pill i {
+        font-size: 1.4rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .btn-hero-pill:hover {
+        transform: translateY(-5px);
+        background-color: #e62c2c;
+        box-shadow: 0 15px 40px rgba(255, 49, 49, 0.4);
+    }
+    
+    .btn-hero-pill:hover i {
+        transform: translateX(5px); /* LTR direction */
+    }
+    
+    .hero-video-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+    
+    .hero-video-el {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.4), rgba(0,0,0,0.8));
+        z-index: 2;
+    }
+    
+    .hero-scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        opacity: 0.8;
+    }
+    
+    .hero-scroll-indicator span {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--hero-muted);
+    }
+    
+    .mouse {
+        width: 26px;
+        height: 42px;
+        border: 2px solid var(--hero-muted);
+        border-radius: 20px;
+        position: relative;
+    }
+    
+    .wheel {
+        width: 2px;
+        height: 6px;
+        background-color: var(--hero-accent);
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+        animation: scrollWheel 2s infinite;
+    }
+    
+    @keyframes scrollWheel {
+        0% { transform: translate(-50%, 0); opacity: 1; }
+        100% { transform: translate(-50%, 15px); opacity: 0; }
+    }
+    
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+    
+    .hero-title.fade-in { animation-delay: 0.2s; }
+    .hero-description.fade-in { animation-delay: 0.4s; }
+    .hero-actions.fade-in { animation-delay: 0.6s; }
+    
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 991px) {
+        .hero-title { font-size: 3.5rem; }
+        .hero-container { padding: 0 30px; }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-modern-section { padding-top: 100px; text-align: center; }
+        .hero-content { margin: 0 auto; }
+        .hero-title { font-size: 2.8rem; }
+        .hero-description { margin-left: auto; margin-right: auto; }
+        .hero-actions { justify-content: center; }
+    }
+    
+    @media (max-width: 480px) {
+        .hero-title { font-size: 2.2rem; }
+        .hero-eyebrow { font-size: 1rem; }
+        .btn-hero-pill { padding: 14px 30px; font-size: 1rem; }
+    }
+    
+    /* ================= Journey Section ================= */
+    .journey-scroll-section {
+        background-color: var(--bg-color, #050505);
+        background-image: radial-gradient(circle at 50% 50%, #1a0505 0%, #050505 60%);
+        padding: 150px 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    [data-theme="light"] .journey-scroll-section {
+        background-color: #fff;
+        background-image: none;
+    }
+    
+    .journey-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 40px;
+        text-align: center;
+        z-index: 2;
+        position: relative;
+    }
+    
+    .journey-eyebrow {
+        font-size: 1rem;
+        color: var(--primary-color, #e44b30);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        margin-bottom: 3rem;
+        font-weight: 700;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    
+    .journey-text-content {
+        font-size: clamp(1.8rem, 4vw, 3.5rem);
+        font-weight: 900;
+        line-height: 1.2;
+        color: var(--text-color, #fff);
+        display: block;
+        text-align: center;
+        max-width: 90%;
+        margin: 0 auto;
+    }
+    
+    [data-theme="light"] .journey-text-content {
+        color: #000;
+    }
+    
+    .journey-line {
+        display: inline;
+        opacity: 0.1;
+        color: currentColor;
+        will-change: opacity, filter, color;
+        transition: opacity 0.4s ease, filter 0.4s ease, color 0.4s ease;
+        filter: blur(3px);
+        margin: 0;
+        padding: 2px 0;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+    }
+    
+    [data-theme="light"] .journey-line {
+        opacity: 0.15;
+    }
+    
+    .journey-line.is-active {
+        opacity: 1;
+        color: currentColor;
+        filter: blur(0);
+    }
+    
+    @media (max-width: 768px) {
+        .journey-scroll-section { padding: 100px 0; }
+        .journey-text-content { font-size: 1.8rem; }
     }
 
-    .project-card {
-        height: 100% !important;
+    /* ================= NEW: Services Section (Matched to Design - English LTR) ================= */
+    .cpoint-services-section {
+        background-color: #000000;
+        color: #ffffff;
+        padding: 120px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .cpoint-services-header {
+        text-align: center;
+        margin-bottom: 80px;
+        position: relative;
+    }
+    .cpoint-services-header h2 {
+        font-size: clamp(2.5rem, 4vw, 3.5rem);
+        font-weight: 900;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+    .cpoint-services-header p {
+        font-size: clamp(1rem, 1.5vw, 1.2rem);
+        color: #a0a0a0;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .header-red-dot {
+        position: absolute;
+        top: -20px;
+        left: 15%; /* LTR Adaptation */
+        width: 14px;
+        height: 14px;
+        background-color: #ff3131;
+        border-radius: 50%;
+    }
+    .cpoint-services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 60px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+    }
+    /* Staggering to match the scattered layout */
+    .cpoint-service-item:nth-child(2) { margin-top: 100px; }
+    .cpoint-service-item:nth-child(5) { margin-top: -60px; }
+    .cpoint-service-item:nth-child(4) { margin-top: -40px; }
+
+    .cpoint-service-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        /* Technical subtle borders resembling blueprint lines */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 30px;
+    }
+    .cpoint-service-item::after {
+        content: '';
+        position: absolute;
+        right: -20px; /* LTR Adaptation: Divider on the right */
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .cpoint-service-item:nth-child(3n)::after {
+        display: none;
+    }
+    .cpoint-svc-num {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+    .cpoint-svc-img {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        margin-top: 30px;
+    }
+    .cpoint-svc-img img {
+        max-width: 90%;
+        max-height: 100%;
+        object-fit: contain;
+        background: transparent;
+        transition: transform 0.4s ease;
+    }
+    .cpoint-service-item:hover .cpoint-svc-img img {
+        transform: scale(1.05);
+    }
+    .cpoint-svc-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* LTR Adaptation: Left align text */
+        text-align: left;
+    }
+    .cpoint-svc-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* LTR Adaptation */
+        gap: 10px;
+        margin-bottom: 5px;
+        width: 100%;
+    }
+    .cpoint-svc-title-row h3 {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+    }
+    .item-red-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #ff3131;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .cpoint-svc-content p {
+        font-size: 0.85rem;
+        color: #888888;
+        margin: 0;
+        margin-left: 18px; /* LTR Adaptation: align under title bypassing the dot */
+        font-family: Arial, sans-serif;
     }
 
-    .project-card img, .project-card video {
-        height: 100% !important;
-        object-fit: cover !important;
+    @media (max-width: 991px) {
+        .cpoint-services-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        .cpoint-service-item:nth-child(n) { margin-top: 0 !important; }
+        .cpoint-service-item::after { display: none; }
+        .header-red-dot { display: none; }
     }
+    @media (max-width: 768px) {
+        .cpoint-services-grid { grid-template-columns: 1fr; }
+        .cpoint-svc-img { height: 180px; }
+    }
+
+    /* ================= NEW: Portfolio Grid Section (Matched to Design) ================= */
+    .cpoint-portfolio-section {
+        background-color: #ffffff;
+        padding: 100px 0 0 0; /* No bottom padding so images touch footer or next section */
+    }
+    .cpoint-portfolio-header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding: 0 20px;
+    }
+    .cpoint-portfolio-header h2 {
+        font-size: clamp(2.5rem, 4vw, 3.5rem);
+        font-weight: 900;
+        color: #000000;
+        margin-bottom: 15px;
+    }
+    .cpoint-portfolio-header p {
+        font-size: 1.1rem;
+        color: #666666;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+    .cpoint-portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 300px;
+        gap: 0;
+        width: 100%;
+    }
+    .cpoint-project-item {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        text-decoration: none;
+    }
+    .cpoint-project-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        display: block;
+    }
+    .cpoint-project-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        display: flex;
+        align-items: flex-end;
+        padding: 30px;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .cpoint-project-overlay h3 {
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: bold;
+        transform: translateY(20px);
+        transition: transform 0.4s ease;
+        margin: 0;
+    }
+    .cpoint-project-item:hover img {
+        transform: scale(1.08);
+    }
+    .cpoint-project-item:hover .cpoint-project-overlay {
+        opacity: 1;
+    }
+    .cpoint-project-item:hover .cpoint-project-overlay h3 {
+        transform: translateY(0);
+    }
+
+    /* Grid Layout Pattern matching the exact image 
+       (Loops every 6 items perfectly) */
+    .cpoint-project-item:nth-child(6n + 1) { grid-column: span 1; grid-row: span 1; }
+    .cpoint-project-item:nth-child(6n + 2) { grid-column: span 2; grid-row: span 2; }
+    .cpoint-project-item:nth-child(6n + 3) { grid-column: span 1; grid-row: span 1; }
+    .cpoint-project-item:nth-child(6n + 4) { grid-column: span 1; grid-row: span 1; }
+    .cpoint-project-item:nth-child(6n + 5) { grid-column: span 1; grid-row: span 1; }
+    .cpoint-project-item:nth-child(6n + 6) { grid-column: span 4; grid-row: span 1; } /* Full width bottom */
+
+    @media (max-width: 1024px) {
+        .cpoint-portfolio-grid { grid-auto-rows: 250px; }
+    }
+    @media (max-width: 768px) {
+        .cpoint-portfolio-grid { 
+            grid-template-columns: repeat(2, 1fr); 
+            grid-auto-rows: 200px;
+        }
+        .cpoint-project-item:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+        /* Make the 6th item span 2 columns instead of 4 on mobile */
+        .cpoint-project-item:nth-child(6n + 6) { grid-column: span 2; }
+    }
+
+    /* ================= Blog & Contact Section ================= */
+    .blog-home-section { padding: 100px 0; background: #fafafa; }
+    .contact-section { padding: 100px 0; background: #111; color: #fff; position: relative; }
+    
 </style>
 
 <main>
@@ -73,22 +577,47 @@
 
     <!-- ========================= Stats Section ========================== -->
     <% if (typeof stats !== 'undefined' && stats && stats.length) { %>
-    <section class="stats-section">
-        <div class="stats-wrapper">
+    <section class="stats-section" style="background:#000; color:#fff; padding: 50px 0;">
+        <div class="stats-wrapper container" style="display:flex; justify-content:space-around; flex-wrap:wrap; text-align:center;">
             <% stats.forEach(function(stat) { %>
-                <article class="stat-item">
-                    <div class="stat-value">
+                <article class="stat-item" style="margin:20px;">
+                    <div class="stat-value" style="font-size:2.5rem; font-weight:bold; color:#ff3131;">
                         <span class="stat-number" data-target="<%= stat.value %>">0</span>
                         <% if (stat.suffix_en) { %>
                             <span class="stat-suffix"><%= stat.suffix_en %></span>
                         <% } %>
                     </div>
-                    <p class="stat-label"><%= stat.label_en %></p>
+                    <p class="stat-label" style="font-size:1.1rem;"><%= stat.label_en %></p>
                 </article>
             <% }); %>
         </div>
     </section>
     <% } %>
+
+    <!-- ========================= Partners Section ========================== -->
+    <section id="partners" class="partners-section" style="padding: 60px 0; background:#f9f9f9;">
+        <div class="container">
+            <div class="partners-header" data-gsap="fade-up" style="text-align:center; margin-bottom:40px;">
+                <h2 class="partners-title" style="font-size:1.8rem; font-weight:bold; color:#000;">We take pride in our work and are even more proud of the partnerships we've established.</h2>
+            </div>
+            <div class="partners-grid" style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; align-items:center;">
+                <% if (partners && partners.length > 0) { %>
+                    <% partners.forEach(function(partner) { %>
+                        <div class="partner-item" data-gsap="fade-up">
+                            <img src="<%= assetPath(partner.logo || '') %>"
+                                 alt="<%= partner.name || '' %>"
+                                 title="<%= partner.name || '' %>"
+                                 loading="lazy" decoding="async" width="150" style="filter:grayscale(100%); opacity:0.7; transition:all 0.3s;">
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="partner-item" data-gsap="fade-up">
+                        <p style="color:#444; font-size:0.9rem;">No partners added yet.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
 
     <!-- ========================= Journey Section ========================== -->
     <section id="journey" class="journey-scroll-section">
@@ -108,176 +637,97 @@
         </div>
     </section>
 
-    <!-- ========================= Services Section ========================== -->
-    <section id="services" class="services-stacked-section">
-        <div class="services-stacked-wrapper">
-            <div class="services-stacked-header">
-                <p class="services-stacked-eyebrow">Services</p>
-                <h2 class="services-stacked-title">Stacked solutions from strategy to execution</h2>
-                <p class="services-stacked-subtitle">
-                    Each service represents a clear point in the journey, building on the previous
-                    one to form a complete creative system that stays consistent across all touchpoints.
+    <!-- ========================= Services Section (NEW DESIGN) ========================== -->
+    <section id="services" class="cpoint-services-section">
+        <div class="container" style="max-width: 1400px; padding: 0 40px;">
+            <div class="cpoint-services-header" data-gsap="fade-up">
+                <div class="header-red-dot"></div>
+                <h2>Our Services</h2>
+                <p>
+                    Integrated solutions starting from a clear point<br>
+                    Every service here is built around a single strategic decision, transforming into a visual experience<br>
+                    and tangible applications stacked together to create a cohesive creative system.
                 </p>
             </div>
 
-            <% var servicesList = (typeof services !== 'undefined' && services) ? services : []; %>
-            <% if (servicesList.length) { %>
-                <div class="services-stacked-cards">
+            <div class="cpoint-services-grid">
+                <% var servicesList = (typeof services !== 'undefined' && services) ? services : []; %>
+                <% if (servicesList.length) { %>
                     <% servicesList.forEach(function(service, index) { %>
-                        <article class="service-stacked-card" style="--card-index:<%= index %>;">
-                            <div class="service-stacked-inner">
-                                <div class="service-stacked-copy">
-                                    <div>
-                                        <div class="service-stacked-topline">
-                                            <span class="service-stacked-label">Service</span>
-                                            <span class="service-stacked-index"><%= (index + 1).toString().padStart(2, '0') %></span>
-                                        </div>
-                                        <h3 class="service-stacked-heading">
-                                            <%= service.title_en || service.title_ar || '' %>
-                                        </h3>
-                                        <p class="service-stacked-text">
-                                            <%= service.description_en || service.description_ar || '' %>
-                                        </p>
-                                        <ul class="service-stacked-tags">
-                                            <% if (service.tag1_en || service.tag1_ar) { %>
-                                                <li class="service-stacked-tag"><%= service.tag1_en || service.tag1_ar %></li>
-                                            <% } %>
-                                            <% if (service.tag2_en || service.tag2_ar) { %>
-                                                <li class="service-stacked-tag"><%= service.tag2_en || service.tag2_ar %></li>
-                                            <% } %>
-                                            <% if (service.tag3_en || service.tag3_ar) { %>
-                                                <li class="service-stacked-tag"><%= service.tag3_en || service.tag3_ar %></li>
-                                            <% } %>
-                                        </ul>
-                                    </div>
-                                    <div class="service-stacked-meta">
-                                        <span>From clear idea to tangible implementation</span>
-                                        <span class="service-stacked-meta-dot"></span>
-                                    </div>
-                                </div>
-                                <div class="service-stacked-media">
-                                    <div class="service-stacked-image-frame">
-                                        <% if (service.image) { %>
-                                            <img class="service-stacked-image"
-                                                 src="<%= assetPath(service.image) %>"
-                                                 alt="<%= service.imageAlt_en || service.title_en || service.title_ar || '' %>"
-                                                 loading="lazy" decoding="async">
-                                        <% } else { %>
-                                            <div class="service-stacked-image-placeholder"></div>
-                                        <% } %>
-                                        <div class="service-stacked-image-overlay"></div>
-                                        <div class="service-stacked-image-grain"></div>
-                                    </div>
-                                </div>
+                        <div class="cpoint-service-item" data-gsap="fade-up" data-delay="<%= index * 0.1 %>">
+                            <!-- Service Number -->
+                            <span class="cpoint-svc-num"><%= (index + 1).toString().padStart(2, '0') %></span>
+                            
+                            <!-- Service Image -->
+                            <div class="cpoint-svc-img">
+                                <% if (service.image) { %>
+                                    <img src="<%= assetPath(service.image) %>" alt="<%= service.title_en || '' %>" loading="lazy">
+                                <% } else { %>
+                                    <!-- Placeholder in case no image -->
+                                    <div style="width:100px; height:100px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
+                                <% } %>
                             </div>
-                        </article>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <div class="services-stacked-empty">
-                    <h3>No services added yet</h3>
-                    <p>Once you add services from the dashboard, they will appear here as stacked sticky cards.</p>
-                </div>
-            <% } %>
-        </div>
-    </section>
-
-    <!-- ========================= Portfolio Section ========================== -->
-    <section id="portfolio" class="portfolio-section">
-        <div class="container">
-            <div class="portfolio-header" data-gsap="fade-up" style="text-align: center;">
-                <h2 class="portfolio-title">Latest Projects</h2>
-                <p style="text-align: center;">Turning ideas into reality... Explore our work</p>
-            </div>
-
-            <div class="portfolio-container" data-gsap="fade-up">
-                <button class="portfolio-nav-btn prev-btn" aria-label="Previous">
-                    <i class="ri-arrow-left-line"></i>
-                </button>
-                <button class="portfolio-nav-btn next-btn" aria-label="Next">
-                    <i class="ri-arrow-right-line"></i>
-                </button>
-
-                <div class="swiper portfolio-swiper">
-                    <div class="swiper-wrapper">
-                        <% if (projects && projects.length > 0) { %>
-                            <% projects.forEach(function(project) { %>
-                                <div class="swiper-slide">
-                                    <div class="project-card">
-                                        <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
-                                            <video src="<%= assetPath(project.image) %>" muted loop playsinline></video>
-                                        <% } else if (project.image) { %>
-                                            <img src="<%= assetPath(project.image) %>"
-                                                 alt="<%= project.title_en || project.title || '' %>"
-                                                 width="1200" height="800" loading="lazy" decoding="async">
-                                        <% } else { %>
-                                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                                                 alt="Project" width="800" height="600" loading="lazy" decoding="async">
-                                        <% } %>
-                                        <div class="project-overlay">
-                                            <div class="project-info">
-                                                <h3><%= project.title_en || project.title || '' %></h3>
-                                                <p><%= project.description_en || project.description || '' %></p>
-                                                <a href="<%= project.externalLink || '/portfolio/' + project.id %>"
-                                                   class="project-link"
-                                                   <%= project.externalLink ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
-                                                    <span>View Project</span>
-                                                    <i class="ri-arrow-right-line"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
+                            
+                            <!-- Service Title & Content -->
+                            <div class="cpoint-svc-content">
+                                <div class="cpoint-svc-title-row">
+                                    <div class="item-red-dot"></div>
+                                    <h3><%= service.title_en || service.title_ar || 'Service Title' %></h3>
                                 </div>
-                            <% }); %>
-                        <% } else { %>
-                            <% for (var i = 1; i <= 6; i++) { %>
-                                <div class="swiper-slide">
-                                    <div class="project-card">
-                                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                                             alt="Creative Project <%= i %>">
-                                        <div class="project-overlay">
-                                            <div class="project-info">
-                                                <h3>Creative Project <%= i %></h3>
-                                                <p>Short description of the project and how we helped the client.</p>
-                                                <a href="#" class="project-link">
-                                                    <span>View Project</span>
-                                                    <i class="ri-arrow-right-line"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <% } %>
-                        <% } %>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================= Partners Section ========================== -->
-    <section id="partners" class="partners-section">
-        <div class="container">
-            <div class="partners-header" data-gsap="fade-up">
-                <h2 class="partners-title">We take pride in our work and are even more proud of the partnerships we've established.</h2>
-            </div>
-            <div class="partners-grid">
-                <% if (partners && partners.length > 0) { %>
-                    <% partners.forEach(function(partner) { %>
-                        <div class="partner-item" data-gsap="fade-up">
-                            <img src="<%= assetPath(partner.logo || '') %>"
-                                 alt="<%= partner.name || '' %>"
-                                 title="<%= partner.name || '' %>"
-                                 loading="lazy" decoding="async" width="200" height="80">
+                                <p><%= service.tag1_en || service.description_en || 'Service Description' %></p>
+                            </div>
                         </div>
                     <% }); %>
                 <% } else { %>
-                    <div class="partner-item" data-gsap="fade-up">
-                        <p style="color:#444; font-size:0.9rem;">No partners added yet.</p>
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #888;">
+                        <p>No services added yet. Please add them from the dashboard.</p>
                     </div>
                 <% } %>
             </div>
+        </div>
+    </section>
+
+    <!-- ========================= Portfolio Section (NEW DESIGN) ========================== -->
+    <section id="portfolio" class="cpoint-portfolio-section">
+        <div class="cpoint-portfolio-header" data-gsap="fade-up">
+            <h2>Our Latest Projects</h2>
+            <p>Turning ideas into tangible reality, and every creation starts with a point.<br>Enjoy exploring all our work.</p>
+        </div>
+
+        <!-- Grid Layout (Matches the exact collage structure automatically via CSS) -->
+        <div class="cpoint-portfolio-grid">
+            <% if (projects && projects.length > 0) { %>
+                <% projects.forEach(function(project) { %>
+                    <a href="<%= project.externalLink || '/portfolio/' + project.id %>" 
+                       class="cpoint-project-item" 
+                       <%= project.externalLink ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
+                       
+                        <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
+                            <video src="<%= assetPath(project.image) %>" muted loop autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                        <% } else if (project.image) { %>
+                            <img src="<%= assetPath(project.image) %>" 
+                                 alt="<%= project.title_en || '' %>" 
+                                 loading="lazy" decoding="async">
+                        <% } else { %>
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Project" loading="lazy">
+                        <% } %>
+
+                        <!-- Hover Overlay -->
+                        <div class="cpoint-project-overlay">
+                            <h3><%= project.title_en || 'Creative Project' %></h3>
+                        </div>
+                    </a>
+                <% }); %>
+            <% } else { %>
+                <!-- Dummy Data matching the screenshot layout exactly if no dynamic data -->
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="1"><div class="cpoint-project-overlay"><h3>Creative Design</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="2"><div class="cpoint-project-overlay"><h3>Visual Identity</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="3"><div class="cpoint-project-overlay"><h3>Printing & Production</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="4"><div class="cpoint-project-overlay"><h3>Photography</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="5"><div class="cpoint-project-overlay"><h3>Web Development</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1558655146-d09347e92766?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="6"><div class="cpoint-project-overlay"><h3>Strategic Planning</h3></div></a>
+            <% } %>
         </div>
     </section>
 
@@ -286,26 +736,26 @@
         <div class="container">
             <div class="blog-section-inner" data-gsap="fade-up">
                 <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
-                    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Latest Articles</h2>
+                    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem; color:#000;">Latest Articles</h2>
                     <p style="color: #888; font-size: 1.1rem;">Insights and thoughts in the world of design and technology</p>
                 </div>
 
-                <div class="blog-grid">
+                <div class="blog-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
                     <% if (posts && posts.length > 0) { %>
                         <% posts.forEach(function(post) { %>
-                            <article class="blog-card">
+                            <article class="blog-card" style="background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
                                 <% if (post.image) { %>
-                                    <div class="blog-image">
+                                    <div class="blog-image" style="height:200px; overflow:hidden;">
                                         <img src="<%= assetPath(post.image) %>"
                                              alt="<%= post.title_en || post.title || '' %>"
-                                             loading="lazy" decoding="async">
+                                             loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">
                                     </div>
                                 <% } %>
-                                <div class="blog-content">
-                                    <span class="blog-date"><%= post.date || '' %></span>
-                                    <h3><%= post.title_en || post.title || '' %></h3>
-                                    <p class="blog-excerpt"><%= post.excerpt_en || post.excerpt || '' %></p>
-                                    <a href="/blog/<%= post.id %>" class="read-more">
+                                <div class="blog-content" style="padding:25px;">
+                                    <span class="blog-date" style="color:#ff3131; font-size:0.85rem;"><%= post.date || '' %></span>
+                                    <h3 style="margin:10px 0; font-size:1.3rem; color:#000;"><%= post.title_en || post.title || '' %></h3>
+                                    <p class="blog-excerpt" style="color:#666; font-size:0.9rem; margin-bottom:20px;"><%= post.excerpt_en || post.excerpt || '' %></p>
+                                    <a href="/blog/<%= post.id %>" class="read-more" style="color:#000; font-weight:bold; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
                                         <span>Read More</span>
                                         <i class="ri-arrow-right-line"></i>
                                     </a>
@@ -313,14 +763,14 @@
                             </article>
                         <% }); %>
                     <% } else { %>
-                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #0a0a0a; border-radius: 20px; border: 1px solid #1a1a1a;">
+                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #fff; border-radius: 20px; border: 1px solid #eee;">
                             <p style="color: #666;">No articles available at the moment.</p>
                         </div>
                     <% } %>
                 </div>
 
-                <div class="view-all-container">
-                    <a href="/blog" class="view-all-btn">View All Articles</a>
+                <div class="view-all-container" style="text-align:center; margin-top:40px;">
+                    <a href="/blog" class="view-all-btn" style="background:#000; color:#fff; padding:12px 30px; border-radius:30px; text-decoration:none; font-weight:bold;">View All Articles</a>
                 </div>
             </div>
         </div>
@@ -328,74 +778,73 @@
 
     <!-- ========================= Contact Section ========================== -->
     <section id="contact" class="contact-section">
-        <div class="marquee-wrapper contact-marquee">
-            <div class="marquee-content" aria-hidden="true">
-                <h2 class="finale-text">CREATIVE POINT</h2>
-                <h2 class="finale-text">CREATIVE POINT</h2>
-                <h2 class="finale-text">CREATIVE POINT</h2>
-                <h2 class="finale-text">CREATIVE POINT</h2>
+        <div class="marquee-wrapper contact-marquee" style="overflow:hidden; white-space:nowrap; margin-bottom:50px;">
+            <div class="marquee-content" aria-hidden="true" style="display:inline-block; font-size:4rem; font-weight:900; color:rgba(255,255,255,0.05); letter-spacing:5px;">
+                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
+                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
+                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
             </div>
         </div>
         <div class="container">
-            <div class="contact-grid">
+            <div class="contact-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:60px;">
                 <div class="contact-info" data-gsap="fade-right">
-                    <h2 class="contact-title">
+                    <h2 class="contact-title" style="font-size:2.5rem; margin-bottom:20px; font-weight:bold;">
                         <%- (seo && seo.contactTitleEn ? seo.contactTitleEn : 'Start a New<br>Creative Journey').replace(/\n/g, '<br>') %>
                     </h2>
-                    <p class="contact-subtitle">
+                    <p class="contact-subtitle" style="color:#aaa; margin-bottom:40px; line-height:1.6;">
                         <%= seo && seo.contactSubtitleEn ? seo.contactSubtitleEn : 'We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.' %>
                     </p>
 
-                    <div class="contact-details">
-                        <div class="contact-item">
-                            <i class="ri-phone-line"></i>
+                    <div class="contact-details" style="display:flex; flex-direction:column; gap:20px;">
+                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
+                            <i class="ri-phone-line" style="font-size:1.5rem; color:#ff3131;"></i>
                             <div>
-                                <span>Call Us</span>
-                                <p dir="ltr"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
+                                <span style="font-size:0.85rem; color:#888;">Call Us</span>
+                                <p dir="ltr" style="margin:0; font-weight:bold;"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
                             </div>
                         </div>
-                        <div class="contact-item">
-                            <i class="ri-mail-line"></i>
+                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
+                            <i class="ri-mail-line" style="font-size:1.5rem; color:#ff3131;"></i>
                             <div>
-                                <span>Email</span>
-                                <p><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
+                                <span style="font-size:0.85rem; color:#888;">Email</span>
+                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
                             </div>
                         </div>
-                        <div class="contact-item">
-                            <i class="ri-map-pin-line"></i>
+                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
+                            <i class="ri-map-pin-line" style="font-size:1.5rem; color:#ff3131;"></i>
                             <div>
-                                <span>Location</span>
-                                <p><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
+                                <span style="font-size:0.85rem; color:#888;">Location</span>
+                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="social-links">
+                    <div class="social-links" style="margin-top:40px; display:flex; gap:15px;">
                         <% if (seo && seo.socialInstagram) { %>
-                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-instagram-line"></i></a>
                         <% } %>
                         <% if (seo && seo.socialTwitter) { %>
-                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"><i class="ri-twitter-x-line"></i></a>
+                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-twitter-x-line"></i></a>
                         <% } %>
                         <% if (seo && seo.socialLinkedin) { %>
-                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="ri-linkedin-box-line"></i></a>
+                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-linkedin-box-line"></i></a>
                         <% } %>
                     </div>
                 </div>
 
                 <div class="contact-form-wrapper" data-gsap="fade-left">
-                    <form action="/contact" method="POST" class="contact-form">
+                    <form action="/contact" method="POST" class="contact-form" style="display:flex; flex-direction:column; gap:20px;">
                         <div class="form-group">
-                            <input type="text" name="name" placeholder="Full Name" required autocomplete="name">
+                            <input type="text" name="name" placeholder="Full Name" required autocomplete="name" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
                         </div>
                         <div class="form-group">
-                            <input type="email" name="email" placeholder="Email Address" required autocomplete="email">
+                            <input type="email" name="email" placeholder="Email Address" required autocomplete="email" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
                         </div>
                         <div class="form-group">
-                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel">
+                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
                         </div>
                         <div class="form-group">
-                            <select name="service">
+                            <select name="service" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
                                 <option value="" disabled selected>Select Service</option>
                                 <option value="branding">Branding</option>
                                 <option value="marketing">Digital Marketing</option>
@@ -404,9 +853,9 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <textarea name="message" rows="5" placeholder="Project Details" required></textarea>
+                            <textarea name="message" rows="5" placeholder="Project Details" required style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
                         </div>
-                        <button type="submit" class="submit-btn" id="contact-submit-btn">
+                        <button type="submit" class="submit-btn" id="contact-submit-btn" style="background:#ff3131; color:#fff; padding:15px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
                             <span>Send Request</span>
                             <i class="ri-send-plane-fill"></i>
                         </button>
