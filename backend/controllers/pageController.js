@@ -164,3 +164,24 @@ exports.getPhilosophyPage = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+exports.getServicesPage = async (req, res) => {
+    try {
+        const seo = await GlobalSeo.findOne();
+        const services = await Service.findAll({ 
+            where: { is_active: true }, 
+            order: [['display_order', 'ASC']] 
+        });
+
+        res.render('services', { 
+            title: 'خدماتنا | Creative Point', 
+            services,
+            seo,
+            globalSeo: seo,
+            lang: req.path.includes('/en') ? 'en' : 'ar',
+            path: req.path
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};

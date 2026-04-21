@@ -82,7 +82,16 @@
                             <textarea name="description_en" rows="4" required><%= service ? service.description_en : '' %></textarea>
                         </div>
                     </div>
-
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+    <div class="form-group">
+        <label>النقاط التفصيلية (عربي) - <small>افصل كل نقطة بسطر جديد (Enter)</small></label>
+        <textarea name="bullet_points_ar" rows="5" placeholder="نقطة 1&#10;نقطة 2&#10;نقطة 3"><%= service ? service.bullet_points_ar : '' %></textarea>
+    </div>
+    <div class="form-group">
+        <label>Bullet Points (English) - <small>One point per line</small></label>
+        <textarea name="bullet_points_en" rows="5" placeholder="Point 1&#10;Point 2&#10;Point 3"><%= service ? service.bullet_points_en : '' %></textarea>
+    </div>
+</div>
                     <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div class="form-group">
                             <label>كلمات تسويقية (عربي)</label>
@@ -137,7 +146,21 @@
                         <i class="fas fa-save" style="margin-left: 8px;"></i> <%= service ? 'حفظ التغييرات' : 'حفظ الخدمة' %>
                     </button>
                 </div>
+<div class="admin-card" style="margin-bottom: 1.5rem;">
+    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+        <i class="fas fa-images"></i> معرض صور الخدمة (4 صور)
+    </h3>
+    
+    <div id="gallery-preview-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+        <!-- سيتم إضافة الصور هنا عبر الجافاسكربت -->
+    </div>
 
+    <input type="hidden" name="gallery_images" id="gallery_images_input" value="<%= service && service.gallery_images ? JSON.stringify(service.gallery_images) : '[]' %>">
+    
+    <button type="button" class="btn btn-secondary" style="width: 100%; padding: 0.8rem; background: #eee; border: none; border-radius: 6px; cursor: pointer;" onclick="openUploadsBrowser('gallery')">
+        <i class="fas fa-plus"></i> إضافة صور للمعرض
+    </button>
+</div>
                 <div class="admin-card" style="margin-bottom: 1.5rem;">
                     <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-image"></i> صورة الخدمة
@@ -245,17 +268,54 @@ async function refreshUploads() {
 function selectExistingImage(url) {
     if (uploadsTarget === 'service') {
         var hidden = document.getElementById('existingImageService');
-        if (hidden) {
-            hidden.value = url;
-        }
+        if (hidden) hidden.value = url;
         var el = document.getElementById('service-file-name');
-        if (el) {
-            var name = url.split('/').pop();
-            el.textContent = 'المحدد: ' + name;
+        if (el) el.textContent = 'المحدد: ' + url.split('/').pop();
+    } else if (uploadsTarget === 'gallery') {
+        var hidden = document.getElementById('gallery_images_input');
+        var currentImages = JSON.parse(hidden.value || '[]');
+        if(currentImages.length >= 4) {
+            alert('عذراً، الحد الأقصى هو 4 صور للمعرض.');
+        } else {
+            currentImages.push(url);
+            hidden.value = JSON.stringify(currentImages);
+            renderGalleryPreview();
         }
     }
     closeUploadsBrowser();
 }
+
+function renderGalleryPreview() {
+    var container = document.getElementById('gallery-preview-container');
+    var hidden = document.getElementById('gallery_images_input');
+    if(!container || !hidden) return;
+    
+    var images = JSON.parse(hidden.value || '[]');
+    container.innerHTML = '';
+    
+    images.forEach(function(url, index) {
+        var div = document.createElement('div');
+        div.style.position = 'relative';
+        div.innerHTML = `
+            <img src="${url}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+            <button type="button" onclick="removeGalleryImage(${index})" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; line-height: 1;">&times;</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function removeGalleryImage(index) {
+    var hidden = document.getElementById('gallery_images_input');
+    var images = JSON.parse(hidden.value || '[]');
+    images.splice(index, 1);
+    hidden.value = JSON.stringify(images);
+    renderGalleryPreview();
+}
+
+// تشغيل الدالة عند تحميل الصفحة لعرض الصور المحفوظة مسبقاً
+document.addEventListener('DOMContentLoaded', function() {
+    renderGalleryPreview();
+});
 </script>
 
 <%- include('layout-footer') %>

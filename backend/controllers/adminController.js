@@ -1292,15 +1292,27 @@ const buildServiceData = (body) => {
     const {
         title_ar, title_en,
         description_ar, description_en,
+        bullet_points_ar, bullet_points_en, // الحقول الجديدة
+        gallery_images, // الحقل الجديد
         tag1_ar, tag2_ar, tag3_ar,
         tag1_en, tag2_en, tag3_en,
         display_order, is_active,
         imageAlt_ar, imageAlt_en,
         seoTitle, seoDescription, seoKeywords
     } = body;
+    
+    // تحويل مصفوفة الصور القادمة من الفورم إلى مصفوفة فعلية
+    let parsedGallery = [];
+    if (gallery_images) {
+        try { parsedGallery = JSON.parse(gallery_images); } catch(e) { parsedGallery = []; }
+    }
+
     return {
         title_ar, title_en,
         description_ar, description_en,
+        bullet_points_ar: bullet_points_ar || null,
+        bullet_points_en: bullet_points_en || null,
+        gallery_images: parsedGallery,
         tag1_ar: tag1_ar || null,
         tag2_ar: tag2_ar || null,
         tag3_ar: tag3_ar || null,
