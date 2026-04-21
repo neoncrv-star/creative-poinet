@@ -68,7 +68,7 @@ app.use(session({
     name: 'creative_session',
     cookie: {
         maxAge: 3600000 * 24 * 7,
-        secure: isProdEnv,
+        secure: isProdEnv, // True in production
         httpOnly: true,
         sameSite: 'lax'
     }
@@ -118,7 +118,7 @@ app.use(async (req, res, next) => {
         res.locals.globalCategories = globalDataCache.categories;
         res.locals.path = req.path;
 
-        // 🛑 [الحل الجذري للصور المكسورة]: معالجة ذكية لمسار الصور
+        // 🛑 [الحل الجذري للصور المكسورة]
         res.locals.assetPath = (val) => {
             if (!val) return '';
             if (val.startsWith('http://') || val.startsWith('https://')) return val;
@@ -137,6 +137,7 @@ app.use(async (req, res, next) => {
             
             return '/' + cleanPath;
         };
+        
         next();
     } catch (error) {
         debugLog('Global Data Error: ' + error.message);
@@ -154,34 +155,39 @@ app.use('/', require('./routes/index'));
 // 🩺 فحص صحة الخادم (Health Check)
 app.get('/healthz', (req, res) => res.json({ status: 'ok', version: app.locals.assetVersion }));
 
-// 🛑 معالجة الأخطاء غير المتوقعة
+// 🛑 معالجة الأخطاء غير المتوقعة (لمنع توقف الخادم نهائياً)
 process.on('unhandledRejection', (reason) => debugLog(`Unhandled Rejection: ${reason}`));
 process.on('uncaughtException', (err) => {
     debugLog(`Uncaught Exception: ${err.message}`);
     console.error(err);
-    setTimeout(() => process.exit(1), 1000);
+    setTimeout(() => process.exit(1), 1000); // إعادة تشغيل آمنة عبر هوستنجر
 });
 
-// 🛠️ معالجة أخطاء القوالب المفقودة
+// 🛠️ معالجة أخطاء القوالب المفقودة بشكل جذري (Fix for 500 error)
 app.use((err, req, res, next) => {
     if (err.message && err.message.includes('Failed to lookup view')) {
         debugLog(`❌ View Error: ${err.message}. Check your filenames in frontend/views/`);
+        console.error(`VIEW ERROR: ${err.message}`);
     }
+    
+    // Default error response for production
     if (isProdEnv) {
-        return res.status(500).send('Internal Server Error');
+        return res.status(500).send('Internal Server Error - ' + (err.message || 'Unknown Error'));
     }
     next(err);
 });
 
-// 🔌 تشغيل الخادم
+// 🔌 تشغيل الخادم فوراً لإرضاء بيئة هوستنجر ومنع خطأ 503
 const port = process.env.PORT || 3000;
+
 const server = app.listen(port, () => {
     console.log(`🚀 Server running on port ${port}`);
 });
+
 server.keepAliveTimeout = 65000;
 server.headersTimeout = 70000;
 
-// 🗄️ الاتصال بقاعدة البيانات
+// 🗄️ الاتصال بقاعدة البيانات في الخلفية بعد تشغيل الخادم
 async function initDatabase() {
     let connected = false;
     for (let i = 0; i < 5; i++) {
@@ -195,15 +201,18 @@ async function initDatabase() {
             await new Promise(res => setTimeout(res, 3000));
         }
     }
+
     if (!connected) return;
 
-    require('./models/Project');
-    require('./models/Post');
-    require('./models/Partner');
-    require('./models/StatBlock');
-    require('./models/User');
-    require('./models/Contact');
+    // استدعاء جميع النماذج لضمان إنشائها في MySQL
+    const Project = require('./models/Project');
+    const Post = require('./models/Post');
+    const Partner = require('./models/Partner');
+    const StatBlock = require('./models/StatBlock');
+    const User = require('./models/User');
+    const Contact = require('./models/Contact');
 
+    // مزامنة جميع الجداول (سيقوم بإنشاء الجداول الناقصة فوراً)
     try {
         await sequelize.sync({ alter: true });
         console.log('✅ All Database Tables Synced Successfully.');
@@ -211,6 +220,7 @@ async function initDatabase() {
         console.error('Sync Warning: ' + e.message);
     }
 }
+
 initDatabase();
 
 module.exports = app;
