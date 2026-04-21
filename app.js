@@ -118,26 +118,15 @@ app.use(async (req, res, next) => {
         res.locals.globalCategories = globalDataCache.categories;
         res.locals.path = req.path;
 
-        // 🛑 [الحل الجذري للصور المكسورة]
+        // 👇 التعديل الوحيد والآمن لحل مشكلة الصور المكسورة
         res.locals.assetPath = (val) => {
             if (!val) return '';
             if (val.startsWith('http://') || val.startsWith('https://')) return val;
-            
-            let cleanPath = val.replace(/^\/+/, '');
-            
-            // إذا كان اسم ملف فقط (بدون مجلد) مثل 1770809046285.png
-            if (!cleanPath.includes('/')) {
-                return '/uploads/' + cleanPath;
-            }
-            
-            // إذا كان يحتوي على مسار بالفعل
-            if (cleanPath.startsWith('uploads/')) {
-                return '/' + cleanPath;
-            }
-            
-            return '/' + cleanPath;
+            let cleanVal = val.replace(/^\/+/, '');
+            return cleanVal.startsWith('uploads/') ? '/' + cleanVal : '/uploads/' + cleanVal;
         };
-        
+        // 👆 نهاية التعديل
+
         next();
     } catch (error) {
         debugLog('Global Data Error: ' + error.message);
