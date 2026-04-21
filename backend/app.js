@@ -145,6 +145,20 @@ process.on('uncaughtException', (err) => {
     setTimeout(() => process.exit(1), 1000); // إعادة تشغيل آمنة عبر هوستنجر
 });
 
+// 🛠️ معالجة أخطاء القوالب المفقودة بشكل جذري (Fix for 500 error)
+app.use((err, req, res, next) => {
+    if (err.message && err.message.includes('Failed to lookup view')) {
+        debugLog(`❌ View Error: ${err.message}. Check your filenames in frontend/views/`);
+        console.error(`VIEW ERROR: ${err.message}`);
+    }
+    
+    // Default error response for production
+    if (isProdEnv) {
+        return res.status(500).send('Internal Server Error - ' + (err.message || 'Unknown Error'));
+    }
+    next(err);
+});
+
 // 🔌 تشغيل الخادم فوراً لإرضاء بيئة هوستنجر ومنع خطأ 503
 const port = process.env.PORT || 3000;
 

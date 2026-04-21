@@ -81,7 +81,7 @@ exports.getHome = async (req, res) => {
             seoDescription: seo ? seo.homeDescription : ''
         };
 
-        res.render('home_ar', { 
+        res.render('index-ar', { 
             title: pageSeo.title, 
             projects,
             partners,
@@ -96,7 +96,7 @@ exports.getHome = async (req, res) => {
     } catch (error) {
         console.error(error);
         debugLog(`Home data error: ${error.message}`);
-        res.render('home_ar', { title: 'الرئيسية', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'ar' });
+        res.render('index-ar', { title: 'الرئيسية', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'ar' });
     }
 };
 
@@ -138,7 +138,7 @@ exports.getHomeEn = async (req, res) => {
             seoDescription: seo ? seo.homeDescription : '' // Ideally should have English field
         };
 
-        res.render('home_en', { 
+        res.render('index-en', { 
             title: pageSeo.title, 
             projects, 
             partners,
@@ -153,7 +153,7 @@ exports.getHomeEn = async (req, res) => {
     } catch (error) {
         console.error(error);
         debugLog(`Home(EN) data error: ${error.message}`);
-        res.render('home_en', { title: 'Home', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'en' });
+        res.render('index-en', { title: 'Home', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'en' });
     }
 };
 

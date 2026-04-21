@@ -7,9 +7,17 @@ require('dotenv').config();
 
 // التحقق من متغيرات هوستنجر الأساسية
 if (!process.env.DB_NAME || !process.env.DB_HOST || !process.env.DB_USER) {
-    console.error('❌ Missing MySQL environment variables. Server stopped.');
+    const missing = [];
+    if (!process.env.DB_NAME) missing.push('DB_NAME');
+    if (!process.env.DB_HOST) missing.push('DB_HOST');
+    if (!process.env.DB_USER) missing.push('DB_USER');
+    console.error(`❌ Missing MySQL environment variables: ${missing.join(', ')}. Server stopped.`);
     process.exit(1);
 }
+
+// تشخيص أولي للاتصال في السجلات لجعل الحل جذرياً
+const maskVal = (val) => val ? (val.substring(0, 2) + '***' + val.substring(val.length - 1)) : 'empty';
+console.log(`🔍 DB Diagnostic: Host=${process.env.DB_HOST}, User=${maskVal(process.env.DB_USER)}, Name=${process.env.DB_NAME}, Port=${process.env.DB_PORT || 3306}`);
 
 const SLOW_DB_MS = Number(process.env.SLOW_DB_MS || 300);
 
