@@ -20,60 +20,58 @@
         --service-image-brightness: <%= (globalSeo && globalSeo.serviceImageBrightness !== undefined) ? globalSeo.serviceImageBrightness : 0.5 %>;
         --slider-height: <%= (globalSeo && globalSeo.sliderHeight) ? globalSeo.sliderHeight : '500px' %>;
     }
-     
+
     .portfolio-swiper {
         height: var(--slider-height) !important;
-    } 
-    
+    }
+
     .project-card {
         height: 100% !important;
     }
- 
+
     .project-card img, .project-card video {
         height: 100% !important;
         object-fit: cover !important;
     }
-
 </style>
 
 <main>
-    <!-- =========================
-         Modern Hero Section
-    ========================== -->
-    <% 
+
+    <!-- ========================= Hero Section ========================== -->
+    <%
         var seo = globalSeo;
         var heroBgStyle = (seo && seo.heroBackgroundImage) ? `style="background-image: url('${assetPath(seo.heroBackgroundImage)}');"` : "";
     %>
     <section class="hero-modern-section" <%- heroBgStyle %>>
-        <% 
-            var mode = seo && seo.heroVideoMode ? seo.heroVideoMode.toLowerCase() : 'none';
-            var rawUrl = seo && seo.heroVideoUrl ? seo.heroVideoUrl.trim() : '';
+        <%
+            var mode    = seo && seo.heroVideoMode ? seo.heroVideoMode.toLowerCase() : 'none';
+            var rawUrl  = seo && seo.heroVideoUrl  ? seo.heroVideoUrl.trim() : '';
             var fileVal = seo && seo.heroVideoFile ? seo.heroVideoFile : '';
-            var heroType = 'none';
-            var heroSrc = '';
+            var heroType  = 'none';
+            var heroSrc   = '';
             var heroEmbed = '';
-            
+
             if (mode !== 'none') {
                 var ytMatch = rawUrl ? rawUrl.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/) : null;
-                var vMatch = rawUrl ? rawUrl.match(/vimeo\.com\/(\d+)/) : null;
+                var vMatch  = rawUrl ? rawUrl.match(/vimeo\.com\/(\d+)/) : null;
                 if (mode === 'file' && fileVal) {
                     heroType = 'video';
-                    heroSrc = assetPath(fileVal);
+                    heroSrc  = assetPath(fileVal);
                 } else if ((mode === 'youtube' || (mode === 'url' && ytMatch && ytMatch[1])) && rawUrl) {
                     var ytId = ytMatch && ytMatch[1] ? ytMatch[1] : null;
                     if (ytId) {
-                        heroType = 'embed';
+                        heroType  = 'embed';
                         heroEmbed = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + ytId + '&showinfo=0&rel=0&modestbranding=1&playsinline=1';
                     }
                 } else if ((mode === 'vimeo' || (mode === 'url' && vMatch && vMatch[1])) && rawUrl) {
                     var vId = vMatch && vMatch[1] ? vMatch[1] : null;
                     if (vId) {
-                        heroType = 'embed';
+                        heroType  = 'embed';
                         heroEmbed = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&background=1&loop=1&title=0&byline=0&portrait=0';
                     }
                 } else if (rawUrl) {
                     heroType = 'video';
-                    heroSrc = rawUrl;
+                    heroSrc  = rawUrl;
                 }
             }
         %>
@@ -93,16 +91,18 @@
 
         <div class="container hero-container">
             <div class="hero-content">
-                <p class="hero-eyebrow fade-in"><%= seo ? (seo.heroSmallTitleEn || 'The Point') : 'The Point' %></p>
+                <p class="hero-eyebrow fade-in">
+                    <%= seo && seo.heroSmallTitleEn ? seo.heroSmallTitleEn : 'The Point' %>
+                </p>
                 <h1 class="hero-title fade-in">
-                    <%- seo ? (seo.heroMainTitleEn || 'Every Creativity Starts <br> With a Point').replace(/\n/g, '<br>') : 'Every Creativity Starts <br> With a Point' %>
+                    <%- (seo && seo.heroMainTitleEn ? seo.heroMainTitleEn : 'Every Creativity Starts <br> With a Point').replace(/\n/g, '<br>') %>
                 </h1>
                 <p class="hero-description fade-in">
-                    <%= seo ? (seo.heroDescriptionEn || 'This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset.') : 'This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset.' %>
+                    <%= seo && seo.heroDescriptionEn ? seo.heroDescriptionEn : 'This slogan goes beyond summarizing our vision — it embodies our practical and strategic mindset.' %>
                 </p>
                 <div class="hero-actions fade-in">
                     <a href="#journey" class="btn-hero-pill">
-                        <%= seo ? (seo.heroBtnTextEn || 'Explore') : 'Explore' %>
+                        <%= seo && seo.heroBtnTextEn ? seo.heroBtnTextEn : 'Explore' %>
                         <i class="ri-arrow-right-line"></i>
                     </a>
                 </div>
@@ -110,13 +110,12 @@
         </div>
 
         <div class="hero-scroll-indicator">
-            <div class="mouse">
-                <div class="wheel"></div>
-            </div>
+            <div class="mouse"><div class="wheel"></div></div>
             <span>Scroll</span>
         </div>
     </section>
 
+    <!-- ========================= Stats Section ========================== -->
     <% if (typeof stats !== 'undefined' && stats && stats.length) { %>
     <section class="stats-section">
         <div class="stats-wrapper">
@@ -135,23 +134,25 @@
     </section>
     <% } %>
 
+    <!-- ========================= Journey Section ========================== -->
     <section id="journey" class="journey-scroll-section">
         <div class="journey-container" style="text-align: center;">
             <p class="journey-eyebrow" style="text-align: center;">Creative Point Agency</p>
             <div class="journey-text-content" style="text-align: center;">
-                <span class="journey-line">A full-service creative and marketing agency</span>
-                <span class="journey-line">Built around one clear idea before any execution begins</span>
-                <span class="journey-line">In a world crowded with visual and advertising noise</span>
-                <span class="journey-line">We don't start with decoration</span>
-                <span class="journey-line">We start with a smart, unified strategic decision</span>
-                <span class="journey-line">From this point, we bring creativity back to its true essence</span>
-                <span class="journey-line">A solid visual identity</span>
-                <span class="journey-line">Professional design solutions</span>
-                <span class="journey-line">And high-quality exhibition and conference setups</span>
+                <span class="journey-line"><%= seo && seo.journeyLine1En ? seo.journeyLine1En : 'A full-service creative and marketing agency' %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine2En ? seo.journeyLine2En : 'Built around one clear idea before any execution begins' %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine3En ? seo.journeyLine3En : 'In a world crowded with visual and advertising noise' %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine4En ? seo.journeyLine4En : "We don't start with decoration" %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine5En ? seo.journeyLine5En : 'We start with a smart, unified strategic decision' %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine6En ? seo.journeyLine6En : "From this point, we bring creativity back to its true essence" %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine7En ? seo.journeyLine7En : 'A solid visual identity' %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine8En ? seo.journeyLine8En : 'Professional design solutions' %></span>
+                <span class="journey-line"><%= seo && seo.journeyLine9En ? seo.journeyLine9En : 'And high-quality exhibition and conference setups' %></span>
             </div>
         </div>
     </section>
 
+    <!-- ========================= Services Section ========================== -->
     <section id="services" class="services-stacked-section">
         <div class="services-stacked-wrapper">
             <div class="services-stacked-header">
@@ -173,9 +174,7 @@
                                     <div>
                                         <div class="service-stacked-topline">
                                             <span class="service-stacked-label">Service</span>
-                                            <span class="service-stacked-index">
-                                                <%= (index + 1).toString().padStart(2, '0') %>
-                                            </span>
+                                            <span class="service-stacked-index"><%= (index + 1).toString().padStart(2, '0') %></span>
                                         </div>
                                         <h3 class="service-stacked-heading">
                                             <%= service.title_en || service.title_ar || '' %>
@@ -203,7 +202,10 @@
                                 <div class="service-stacked-media">
                                     <div class="service-stacked-image-frame">
                                         <% if (service.image) { %>
-                                            <img class="service-stacked-image" src="<%= assetPath(service.image) %>" alt="<%= service.imageAlt_en || service.title_en || service.title_ar || '' %>" loading="lazy" decoding="async">
+                                            <img class="service-stacked-image"
+                                                 src="<%= assetPath(service.image) %>"
+                                                 alt="<%= service.imageAlt_en || service.title_en || service.title_ar || '' %>"
+                                                 loading="lazy" decoding="async">
                                         <% } else { %>
                                             <div class="service-stacked-image-placeholder"></div>
                                         <% } %>
@@ -213,7 +215,7 @@
                                 </div>
                             </div>
                         </article>
-                    <% }) %>
+                    <% }); %>
                 </div>
             <% } else { %>
                 <div class="services-stacked-empty">
@@ -224,7 +226,7 @@
         </div>
     </section>
 
-    <!-- Portfolio Slider Section -->
+    <!-- ========================= Portfolio Section ========================== -->
     <section id="portfolio" class="portfolio-section">
         <div class="container">
             <div class="portfolio-header" data-gsap="fade-up" style="text-align: center;">
@@ -233,32 +235,36 @@
             </div>
 
             <div class="portfolio-container" data-gsap="fade-up">
-                <button class="portfolio-nav-btn prev-btn">
+                <button class="portfolio-nav-btn prev-btn" aria-label="Previous">
                     <i class="ri-arrow-left-line"></i>
                 </button>
-                <button class="portfolio-nav-btn next-btn">
+                <button class="portfolio-nav-btn next-btn" aria-label="Next">
                     <i class="ri-arrow-right-line"></i>
                 </button>
 
                 <div class="swiper portfolio-swiper">
                     <div class="swiper-wrapper">
                         <% if (projects && projects.length > 0) { %>
-                            <% projects.forEach(project => { %>
+                            <% projects.forEach(function(project) { %>
                                 <div class="swiper-slide">
                                     <div class="project-card">
                                         <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
                                             <video src="<%= assetPath(project.image) %>" muted loop playsinline></video>
                                         <% } else if (project.image) { %>
-                                        <img src="<%= assetPath(project.image) %>" alt="<%= project.title_en || project.title %>" width="1200" height="800" loading="lazy" decoding="async">
+                                            <img src="<%= assetPath(project.image) %>"
+                                                 alt="<%= project.title_en || project.title || '' %>"
+                                                 width="1200" height="800" loading="lazy" decoding="async">
                                         <% } else { %>
-                                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project Placeholder" width="800" height="600" loading="lazy" decoding="async">
+                                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                                 alt="Project" width="800" height="600" loading="lazy" decoding="async">
                                         <% } %>
-                                        
                                         <div class="project-overlay">
                                             <div class="project-info">
-                                                <h3><%= project.title_en || project.title %></h3>
-                                                <p><%= project.description_en || project.description %></p>
-                                                <a href="<%= project.externalLink || '/portfolio/' + project.id %>" class="project-link" <%= project.externalLink ? 'target="_blank"' : '' %>>
+                                                <h3><%= project.title_en || project.title || '' %></h3>
+                                                <p><%= project.description_en || project.description || '' %></p>
+                                                <a href="<%= project.externalLink || '/portfolio/' + project.id %>"
+                                                   class="project-link"
+                                                   <%= project.externalLink ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
                                                     <span>View Project</span>
                                                     <i class="ri-arrow-right-line"></i>
                                                 </a>
@@ -268,11 +274,11 @@
                                 </div>
                             <% }); %>
                         <% } else { %>
-                            <!-- Fallback static projects -->
-                            <% for(let i=1; i<=6; i++) { %>
+                            <% for (var i = 1; i <= 6; i++) { %>
                                 <div class="swiper-slide">
                                     <div class="project-card">
-                                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project <%= i %>">
+                                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                             alt="Creative Project <%= i %>">
                                         <div class="project-overlay">
                                             <div class="project-info">
                                                 <h3>Creative Project <%= i %></h3>
@@ -288,14 +294,13 @@
                             <% } %>
                         <% } %>
                     </div>
-                    <!-- Add Pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Partners Section -->
+    <!-- ========================= Partners Section ========================== -->
     <section id="partners" class="partners-section">
         <div class="container">
             <div class="partners-header" data-gsap="fade-up">
@@ -303,30 +308,24 @@
             </div>
             <div class="partners-grid">
                 <% if (partners && partners.length > 0) { %>
-                    <% partners.forEach(partner => { %>
+                    <% partners.forEach(function(partner) { %>
                         <div class="partner-item" data-gsap="fade-up">
-                            <img src="<%= assetPath(partner.logo || '') %>" alt="<%= partner.name %>" title="<%= partner.name %>" loading="lazy" decoding="async" width="200" height="80">
+                            <img src="<%= assetPath(partner.logo || '') %>"
+                                 alt="<%= partner.name || '' %>"
+                                 title="<%= partner.name || '' %>"
+                                 loading="lazy" decoding="async" width="200" height="80">
                         </div>
-                    <% }) %>
+                    <% }); %>
                 <% } else { %>
                     <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Saudi_Aramco_logo.svg/1200px-Saudi_Aramco_logo.svg.png" alt="Saudi Aramco" loading="lazy" decoding="async" width="200" height="80">
-                    </div>
-                    <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/8/82/Misk_Foundation_logo.svg/1200px-Misk_Foundation_logo.svg.png" alt="Misk" loading="lazy" decoding="async" width="200" height="80">
-                    </div>
-                    <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/ROSHN_Logo.svg/1200px-ROSHN_Logo.svg.png" alt="ROSHN" loading="lazy" decoding="async" width="200" height="80">
-                    </div>
-                    <div class="partner-item" data-gsap="fade-up">
-                        <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/e/e0/Diriyah_Gate_Development_Authority_logo.svg/1200px-Diriyah_Gate_Development_Authority_logo.svg.png" alt="DGDA" loading="lazy" decoding="async" width="200" height="80">
+                        <p style="color:#444; font-size:0.9rem;">No partners added yet.</p>
                     </div>
                 <% } %>
             </div>
         </div>
     </section>
 
-    <!-- Blog Section -->
+    <!-- ========================= Blog Section ========================== -->
     <section id="blog" class="blog-home-section">
         <div class="container">
             <div class="blog-section-inner" data-gsap="fade-up">
@@ -334,34 +333,36 @@
                     <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Latest Articles</h2>
                     <p style="color: #888; font-size: 1.1rem;">Insights and thoughts in the world of design and technology</p>
                 </div>
-                
+
                 <div class="blog-grid">
                     <% if (posts && posts.length > 0) { %>
-                        <% posts.forEach(post => { %>
+                        <% posts.forEach(function(post) { %>
                             <article class="blog-card">
                                 <% if (post.image) { %>
                                     <div class="blog-image">
-                                        <img src="<%= assetPath(post.image) %>" alt="<%= post.title %>">
+                                        <img src="<%= assetPath(post.image) %>"
+                                             alt="<%= post.title_en || post.title || '' %>"
+                                             loading="lazy" decoding="async">
                                     </div>
                                 <% } %>
                                 <div class="blog-content">
-                                    <span class="blog-date"><%= post.date %></span>
-                                    <h3><%= post.title %></h3>
-                                    <p class="blog-excerpt"><%= post.excerpt %></p>
+                                    <span class="blog-date"><%= post.date || '' %></span>
+                                    <h3><%= post.title_en || post.title || '' %></h3>
+                                    <p class="blog-excerpt"><%= post.excerpt_en || post.excerpt || '' %></p>
                                     <a href="/blog/<%= post.id %>" class="read-more">
                                         <span>Read More</span>
                                         <i class="ri-arrow-right-line"></i>
                                     </a>
                                 </div>
                             </article>
-                        <% }) %>
+                        <% }); %>
                     <% } else { %>
                         <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #0a0a0a; border-radius: 20px; border: 1px solid #1a1a1a;">
                             <p style="color: #666;">No articles available at the moment.</p>
                         </div>
                     <% } %>
                 </div>
-                
+
                 <div class="view-all-container">
                     <a href="/blog" class="view-all-btn">View All Articles</a>
                 </div>
@@ -369,63 +370,73 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- ========================= Contact Section ========================== -->
     <section id="contact" class="contact-section">
         <div class="marquee-wrapper contact-marquee">
-            <div class="marquee-content">
-                <h1 class="finale-text">CREATIVE POINT</h1>
-                <h1 class="finale-text">CREATIVE POINT</h1>
-                <h1 class="finale-text">CREATIVE POINT</h1>
-                <h1 class="finale-text">CREATIVE POINT</h1>
+            <div class="marquee-content" aria-hidden="true">
+                <h2 class="finale-text">CREATIVE POINT</h2>
+                <h2 class="finale-text">CREATIVE POINT</h2>
+                <h2 class="finale-text">CREATIVE POINT</h2>
+                <h2 class="finale-text">CREATIVE POINT</h2>
             </div>
         </div>
         <div class="container">
             <div class="contact-grid">
                 <div class="contact-info" data-gsap="fade-right">
-                    <h2 class="contact-title">Start a New<br>Creative Journey</h2>
-                    <p class="contact-subtitle">We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.</p>
-                    
+                    <h2 class="contact-title">
+                        <%- (seo && seo.contactTitleEn ? seo.contactTitleEn : 'Start a New<br>Creative Journey').replace(/\n/g, '<br>') %>
+                    </h2>
+                    <p class="contact-subtitle">
+                        <%= seo && seo.contactSubtitleEn ? seo.contactSubtitleEn : 'We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.' %>
+                    </p>
+
                     <div class="contact-details">
                         <div class="contact-item">
                             <i class="ri-phone-line"></i>
                             <div>
                                 <span>Call Us</span>
-                                <p dir="ltr">+966 56 839 49 45</p>
+                                <p dir="ltr"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
                             </div>
                         </div>
                         <div class="contact-item">
                             <i class="ri-mail-line"></i>
                             <div>
                                 <span>Email</span>
-                                <p>info@cpoint-sa.com</p>
+                                <p><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
                             </div>
                         </div>
                         <div class="contact-item">
                             <i class="ri-map-pin-line"></i>
                             <div>
                                 <span>Location</span>
-                                <p>Riyadh, Saudi Arabia</p>
+                                <p><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
                             </div>
                         </div>
                     </div>
 
                     <div class="social-links">
-                        <a href="#"><i class="ri-instagram-line"></i></a>
-                        <a href="#"><i class="ri-twitter-x-line"></i></a>
-                        <a href="#"><i class="ri-linkedin-box-line"></i></a>
+                        <% if (seo && seo.socialInstagram) { %>
+                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+                        <% } %>
+                        <% if (seo && seo.socialTwitter) { %>
+                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter"><i class="ri-twitter-x-line"></i></a>
+                        <% } %>
+                        <% if (seo && seo.socialLinkedin) { %>
+                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="ri-linkedin-box-line"></i></a>
+                        <% } %>
                     </div>
                 </div>
 
                 <div class="contact-form-wrapper" data-gsap="fade-left">
                     <form action="/contact" method="POST" class="contact-form">
                         <div class="form-group">
-                            <input type="text" name="name" placeholder="Full Name" required>
+                            <input type="text" name="name" placeholder="Full Name" required autocomplete="name">
                         </div>
                         <div class="form-group">
-                            <input type="email" name="email" placeholder="Email Address" required>
+                            <input type="email" name="email" placeholder="Email Address" required autocomplete="email">
                         </div>
                         <div class="form-group">
-                            <input type="tel" name="phone" placeholder="Phone Number">
+                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel">
                         </div>
                         <div class="form-group">
                             <select name="service">
@@ -445,8 +456,8 @@
                         </button>
                     </form>
 
-                    <div id="contact-success" style="display: none; margin-top: 20px; padding: 15px; background: #222; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center;">
-                        <i class="ri-checkbox-circle-line" style="font-size: 1.5rem; vertical-align: middle; margin-right: 10px;"></i>
+                    <div id="contact-success" style="display:none; margin-top:20px; padding:15px; background:#222; border:1px solid #fff; border-radius:10px; color:#fff; text-align:center;" role="alert">
+                        <i class="ri-checkbox-circle-line" style="font-size:1.5rem; vertical-align:middle; margin-right:10px;"></i>
                         Your request has been sent successfully! We will contact you soon.
                     </div>
                 </div>
@@ -457,26 +468,27 @@
 </main>
 
 <script>
-    // Check for success/error query params
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('success')) {
-        document.getElementById('contact-success').style.display = 'block';
-        const contactForm = document.querySelector('.contact-form');
-        if (contactForm) contactForm.style.display = 'none';
-    }
+    (function () {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            var successEl = document.getElementById('contact-success');
+            var formEl    = document.querySelector('.contact-form');
+            if (successEl) successEl.style.display = 'block';
+            if (formEl)    formEl.style.display    = 'none';
+        }
+    })();
 </script>
 
-<!-- Page Specific Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
 
-<!-- Slider Config Injection -->
 <script id="slider-config-data" type="application/json">
     <%- JSON.stringify({
-        effect: (seo && seo.sliderEffect) ? seo.sliderEffect : "slide",
-        autoplay: (seo && seo.sliderAutoplay) ? true : false,
-        autoplayDelay: (seo && seo.sliderAutoplayDelay) ? seo.sliderAutoplayDelay : 3000,
-        slidesPerView: (seo && seo.sliderSlidesPerView) ? seo.sliderSlidesPerView : 3,
-        spaceBetween: (seo && seo.sliderSpaceBetween) ? seo.sliderSpaceBetween : 30
+        effect:           (seo && seo.sliderEffect)           ? seo.sliderEffect           : "slide",
+        autoplay:         (seo && seo.sliderAutoplay)         ? true                       : false,
+        autoplayDelay:    (seo && seo.sliderAutoplayDelay)    ? seo.sliderAutoplayDelay    : 3000,
+        slidesPerView:    (seo && seo.sliderSlidesPerView)    ? seo.sliderSlidesPerView    : 3,
+        spaceBetween:     (seo && seo.sliderSpaceBetween)     ? seo.sliderSpaceBetween     : 30
     }) %>
 </script>
+
 <%- include('partials/footer', { isEn: isEn }) %>
