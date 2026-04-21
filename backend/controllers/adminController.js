@@ -532,7 +532,7 @@ exports.getMediaLibrary = async (req, res) => {
     }
 };
 
-// استبدل الدالة القديمة بهذه الدالة الجديدة والأكثر أماناً
+// استبدل الدالة القديمة بهذا الكود النهائي والمصحح
 exports.postMediaDelete = async (req, res) => {
     try {
         const body = req.body || {};
@@ -551,10 +551,10 @@ exports.postMediaDelete = async (req, res) => {
         });
 
         if (!ops.length) {
-            return res.redirect('/admin/media');
+            return res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
         }
-
-        // التكرار على العناصر وتحديث قاعدة البيانات فقط
+        
+        // التكرار على العناصر وتحديث قاعدة البيانات
         for (const op of ops) {
             const Model = models[op.entityType];
             if (!Model || !op.fieldName) continue;
@@ -563,25 +563,31 @@ exports.postMediaDelete = async (req, res) => {
             if (op.entityType === 'GlobalSeo') {
                 record = await Model.findOne();
             } else {
-                const numericId = parseInt(op.id, 10);
+                // FIX 2: إزالة علامة # من المعرف (ID) قبل تحويله لرقم
+                const cleanId = String(op.id || '').replace('#', '');
+                const numericId = parseInt(cleanId, 10);
                 if (!isNaN(numericId)) {
                     record = await Model.findByPk(numericId);
                 }
             }
 
+            // تحديث الحقل إلى null في قاعدة البيانات
             if (record && record.dataValues.hasOwnProperty(op.fieldName)) {
-                // الخطوة الأهم: نقوم بتحديث الحقل إلى null في قاعدة البيانات
-                // لن نحاول حذف الملف لأنه بالفعل مفقود، وهذا يمنع حدوث الخطأ
                 await record.update({ [op.fieldName]: null });
             }
         }
 
-        // مسح الكاش وإعادة التوجيه
-        pageCache.invalidateAll();
+        // FIX 1: استخدام الدالة الصحيحة لمسح الكاش
+        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio', '/blog']);
+        
         res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
 
     } catch (e) {
         console.error('Error in postMediaDelete:', e);
+        // يمكنك إظهار الخطأ الفعلي أثناء التطوير لتسهيل التصحيح
+        if (process.env.NODE_ENV !== 'production') {
+            return res.status(500).send(`Server Error: ${e.message}`);
+        }
         res.status(500).send('Server Error occurred during media deletion.');
     }
 };
