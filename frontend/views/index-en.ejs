@@ -33,7 +33,7 @@
         color: var(--hero-text);
         padding: 120px 0 80px;
     }
-    
+
     .hero-modern-section::before {
         content: '';
         position: absolute;
@@ -41,7 +41,7 @@
         background: radial-gradient(circle at center, rgba(255, 49, 49, 0.05) 0%, transparent 70%);
         pointer-events: none;
     }
-    
+
     .hero-container {
         position: relative;
         z-index: 5;
@@ -50,11 +50,11 @@
         margin: 0 auto;
         padding: 0 40px;
     }
-    
+
     .hero-content {
         max-width: 800px;
     }
-    
+
     .hero-eyebrow {
         color: var(--hero-accent);
         font-size: 1.2rem;
@@ -63,7 +63,7 @@
         text-transform: uppercase;
         letter-spacing: 2px;
     }
-    
+
     .hero-title {
         font-size: clamp(2.5rem, 5vw, 4.5rem);
         line-height: 1.1;
@@ -71,7 +71,7 @@
         margin-bottom: 30px;
         color: #fff;
     }
-    
+
     .hero-description {
         font-size: clamp(1.1rem, 2vw, 1.3rem);
         line-height: 1.6;
@@ -79,7 +79,7 @@
         margin-bottom: 40px;
         max-width: 650px;
     }
-    
+
     .btn-hero-pill {
         display: inline-flex;
         align-items: center;
@@ -94,43 +94,29 @@
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         box-shadow: 0 10px 30px rgba(255, 49, 49, 0.3);
     }
-    
+
     .btn-hero-pill i {
         font-size: 1.4rem;
         transition: transform 0.3s ease;
     }
-    
+
     .btn-hero-pill:hover {
         transform: translateY(-5px);
         background-color: #e62c2c;
         box-shadow: 0 15px 40px rgba(255, 49, 49, 0.4);
     }
-    
+
     .btn-hero-pill:hover i {
         transform: translateX(5px);
     }
-    
-    .hero-video-bg {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-    }
-    
-    .hero-video-el {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
+
     .hero-overlay {
         position: absolute;
         inset: 0;
         background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.4), rgba(0,0,0,0.8));
         z-index: 2;
     }
-    
+
     .hero-scroll-indicator {
         position: absolute;
         bottom: 40px;
@@ -143,14 +129,14 @@
         gap: 10px;
         opacity: 0.8;
     }
-    
+
     .hero-scroll-indicator span {
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         color: var(--hero-muted);
     }
-    
+
     .mouse {
         width: 26px;
         height: 42px;
@@ -158,7 +144,7 @@
         border-radius: 20px;
         position: relative;
     }
-    
+
     .wheel {
         width: 2px;
         height: 6px;
@@ -170,40 +156,43 @@
         border-radius: 2px;
         animation: scrollWheel 2s infinite;
     }
-    
+
     @keyframes scrollWheel {
         0% { transform: translate(-50%, 0); opacity: 1; }
         100% { transform: translate(-50%, 15px); opacity: 0; }
     }
-    
+
     .fade-in {
         opacity: 0;
         transform: translateY(30px);
         animation: fadeInUp 0.8s ease forwards;
     }
-    
+
     .hero-title.fade-in { animation-delay: 0.2s; }
     .hero-description.fade-in { animation-delay: 0.4s; }
     .hero-actions.fade-in { animation-delay: 0.6s; }
-    
+
     @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        to { opacity: 1; transform: translateY(0); }
     }
-    
+
     @media (max-width: 991px) {
         .hero-title { font-size: 3.5rem; }
         .hero-container { padding: 0 30px; }
     }
-    
+
     @media (max-width: 768px) {
         .hero-modern-section { padding-top: 100px; text-align: center; }
         .hero-content { margin: 0 auto; }
         .hero-title { font-size: 2.8rem; }
         .hero-description { margin-left: auto; margin-right: auto; }
         .hero-actions { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title { font-size: 2.2rem; }
+        .hero-eyebrow { font-size: 1rem; }
+        .btn-hero-pill { padding: 14px 30px; font-size: 1rem; }
     }
 
     /* ================= Achievements / Stats Section ================= */
@@ -240,7 +229,7 @@
         font-weight: bold;
     }
 
-    /* ================= Services Section (NEW DESIGN - LTR) ================= */
+    /* ================= Services Section (LTR) ================= */
     .cpoint-services-section {
         background-color: #000000;
         color: #ffffff;
@@ -269,7 +258,7 @@
     .header-red-dot {
         position: absolute;
         top: -20px;
-        left: 15%; /* LTR Adaptation */
+        left: 15%;
         width: 14px;
         height: 14px;
         background-color: #ff3131;
@@ -283,11 +272,9 @@
         margin: 0 auto;
         position: relative;
     }
-    /* Staggering */
     .cpoint-service-item:nth-child(2) { margin-top: 100px; }
     .cpoint-service-item:nth-child(5) { margin-top: -60px; }
     .cpoint-service-item:nth-child(4) { margin-top: -40px; }
-
     .cpoint-service-item {
         position: relative;
         display: flex;
@@ -307,7 +294,6 @@
         background: rgba(255, 255, 255, 0.05);
     }
     .cpoint-service-item:nth-child(3n)::after { display: none; }
-    
     .cpoint-svc-num {
         position: absolute;
         top: 0;
@@ -315,6 +301,7 @@
         font-size: 1.2rem;
         font-weight: 700;
         color: #ffffff;
+        font-family: sans-serif;
     }
     .cpoint-svc-img {
         width: 100%;
@@ -329,13 +316,15 @@
         max-width: 90%;
         max-height: 100%;
         object-fit: contain;
+        background: transparent;
         transition: transform 0.4s ease;
     }
+    .cpoint-service-item:hover .cpoint-svc-img img { transform: scale(1.05); }
     .cpoint-svc-content {
         width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: flex-start; /* LTR Adaptation */
+        align-items: flex-start;
         text-align: left;
     }
     .cpoint-svc-title-row {
@@ -357,11 +346,24 @@
         height: 8px;
         background-color: #ff3131;
         border-radius: 50%;
+        flex-shrink: 0;
     }
     .cpoint-svc-content p {
         font-size: 0.85rem;
         color: #888888;
         margin: 0;
+        margin-left: 18px;
+        font-family: Arial, sans-serif;
+    }
+    @media (max-width: 991px) {
+        .cpoint-services-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        .cpoint-service-item:nth-child(n) { margin-top: 0 !important; }
+        .cpoint-service-item::after { display: none; }
+        .header-red-dot { display: none; }
+    }
+    @media (max-width: 768px) {
+        .cpoint-services-grid { grid-template-columns: 1fr; }
+        .cpoint-svc-img { height: 180px; }
     }
 
     /* ================= Portfolio Grid Section ================= */
@@ -423,12 +425,12 @@
         font-weight: bold;
         transform: translateY(20px);
         transition: transform 0.4s ease;
+        margin: 0;
     }
     .cpoint-project-item:hover img { transform: scale(1.08); }
     .cpoint-project-item:hover .cpoint-project-overlay { opacity: 1; }
     .cpoint-project-item:hover .cpoint-project-overlay h3 { transform: translateY(0); }
 
-    /* Collage Layout Pattern */
     .cpoint-project-item:nth-child(6n + 1) { grid-column: span 1; grid-row: span 1; }
     .cpoint-project-item:nth-child(6n + 2) { grid-column: span 2; grid-row: span 2; }
     .cpoint-project-item:nth-child(6n + 3) { grid-column: span 1; grid-row: span 1; }
@@ -436,8 +438,11 @@
     .cpoint-project-item:nth-child(6n + 5) { grid-column: span 1; grid-row: span 1; }
     .cpoint-project-item:nth-child(6n + 6) { grid-column: span 4; grid-row: span 1; }
 
+    @media (max-width: 1024px) {
+        .cpoint-portfolio-grid { grid-auto-rows: 250px; }
+    }
     @media (max-width: 768px) {
-        .cpoint-portfolio-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px;}
+        .cpoint-portfolio-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
         .cpoint-project-item:nth-child(n) { grid-column: span 1; grid-row: span 1; }
         .cpoint-project-item:nth-child(6n + 6) { grid-column: span 2; }
     }
@@ -460,17 +465,17 @@
         <div class="container hero-container">
             <div class="hero-content">
                 <p class="hero-eyebrow fade-in">
-                    <%= seo && seo.heroSmallTitleEn ? seo.heroSmallTitleEn : 'Creative starts with a point' %>
+                    <%= seo && seo.heroSmallTitleEn ? seo.heroSmallTitleEn : 'Creativity starts with a point' %>
                 </p>
                 <h1 class="hero-title fade-in">
-                    <%- (seo && seo.heroMainTitleEn ? seo.heroMainTitleEn : 'Full Service Creative <br> & Marketing Agency').replace(/\n/g, '<br>') %>
+                    <%- (seo && seo.heroMainTitleEn ? seo.heroMainTitleEn : 'A Full-Service Creative &<br>Marketing Agency').replace(/\n/g, '<br>') %>
                 </h1>
                 <p class="hero-description fade-in">
-                    <%= seo && seo.heroDescriptionEn ? seo.heroDescriptionEn : 'We believe that clarity of vision is the basis of every successful project.' %>
+                    <%= seo && seo.heroDescriptionEn ? seo.heroDescriptionEn : 'Built around one clear idea before any execution begins. We believe that clarity of vision is the foundation of every successful project.' %>
                 </p>
                 <div class="hero-actions fade-in">
                     <a href="#services" class="btn-hero-pill">
-                        <%= seo && seo.heroBtnTextEn ? seo.heroBtnTextEn : 'Explore Services' %>
+                        <%= seo && seo.heroBtnTextEn ? seo.heroBtnTextEn : 'Explore Our Services' %>
                         <i class="ri-arrow-right-line"></i>
                     </a>
                 </div>
@@ -508,13 +513,17 @@
     <section id="partners" class="partners-section" style="padding: 60px 0; background:#f9f9f9;">
         <div class="container">
             <div class="partners-header" data-gsap="fade-up" style="text-align:center; margin-bottom:40px;">
-                <h2 class="partners-title" style="font-size:1.8rem; font-weight:bold; color:#000;">Proud of our work and our partnerships.</h2>
+                <h2 class="partners-title" style="font-size:1.8rem; font-weight:bold; color:#000;">We take pride in our work and are even more proud of our partnerships.</h2>
             </div>
             <div class="partners-grid" style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; align-items:center;">
                 <% if (partners && partners.length > 0) { %>
                     <% partners.forEach(function(partner) { %>
                         <div class="partner-item" data-gsap="fade-up">
-                            <img src="<%= assetPath(partner.logo || '') %>" alt="<%= partner.name || '' %>" width="150" style="filter:grayscale(100%); opacity:0.7; transition:all 0.3s;">
+                            <img src="<%= assetPath(partner.logo || '') %>"
+                                 alt="<%= partner.name || '' %>"
+                                 title="<%= partner.name || '' %>"
+                                 loading="lazy" decoding="async" width="150"
+                                 style="filter:grayscale(100%); opacity:0.7; transition:all 0.3s;">
                         </div>
                     <% }); %>
                 <% } else { %>
@@ -526,24 +535,30 @@
         </div>
     </section>
 
-    <!-- ========================= Services Section (LTR) ========================== -->
+    <!-- ========================= Services Section ========================== -->
     <section id="services" class="cpoint-services-section">
         <div class="container" style="max-width: 1400px; padding: 0 40px;">
             <div class="cpoint-services-header" data-gsap="fade-up">
                 <div class="header-red-dot"></div>
                 <h2>Our Services</h2>
-                <p>Integrated solutions starting from a clear point. Every service is built on strategic decisions to create a cohesive creative system.</p>
+                <p>
+                    Integrated solutions starting from a clear point.<br>
+                    Every service is built around a single strategic decision, transforming into a visual experience<br>
+                    and tangible applications that stack together to create a cohesive creative system.
+                </p>
             </div>
 
             <div class="cpoint-services-grid">
                 <% var servicesList = (typeof services !== 'undefined' && services) ? services : []; %>
                 <% if (servicesList.length) { %>
                     <% servicesList.forEach(function(service, index) { %>
-                        <div class="cpoint-service-item" data-gsap="fade-up">
+                        <div class="cpoint-service-item" data-gsap="fade-up" data-delay="<%= index * 0.1 %>">
                             <span class="cpoint-svc-num"><%= (index + 1).toString().padStart(2, '0') %></span>
                             <div class="cpoint-svc-img">
                                 <% if (service.image) { %>
                                     <img src="<%= assetPath(service.image) %>" alt="<%= service.title_en || '' %>" loading="lazy">
+                                <% } else { %>
+                                    <div style="width:100px; height:100px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
                                 <% } %>
                             </div>
                             <div class="cpoint-svc-content">
@@ -551,10 +566,14 @@
                                     <div class="item-red-dot"></div>
                                     <h3><%= service.title_en || service.title_ar || 'Service Title' %></h3>
                                 </div>
-                                <p><%= service.description_en || 'Service Description' %></p>
+                                <p><%= service.tag1_en || service.description_en || 'Service Description' %></p>
                             </div>
                         </div>
                     <% }); %>
+                <% } else { %>
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #888;">
+                        <p>No services added yet. Please add them from the dashboard.</p>
+                    </div>
                 <% } %>
             </div>
         </div>
@@ -563,22 +582,40 @@
     <!-- ========================= Portfolio Section ========================== -->
     <section id="portfolio" class="cpoint-portfolio-section">
         <div class="cpoint-portfolio-header" data-gsap="fade-up">
-            <h2>Latest Projects</h2>
-            <p>Turning ideas into tangible reality... explore our latest creative work.</p>
+            <h2>Our Latest Projects</h2>
+            <p>Turning ideas into tangible reality — every creation starts with a point.<br>Explore all our work.</p>
         </div>
 
         <div class="cpoint-portfolio-grid">
             <% if (projects && projects.length > 0) { %>
                 <% projects.forEach(function(project) { %>
-                    <a href="<%= project.externalLink || '/portfolio/' + project.id %>" class="cpoint-project-item">
-                        <% if (project.image) { %>
-                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title_en || '' %>" loading="lazy">
+                    <a href="<%= project.externalLink || '/portfolio/' + project.id %>"
+                       class="cpoint-project-item"
+                       <%= project.externalLink ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
+
+                        <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
+                            <video src="<%= assetPath(project.image) %>" muted loop autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                        <% } else if (project.image) { %>
+                            <img src="<%= assetPath(project.image) %>"
+                                 alt="<%= project.title_en || '' %>"
+                                 loading="lazy" decoding="async">
+                        <% } else { %>
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                 alt="Project" loading="lazy">
                         <% } %>
+
                         <div class="cpoint-project-overlay">
                             <h3><%= project.title_en || 'Creative Project' %></h3>
                         </div>
                     </a>
                 <% }); %>
+            <% } else { %>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="1"><div class="cpoint-project-overlay"><h3>Creative Design</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="2"><div class="cpoint-project-overlay"><h3>Visual Identity</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="3"><div class="cpoint-project-overlay"><h3>Printing & Production</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="4"><div class="cpoint-project-overlay"><h3>Photography</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="5"><div class="cpoint-project-overlay"><h3>Web Development</h3></div></a>
+                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1558655146-d09347e92766?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="6"><div class="cpoint-project-overlay"><h3>Strategic Planning</h3></div></a>
             <% } %>
         </div>
     </section>
@@ -586,45 +623,183 @@
     <!-- ========================= Blog Section ========================== -->
     <section id="blog" class="blog-home-section">
         <div class="container">
-            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
-                <h2 class="section-title" style="font-size: 2.5rem; color:#000;">Latest Articles</h2>
-            </div>
-            <div class="blog-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
-                <% if (posts && posts.length > 0) { %>
-                    <% posts.forEach(function(post) { %>
-                        <article class="blog-card" style="background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
-                            <div class="blog-content" style="padding:25px;">
-                                <span style="color:#ff3131; font-size:0.85rem;"><%= post.date || '' %></span>
-                                <h3 style="margin:10px 0; color:#000;"><%= post.title_en || post.title || '' %></h3>
-                                <a href="/blog/<%= post.id %>" style="color:#000; font-weight:bold; text-decoration:none;">Read More <i class="ri-arrow-right-line"></i></a>
-                            </div>
-                        </article>
-                    <% }); %>
-                <% } %>
+            <div class="blog-section-inner" data-gsap="fade-up">
+                <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem; color:#000;">Latest Articles</h2>
+                    <p style="color: #888; font-size: 1.1rem;">Insights and ideas in the world of design and technology</p>
+                </div>
+
+                <div class="blog-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
+                    <% if (posts && posts.length > 0) { %>
+                        <% posts.forEach(function(post) { %>
+                            <article class="blog-card" style="background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+                                <% if (post.image) { %>
+                                    <div class="blog-image" style="height:200px; overflow:hidden;">
+                                        <img src="<%= assetPath(post.image) %>"
+                                             alt="<%= post.title_en || post.title || '' %>"
+                                             loading="lazy" decoding="async"
+                                             style="width:100%; height:100%; object-fit:cover;">
+                                    </div>
+                                <% } %>
+                                <div class="blog-content" style="padding:25px;">
+                                    <span class="blog-date" style="color:#ff3131; font-size:0.85rem;"><%= post.date || '' %></span>
+                                    <h3 style="margin:10px 0; font-size:1.3rem; color:#000;"><%= post.title_en || post.title || '' %></h3>
+                                    <p class="blog-excerpt" style="color:#666; font-size:0.9rem; margin-bottom:20px;"><%= post.excerpt_en || post.excerpt || '' %></p>
+                                    <a href="/blog/<%= post.id %>" class="read-more"
+                                       style="color:#000; font-weight:bold; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                                        <span>Read More</span>
+                                        <i class="ri-arrow-right-line"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        <% }); %>
+                    <% } else { %>
+                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #fff; border-radius: 20px; border: 1px solid #eee;">
+                            <p style="color: #666;">No articles available at the moment.</p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="view-all-container" style="text-align:center; margin-top:40px;">
+                    <a href="/blog" class="view-all-btn"
+                       style="background:#000; color:#fff; padding:12px 30px; border-radius:30px; text-decoration:none; font-weight:bold;">
+                        View All Articles
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- ========================= Contact Section ========================== -->
     <section id="contact" class="contact-section">
+        <div class="marquee-wrapper contact-marquee" style="overflow:hidden; white-space:nowrap; margin-bottom:50px;">
+            <div class="marquee-content" aria-hidden="true"
+                 style="display:inline-block; font-size:4rem; font-weight:900; color:rgba(255,255,255,0.05); letter-spacing:5px;">
+                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
+                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
+                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
+            </div>
+        </div>
         <div class="container">
-            <div class="contact-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:60px;">
-                <div class="contact-info">
-                    <h2 style="font-size:2.5rem; margin-bottom:20px;">Start a New Journey</h2>
-                    <p style="color:#aaa; line-height:1.6;">We are here to listen to your ideas and transform them into visual impact. Contact us today.</p>
+            <div class="contact-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:60px;">
+
+                <div class="contact-info" data-gsap="fade-right">
+                    <h2 class="contact-title" style="font-size:2.5rem; margin-bottom:20px; font-weight:bold;">
+                        <%- (seo && seo.contactTitleEn ? seo.contactTitleEn : 'Start a New<br>Creative Journey').replace(/\n/g, '<br>') %>
+                    </h2>
+                    <p class="contact-subtitle" style="color:#aaa; margin-bottom:40px; line-height:1.6;">
+                        <%= seo && seo.contactSubtitleEn ? seo.contactSubtitleEn : 'We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.' %>
+                    </p>
+
+                    <div class="contact-details" style="display:flex; flex-direction:column; gap:20px;">
+                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
+                            <i class="ri-phone-line" style="font-size:1.5rem; color:#ff3131;"></i>
+                            <div>
+                                <span style="font-size:0.85rem; color:#888;">Call Us</span>
+                                <p dir="ltr" style="margin:0; font-weight:bold;"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
+                            </div>
+                        </div>
+                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
+                            <i class="ri-mail-line" style="font-size:1.5rem; color:#ff3131;"></i>
+                            <div>
+                                <span style="font-size:0.85rem; color:#888;">Email</span>
+                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
+                            </div>
+                        </div>
+                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
+                            <i class="ri-map-pin-line" style="font-size:1.5rem; color:#ff3131;"></i>
+                            <div>
+                                <span style="font-size:0.85rem; color:#888;">Location</span>
+                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-links" style="margin-top:40px; display:flex; gap:15px;">
+                        <% if (seo && seo.socialInstagram) { %>
+                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-instagram-line"></i></a>
+                        <% } %>
+                        <% if (seo && seo.socialTwitter) { %>
+                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-twitter-x-line"></i></a>
+                        <% } %>
+                        <% if (seo && seo.socialLinkedin) { %>
+                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-linkedin-box-line"></i></a>
+                        <% } %>
+                    </div>
                 </div>
-                <div class="contact-form-wrapper">
-                    <form action="/contact" method="POST" class="contact-form" style="display:flex; flex-direction:column; gap:20px;">
-                        <input type="text" name="name" placeholder="Full Name" required style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        <textarea name="message" rows="4" placeholder="Project Details" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
-                        <button type="submit" style="background:#ff3131; color:#fff; padding:15px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Send Request</button>
+
+                <div class="contact-form-wrapper" data-gsap="fade-left">
+                    <form action="/contact" method="POST" class="contact-form"
+                          style="display:flex; flex-direction:column; gap:20px;">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Full Name" required autocomplete="name"
+                                   style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="Email Address" required autocomplete="email"
+                                   style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel"
+                                   style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
+                        </div>
+                        <div class="form-group">
+                            <select name="service"
+                                    style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
+                                <option value="" disabled selected>Select a Service</option>
+                                <option value="branding">Branding</option>
+                                <option value="marketing">Digital Marketing</option>
+                                <option value="web">Web Development</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" rows="5" placeholder="Project Details" required
+                                      style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="contact-submit-btn"
+                                style="background:#ff3131; color:#fff; padding:15px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
+                            <span>Send Request</span>
+                            <i class="ri-send-plane-fill"></i>
+                        </button>
                     </form>
+
+                    <div id="contact-success"
+                         style="display:none; margin-top:20px; padding:15px; background:#222; border:1px solid #fff; border-radius:10px; color:#fff; text-align:center;"
+                         role="alert">
+                        <i class="ri-checkbox-circle-line" style="font-size:1.5rem; vertical-align:middle; margin-right:10px;"></i>
+                        Your request has been sent successfully! We will contact you soon.
+                    </div>
                 </div>
+
             </div>
         </div>
     </section>
 
 </main>
+
+<script>
+    (function () {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            var successEl = document.getElementById('contact-success');
+            var formEl    = document.querySelector('.contact-form');
+            if (successEl) successEl.style.display = 'block';
+            if (formEl)    formEl.style.display    = 'none';
+        }
+    })();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+
+<script id="slider-config-data" type="application/json">
+    <%- JSON.stringify({
+        effect:           (seo && seo.sliderEffect)           ? seo.sliderEffect           : "slide",
+        autoplay:         (seo && seo.sliderAutoplay)         ? true                       : false,
+        autoplayDelay:    (seo && seo.sliderAutoplayDelay)    ? seo.sliderAutoplayDelay    : 3000,
+        slidesPerView:    (seo && seo.sliderSlidesPerView)    ? seo.sliderSlidesPerView    : 3,
+        spaceBetween:     (seo && seo.sliderSpaceBetween)     ? seo.sliderSpaceBetween     : 30
+    }) %>
+</script>
 
 <%- include('partials/footer', { isEn: isEn }) %>
