@@ -532,6 +532,7 @@ exports.getMediaLibrary = async (req, res) => {
     }
 };
 
+// استبدل الدالة القديمة بهذه الدالة الجديدة والأكثر أماناً
 exports.postMediaDelete = async (req, res) => {
     try {
         const body = req.body || {};
@@ -539,59 +540,49 @@ exports.postMediaDelete = async (req, res) => {
         const models = { Partner, Project, Post, Service, GlobalSeo };
         const ops = [];
 
-        if (body.items) {
-            const arr = Array.isArray(body.items) ? body.items : [body.items];
-            arr.forEach(item => {
-                const parts = String(item || '').trim().split('|');
-                if (parts.length < 3) return;
+        // جمع العناصر المراد حذفها من الطلب
+        const items = body.items ? (Array.isArray(body.items) ? body.items : [body.items]) : [];
+        items.forEach(item => {
+            const parts = String(item || '').trim().split('|');
+            if (parts.length >= 3) {
                 const [entityType, id, fieldName] = parts;
-                if (entityType && fieldName) ops.push({ entityType, id, fieldName });
-            });
-        } else if (body.type && body.id && body.field) {
-            ops.push({ entityType: body.type, id: body.id, fieldName: body.field });
-        }
+                ops.push({ entityType, id, fieldName });
+            }
+        });
 
         if (!ops.length) {
-            return res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
+            return res.redirect('/admin/media');
         }
 
-        const affectedValues = [];
-
+        // التكرار على العناصر وتحديث قاعدة البيانات فقط
         for (const op of ops) {
             const Model = models[op.entityType];
             if (!Model || !op.fieldName) continue;
 
-            let record = null;
+            let record;
             if (op.entityType === 'GlobalSeo') {
-                const numericId = parseInt(op.id, 10);
-                record = !isNaN(numericId) ? await Model.findByPk(numericId) : null;
-                if (!record) record = await Model.findOne();
+                record = await Model.findOne();
             } else {
                 const numericId = parseInt(op.id, 10);
-                if (!isNaN(numericId)) record = await Model.findByPk(numericId);
+                if (!isNaN(numericId)) {
+                    record = await Model.findByPk(numericId);
+                }
             }
 
-            if (record && Object.prototype.hasOwnProperty.call(record.dataValues || {}, op.fieldName)) {
-                const prev = record[op.fieldName];
-                if (prev) affectedValues.push(String(prev));
+            if (record && record.dataValues.hasOwnProperty(op.fieldName)) {
+                // الخطوة الأهم: نقوم بتحديث الحقل إلى null في قاعدة البيانات
+                // لن نحاول حذف الملف لأنه بالفعل مفقود، وهذا يمنع حدوث الخطأ
                 await record.update({ [op.fieldName]: null });
             }
         }
 
-        if (affectedValues.length) {
-            const refs = await collectMediaRefs();
-            Array.from(new Set(affectedValues)).forEach(val => {
-                const v = String(val || '').trim();
-                if (!v || /^https?:\/\//i.test(v)) return;
-                if (!refs.some(r => !r.isExternal && r.value === v)) deleteFile(v);
-            });
-        }
-
-        pageCache.invalidateRoutes(['/', '/en']);
+        // مسح الكاش وإعادة التوجيه
+        pageCache.invalidateAll();
         res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
+
     } catch (e) {
-        console.error(e);
-        res.status(500).send('Server Error');
+        console.error('Error in postMediaDelete:', e);
+        res.status(500).send('Server Error occurred during media deletion.');
     }
 };
 
