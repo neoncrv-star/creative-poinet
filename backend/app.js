@@ -186,15 +186,18 @@ async function initDatabase() {
 
     if (!connected) return;
 
-    // استدعاء جميع النماذج لضمان إنشائها في MySQL
-    const Project = require('./models/Project');
-    const Post = require('./models/Post');
-    const Partner = require('./models/Partner');
-    const StatBlock = require('./models/StatBlock');
-    const User = require('./models/User');
-    const Contact = require('./models/Contact');
+    // ← تحميل جميع الموديلات بدون استثناء
+    require('./models/Project');
+    require('./models/Post');
+    require('./models/Partner');
+    require('./models/StatBlock');
+    require('./models/User');
+    require('./models/Contact');
+    require('./models/Philosophy');  // ← هذا كان ناقصاً
+    require('./models/GlobalSeo');   // ← احتياطي
+    require('./models/Category');    // ← احتياطي
+    require('./models/Service');     // ← احتياطي
 
-    // مزامنة جميع الجداول (سيقوم بإنشاء الجداول الناقصة فوراً)
     try {
         await sequelize.sync({ alter: true });
         console.log('✅ All Database Tables Synced Successfully.');
