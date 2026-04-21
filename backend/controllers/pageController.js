@@ -18,6 +18,16 @@ const debugLog = (msg) => {
 const withTimeout = require('../utils/withTimeout');
 const storageService = require('../src/storage/storage.service');
 
+// ======================================================
+// دالة مشتركة لمعالجة مسارات الصور
+// ======================================================
+const assetPath = (p) => p
+    ? (p.startsWith('http') ? p : (p.startsWith('/') ? p : '/' + p))
+    : '';
+
+// ======================================================
+// تشخيص صور الخدمات (للـ debug فقط)
+// ======================================================
 const resolveServiceImageDiagnostics = () => {
     return async (services) => {
         try {
@@ -44,38 +54,51 @@ const resolveServiceImageDiagnostics = () => {
 
 const diagnoseServiceImages = resolveServiceImageDiagnostics();
 
+// ======================================================
+// الصفحة الرئيسية - عربي
+// ======================================================
 exports.getHome = async (req, res) => {
     try {
-        // جلب مباشر بدون تعقيدات Timeout
-        const projects = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
-        const partners = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const services = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const posts = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
-        const seo = await GlobalSeo.findOne();
-        const stats = await StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const projects  = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
+        const partners  = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const services  = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const posts     = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
+        const seo       = await GlobalSeo.findOne();
+        const stats     = await StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
 
-        res.render('index-ar', { 
-            title: seo ? (seo.homeTitle || 'الرئيسية') : 'الرئيسية', 
-            projects: projects || [],
-            partners: partners || [],
-            posts: posts || [],
-            globalSeo: seo,
-            seo: seo,
-            stats: stats || [],
-            services: services || [],
+        res.render('index-ar', {
+            title: seo ? (seo.homeTitle || 'الرئيسية') : 'الرئيسية',
+            projects:   projects || [],
+            partners:   partners || [],
+            posts:      posts    || [],
+            globalSeo:  seo,
+            seo:        seo,
+            stats:      stats    || [],
+            services:   services || [],
             lang: 'ar',
-            assetPath: (p) => p ? (p.startsWith('http') ? p : (p.startsWith('/') ? p : '/' + p)) : ''
+            assetPath
         });
     } catch (error) {
-        console.error("Home Error:", error);
-        res.render('index-ar', { title: 'الرئيسية', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'ar', assetPath: (p)=>p });
+        console.error('Home(AR) Error:', error);
+        res.render('index-ar', {
+            title: 'الرئيسية',
+            projects: [], partners: [], posts: [],
+            seo: null, globalSeo: null,
+            stats: [], services: [],
+            lang: 'ar',
+            assetPath
+        });
     }
 };
 
+// ======================================================
+// الصفحة الرئيسية - إنجليزي
+// ======================================================
 exports.getHomeEn = async (req, res) => {
     try {
-        const t0 = Date.now();
+        const t0  = Date.now();
         const cap = Number(process.env.HOME_QUERY_TIMEOUT_MS || 800);
+
         const [projects, partners, posts, seo, stats, services] = await Promise.all([
             withTimeout(Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }), cap, []),
             withTimeout(Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
@@ -84,75 +107,71 @@ exports.getHomeEn = async (req, res) => {
             withTimeout(StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, [])
         ]);
+
         const dt = Date.now() - t0;
-        debugLog(`Home(EN) data fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
+        debugLog(`Home(EN) fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
         await diagnoseServiceImages(services);
-        
-        
+
         const pageSeo = {
             title: 'Home',
-            seoDescription: seo ? seo.homeDescription : '' // Ideally should have English field
+            seoDescription: seo ? seo.homeDescription : ''
         };
 
-        res.render('index-en', { 
-            title: pageSeo.title, 
-            projects, 
-            partners,
-            posts,
-            seo,
-            globalSeo: seo,
-            pageSeo,
-            stats,
-            services,
-            lang: 'en'
+        res.render('index-en', {
+            title: pageSeo.title,
+            projects, partners, posts,
+            seo, globalSeo: seo, pageSeo,
+            stats, services,
+            lang: 'en',
+            assetPath
         });
     } catch (error) {
-        console.error(error);
-        debugLog(`Home(EN) data error: ${error.message}`);
-        res.render('index-en', { title: 'Home', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'en' });
+        console.error('Home(EN) Error:', error);
+        debugLog(`Home(EN) error: ${error.message}`);
+        res.render('index-en', {
+            title: 'Home',
+            projects: [], partners: [], posts: [],
+            seo: null, globalSeo: null,
+            stats: [], services: [],
+            lang: 'en',
+            assetPath
+        });
     }
 };
 
+// ======================================================
+// نموذج التواصل
+// ======================================================
 exports.postContact = async (req, res) => {
     try {
         const { name, email, phone, service, message } = req.body;
-        
-        // Save to database
-        await Contact.create({
-            name,
-            email,
-            phone,
-            service,
-            message
-        });
-
-        // Redirect back with success flag
+        await Contact.create({ name, email, phone, service, message });
         res.redirect('/?success=true#contact');
     } catch (error) {
         console.error('Contact form error:', error);
         res.redirect('/?error=true#contact');
     }
 };
-exports.getPhilosophyPage = async (req, res) => {
-    const assetPath = (p) => p ? (p.startsWith('http') ? p : (p.startsWith('/') ? p : '/' + p)) : '';
-    const isEn = req.path.includes('/en');
 
+// ======================================================
+// صفحة فلسفتنا
+// ======================================================
+exports.getPhilosophyPage = async (req, res) => {
     try {
-        const seo = await GlobalSeo.findOne();
-        const rawData = await Philosophy.findOne();
+        const isEn  = req.path.includes('/en');
+        const seo   = await GlobalSeo.findOne();
+        const raw   = await Philosophy.findOne();
 
         // تحويل Sequelize instance إلى plain object بأمان
-        const data = rawData ? rawData.get({ plain: true }) : {};
+        const data  = raw ? raw.get({ plain: true }) : {};
 
         res.render('philosophy', {
-            title: isEn
-                ? (data.mainTitleEn || 'Our Philosophy')
-                : (data.mainTitleAr || 'فلسفتنا'),
+            title:     isEn ? (data.mainTitleEn || 'Our Philosophy') : (data.mainTitleAr || 'فلسفتنا'),
             data,
             seo,
             globalSeo: seo,
-            lang: isEn ? 'en' : 'ar',
-            assetPath  // ← الإضافة الأساسية
+            lang:      isEn ? 'en' : 'ar',
+            assetPath
         });
     } catch (error) {
         console.error('Philosophy page error:', error);
@@ -160,25 +179,29 @@ exports.getPhilosophyPage = async (req, res) => {
     }
 };
 
-
+// ======================================================
+// صفحة الخدمات
+// ======================================================
 exports.getServicesPage = async (req, res) => {
     try {
-        const seo = await GlobalSeo.findOne();
-        const services = await Service.findAll({ 
-            where: { is_active: true }, 
-            order: [['display_order', 'ASC']] 
+        const isEn    = req.path.includes('/en');
+        const seo      = await GlobalSeo.findOne();
+        const services = await Service.findAll({
+            where: { is_active: true },
+            order: [['display_order', 'ASC']]
         });
 
-        res.render('services', { 
-            title: 'خدماتنا | Creative Point', 
+        res.render('services', {
+            title:    isEn ? 'Our Services | Creative Point' : 'خدماتنا | Creative Point',
             services,
             seo,
             globalSeo: seo,
-            lang: req.path.includes('/en') ? 'en' : 'ar',
-            path: req.path
+            lang:     isEn ? 'en' : 'ar',
+            path:     req.path,
+            assetPath
         });
     } catch (error) {
-        console.error(error);
+        console.error('Services page error:', error);
         res.status(500).send('Server Error');
     }
 };
