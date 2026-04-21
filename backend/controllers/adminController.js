@@ -850,6 +850,9 @@ exports.deletePartner = async (req, res) => {
 // ─── Portfolio Management ─────────────────────────────────────────────────
 // Supports bilingual: title_ar / title_en, description_ar / description_en
 
+// ─── Portfolio Management ─────────────────────────────────────────────────
+// Supports bilingual: title_ar / title_en, description_ar / description_en
+
 exports.managePortfolio = async (req, res) => {
     try {
         const projects = await Project.findAll({ order: [['display_order', 'ASC']] });
@@ -895,10 +898,8 @@ exports.postAddProject = async (req, res) => {
         } = req.body;
 
         const data = {
-            // Legacy single-lang (kept for backward compat)
             title: title_ar || title_en || title || '',
             description: description_ar || description_en || description || '',
-            // Bilingual
             title_ar: title_ar || title || null,
             title_en: title_en || title || null,
             description_ar: description_ar || description || null,
@@ -913,8 +914,12 @@ exports.postAddProject = async (req, res) => {
             seoKeywords
         };
 
-        if (existingImage) data.image = normalizeAsset(existingImage);
-        else if (req.file) data.image = await toHashedAsset(req.file);
+        // الكود الآمن لإضافة الصورة
+        let image = existingImage ? normalizeAsset(existingImage) : null;
+        if (req.file) {
+            image = await toHashedAsset(req.file);
+        }
+        data.image = image;
 
         if (data.category && !isNaN(data.category)) {
             data.CategoryId = parseInt(data.category);
@@ -959,7 +964,6 @@ exports.postEditProject = async (req, res) => {
             content, externalLink, category,
             display_order, is_active,
             seoTitle, seoDescription, seoKeywords,
-            existingImage
         } = req.body;
 
         const data = {
@@ -978,9 +982,11 @@ exports.postEditProject = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-
-        if (existingImage) data.image = normalizeAsset(existingImage);
-        else if (req.file) data.image = await toHashedAsset(req.file);
+        
+        // الكود الآمن لتحديث الصورة (لا يحذف القديمة إلا عند رفع جديدة)
+        if (req.file) {
+            data.image = await toHashedAsset(req.file);
+        }
 
         if (data.category && !isNaN(data.category)) {
             data.CategoryId = parseInt(data.category);
@@ -1099,6 +1105,9 @@ exports.deleteCategory = async (req, res) => {
 // ─── Blog Management ──────────────────────────────────────────────────────
 // Supports bilingual: title_ar / title_en, excerpt_ar / excerpt_en
 
+// ─── Blog Management ──────────────────────────────────────────────────────
+// Supports bilingual: title_ar / title_en, excerpt_ar / excerpt_en
+
 exports.manageBlog = async (req, res) => {
     try {
         const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
@@ -1136,10 +1145,8 @@ exports.postAddPost = async (req, res) => {
         } = req.body;
 
         const data = {
-            // Legacy single-lang (kept for backward compat)
             title: title_ar || title_en || title || '',
             excerpt: excerpt_ar || excerpt_en || excerpt || '',
-            // Bilingual
             title_ar: title_ar || title || null,
             title_en: title_en || title || null,
             excerpt_ar: excerpt_ar || excerpt || null,
@@ -1151,9 +1158,13 @@ exports.postAddPost = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-
-        if (existingImage) data.image = normalizeAsset(existingImage);
-        else if (req.file) data.image = await toHashedAsset(req.file);
+        
+        // الكود الآمن لإضافة الصورة
+        let image = existingImage ? normalizeAsset(existingImage) : null;
+        if (req.file) {
+            image = await toHashedAsset(req.file);
+        }
+        data.image = image;
 
         await Post.create(data);
         pageCache.invalidateRoutes(['/', '/en', '/blog']);
@@ -1189,7 +1200,6 @@ exports.postEditPost = async (req, res) => {
             excerpt, excerpt_ar, excerpt_en,
             content, date, is_active,
             seoTitle, seoDescription, seoKeywords,
-            existingImage
         } = req.body;
 
         const data = {
@@ -1207,8 +1217,10 @@ exports.postEditPost = async (req, res) => {
             seoKeywords
         };
 
-        if (existingImage) data.image = normalizeAsset(existingImage);
-        else if (req.file) data.image = await toHashedAsset(req.file);
+        // الكود الآمن لتحديث الصورة (لا يلمس القديمة إلا عند رفع جديدة)
+        if (req.file) {
+            data.image = await toHashedAsset(req.file);
+        }
 
         await post.update(data);
         pageCache.invalidateRoutes(['/', '/en', '/blog']);
