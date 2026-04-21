@@ -1,18 +1,63 @@
 <%- include('layout-header') %>
 
-<div class="admin-content-inner">
+<!-- أضفنا هذا الستايل هنا لضمان عدم انهيار الحقول حتى لو تعطل ملف الـ CSS الخارجي -->
+<style>
+    .service-form-wrapper {
+        color: var(--text-main, #333);
+    }
+    .service-form-wrapper .form-group {
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+    .service-form-wrapper label {
+        display: block !important;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .service-form-wrapper input[type="text"],
+    .service-form-wrapper input[type="number"],
+    .service-form-wrapper textarea {
+        width: 100% !important;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: inherit;
+        box-sizing: border-box; /* لمنع خروج الحقل عن الإطار */
+        background-color: #fff;
+        color: #333;
+    }
+    .service-form-wrapper .admin-card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid #eee;
+    }
+    @media (max-width: 992px) {
+        .form-layout { grid-template-columns: 1fr !important; }
+        .form-side-col { order: -1; }
+    }
+    @media (max-width: 768px) {
+        .form-row { grid-template-columns: 1fr !important; }
+    }
+</style>
+
+<div class="admin-content-inner service-form-wrapper">
     <div class="admin-topbar-actions" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="font-weight: 700; color: var(--secondary-color);"><%= service ? 'تعديل الخدمة' : 'إضافة خدمة جديدة' %></h2>
-        <a href="/admin/services" class="btn btn-secondary" style="background: #eee; color: var(--text-main);">
+        <h2 style="font-weight: 700; color: var(--secondary-color, #1A1A1A);"><%= service ? 'تعديل الخدمة' : 'إضافة خدمة جديدة' %></h2>
+        <a href="/admin/services" class="btn btn-secondary" style="background: #eee; color: #333; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none;">
             <i class="fas fa-arrow-right"></i> إلغاء والعودة
         </a>
     </div>
 
     <form action="/admin/services/<%= service ? 'edit/' + service.id : 'add' %>" method="POST" enctype="multipart/form-data">
         <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            
+            <!-- العمود الأيمن (البيانات الأساسية) -->
             <div class="form-main-col">
                 <div class="admin-card" style="margin-bottom: 1.5rem;">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-layer-group"></i> بيانات الخدمة
                     </h3>
 
@@ -55,7 +100,7 @@
                 </div>
 
                 <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-search"></i> إعدادات SEO
                     </h3>
 
@@ -74,9 +119,10 @@
                 </div>
             </div>
 
+            <!-- العمود الأيسر (الإعدادات والصور) -->
             <div class="form-side-col">
                 <div class="admin-card" style="margin-bottom: 1.5rem;">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-cog"></i> الإعدادات
                     </h3>
                     <div class="form-group">
@@ -85,15 +131,15 @@
                     </div>
                     <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="is_active" name="is_active" <%= !service || service.is_active ? 'checked' : '' %>>
-                        <label for="is_active">إظهار الخدمة في الموقع</label>
+                        <label for="is_active" style="margin: 0; display: inline-block !important;">إظهار الخدمة في الموقع</label>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%; justify-content: center; padding: 1rem; margin-top: 1rem;">
-                        <i class="fas fa-save"></i> <%= service ? 'حفظ التغييرات' : 'حفظ الخدمة' %>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; display: flex; justify-content: center; padding: 1rem; margin-top: 1.5rem; background: var(--primary-color, #D00000); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        <i class="fas fa-save" style="margin-left: 8px;"></i> <%= service ? 'حفظ التغييرات' : 'حفظ الخدمة' %>
                     </button>
                 </div>
 
-                <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <div class="admin-card" style="margin-bottom: 1.5rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-image"></i> صورة الخدمة
                     </h3>
 
@@ -102,35 +148,35 @@
                             <img src="<%= assetPath(service.image) %>" alt="Service Image" style="width: 100%; height: auto; display: block;">
                         </div>
                     <% } else { %>
-                        <div style="background: #f8f9fa; height: 150px; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; border-radius: 8px; margin-bottom: 1rem; color: var(--text-muted);">
+                        <div style="background: #f8f9fa; height: 150px; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; border-radius: 8px; margin-bottom: 1rem; color: #999;">
                             <i class="fas fa-image fa-3x"></i>
                         </div>
                     <% } %>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label class="btn btn-outline" for="service-image" style="width: 100%; border: 2px dashed var(--primary-color); color: var(--primary-color); justify-content: center; cursor: pointer;">
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label class="btn btn-outline" for="service-image" style="width: 100%; border: 2px dashed var(--primary-color, #D00000); color: var(--primary-color, #D00000); padding: 0.8rem; text-align: center; border-radius: 6px; cursor: pointer; display: block;">
                             <i class="fas fa-cloud-upload-alt"></i> اختر من جهازك
                             <input type="file" name="image" id="service-image" accept="image/*" style="display: none" onchange="updateServiceFileName(this)">
                         </label>
-                        <button type="button" class="btn btn-secondary" style="justify-content: center;" onclick="openUploadsBrowser('service')" id="open-server-service-btn">
+                        <button type="button" class="btn btn-secondary" style="width: 100%; padding: 0.8rem; background: #eee; border: none; border-radius: 6px; cursor: pointer;" onclick="openUploadsBrowser('service')" id="open-server-service-btn">
                             <i class="fas fa-folder-open"></i> اختيار من الخادم
                         </button>
                         <input type="hidden" name="existingImage" id="existingImageService" value="<%= service && service.image ? service.image : '' %>">
-                        <div id="service-file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
+                        <div id="service-file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color, #D00000); text-align: center;"></div>
                     </div>
                 </div>
 
                 <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color, #1A1A1A); border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         <i class="fas fa-align-left"></i> نص بديل للصورة (ALT)
                     </h3>
                     <div class="form-group">
                         <label>النص البديل (عربي)</label>
-                        <input type="text" name="imageAlt_ar" value="<%= service && service.imageAlt_ar ? service.imageAlt_ar : '' %>" placeholder="وصف قصير للصورة يظهر لمحركات البحث والقارئات">
+                        <input type="text" name="imageAlt_ar" value="<%= service && service.imageAlt_ar ? service.imageAlt_ar : '' %>" placeholder="وصف قصير للصورة">
                     </div>
                     <div class="form-group">
                         <label>النص البديل (إنجليزي)</label>
-                        <input type="text" name="imageAlt_en" value="<%= service && service.imageAlt_en ? service.imageAlt_en : '' %>" placeholder="Short English alt text for the service image">
+                        <input type="text" name="imageAlt_en" value="<%= service && service.imageAlt_en ? service.imageAlt_en : '' %>" placeholder="Short English alt text">
                     </div>
                 </div>
             </div>
@@ -138,21 +184,17 @@
     </form>
 </div>
 
-<div id="uploadsBrowserModal" class="admin-modal">
-    <div class="modal-content" style="max-width: 800px;">
-        <span class="close-modal" onclick="closeUploadsBrowser()">&times;</span>
-        <h3 style="margin-bottom: 10px; color: var(--secondary-color);"><i class="fas fa-folder-open"></i> استعراض الصور على الخادم</h3>
-        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
-            <input id="uploadsSearch" type="text" placeholder="ابحث بالاسم..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
-            <button class="btn" type="button" onclick="refreshUploads()">تحديث</button>
+<!-- Modal الخاص بالصور -->
+<div id="uploadsBrowserModal" class="admin-modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+    <div class="modal-content" style="background-color: #fff; margin: 5% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 800px; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: right;">
+        <span class="close-modal" onclick="closeUploadsBrowser()" style="position: absolute; left: 20px; top: 20px; font-size: 24px; cursor: pointer; color: #999;">&times;</span>
+        <h3 style="margin-bottom: 15px; color: #333;"><i class="fas fa-folder-open"></i> استعراض الصور على الخادم</h3>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 15px;">
+            <input id="uploadsSearch" type="text" placeholder="ابحث بالاسم..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+            <button class="btn" type="button" onclick="refreshUploads()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">تحديث</button>
         </div>
-        <div id="uploadsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; max-height: 60vh; overflow: auto;"></div>
+        <div id="uploadsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; max-height: 50vh; overflow-y: auto;"></div>
     </div>
-    <style>
-        #uploadsGrid img{width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid #eee}
-        .upload-tile{cursor:pointer;position:relative}
-        .upload-tile span{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:#fff;font-size:.75rem;padding:2px 4px;border-radius:0 0 8px 8px;direction:ltr}
-    </style>
 </div>
 
 <script>
@@ -192,8 +234,11 @@ async function refreshUploads() {
     }).forEach(function (f) {
         var div = document.createElement('div');
         div.className = 'upload-tile';
+        div.style.cursor = 'pointer';
+        div.style.position = 'relative';
         div.onclick = function () { selectExistingImage(f.url); };
-        div.innerHTML = '<img src="' + f.url + '" alt="' + (f.name || "") + '"><span>' + (f.name || "") + '</span>';
+        div.innerHTML = '<img src="' + f.url + '" alt="' + (f.name || "") + '" style="width:100%; height:100px; object-fit:cover; border-radius:8px; border:1px solid #eee;">' +
+                        '<span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:#fff; font-size:0.75rem; padding:4px; border-radius:0 0 8px 8px; direction:ltr; text-align:center;">' + (f.name || "") + '</span>';
         grid.appendChild(div);
     });
 }
@@ -212,16 +257,5 @@ function selectExistingImage(url) {
     closeUploadsBrowser();
 }
 </script>
-
-<style>
-@media (max-width: 992px) {
-    .form-layout {
-        grid-template-columns: 1fr !important;
-    }
-    .form-side-col {
-        order: -1;
-    }
-}
-</style>
 
 <%- include('layout-footer') %>
