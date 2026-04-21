@@ -134,23 +134,33 @@ exports.postContact = async (req, res) => {
     }
 };
 exports.getPhilosophyPage = async (req, res) => {
+    const assetPath = (p) => p ? (p.startsWith('http') ? p : (p.startsWith('/') ? p : '/' + p)) : '';
+    const isEn = req.path.includes('/en');
+
     try {
         const seo = await GlobalSeo.findOne();
-        let data = await Philosophy.findOne();
-        if (!data) data = {}; // في حال لم يتم إدخال بيانات بعد
-        
-        res.render('philosophy', { 
-            title: data.mainTitleAr || 'فلسفتنا', 
+        const rawData = await Philosophy.findOne();
+
+        // تحويل Sequelize instance إلى plain object بأمان
+        const data = rawData ? rawData.get({ plain: true }) : {};
+
+        res.render('philosophy', {
+            title: isEn
+                ? (data.mainTitleEn || 'Our Philosophy')
+                : (data.mainTitleAr || 'فلسفتنا'),
             data,
             seo,
             globalSeo: seo,
-            lang: req.path.includes('/en') ? 'en' : 'ar'
+            lang: isEn ? 'en' : 'ar',
+            assetPath  // ← الإضافة الأساسية
         });
     } catch (error) {
-        console.error(error);
+        console.error('Philosophy page error:', error);
         res.status(500).send('Server Error');
     }
 };
+
+
 exports.getServicesPage = async (req, res) => {
     try {
         const seo = await GlobalSeo.findOne();

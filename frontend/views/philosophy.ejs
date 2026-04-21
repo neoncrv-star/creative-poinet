@@ -1,7 +1,7 @@
-<%- include('partials/header') %>
+<% const isEn = (typeof lang !== 'undefined' && lang === 'en'); %>
+<%- include('partials/header', { isEn: isEn }) %>
 
 <style>
-    /* تنسيقات صفحة فلسفتنا لتطابق الـ PDF */
     .philosophy-page {
         background-color: #ffffff;
         color: #1A1A1A;
@@ -72,9 +72,7 @@
         text-align: center;
         transition: transform 0.3s ease;
     }
-    .ph-card:hover {
-        transform: translateY(-5px);
-    }
+    .ph-card:hover { transform: translateY(-5px); }
     .ph-card h4 {
         color: #D00000;
         font-size: 1.3rem;
@@ -99,7 +97,6 @@
         direction: ltr;
         line-height: 1.5;
     }
-
     @media (max-width: 768px) {
         .ph-grid { grid-template-columns: 1fr; }
         .ph-title-ar { font-size: 2rem; }
@@ -108,39 +105,43 @@
 </style>
 
 <main class="philosophy-page">
-    <!-- صورة الهيرو (الخطوط الحمراء) -->
+
+    <!-- صورة الهيرو -->
     <section class="ph-hero">
         <% if (data && data.heroImage) { %>
-            <img src="/uploads/<%= data.heroImage %>" alt="Creative Point Philosophy">
+            <img src="<%= assetPath(data.heroImage) %>" alt="Creative Point Philosophy">
         <% } %>
     </section>
 
     <!-- النصوص الرئيسية -->
     <section class="ph-content">
-        <!-- القسم العربي -->
-        <h1 class="ph-title-ar"><%- data ? data.mainTitleAr : 'لم <span style="color:#D00000">ولن</span> نكن صدفة او حدث عشوائي' %></h1>
-        <p class="ph-desc-ar"><%= data ? data.mainDescAr : '' %></p>
+        <h1 class="ph-title-ar">
+            <%- (data && data.mainTitleAr) ? data.mainTitleAr : 'لم <span style="color:#D00000">ولن</span> نكن صدفة أو حدث عشوائي' %>
+        </h1>
+        <p class="ph-desc-ar"><%= (data && data.mainDescAr) ? data.mainDescAr : '' %></p>
 
-        <!-- القسم الإنجليزي -->
-        <h2 class="ph-title-en"><%- data ? data.mainTitleEn : 'We were not and will never be <br><span style="color:#1A1A1A">a coincidence or a random occurrence</span>' %></h2>
-        <p class="ph-desc-en"><%= data ? data.mainDescEn : '' %></p>
+        <h2 class="ph-title-en">
+            <%- (data && data.mainTitleEn) ? data.mainTitleEn : 'We were not and will never be <br><span style="color:#1A1A1A">a coincidence or a random occurrence</span>' %>
+        </h2>
+        <p class="ph-desc-en"><%= (data && data.mainDescEn) ? data.mainDescEn : '' %></p>
     </section>
 
     <!-- شبكة المربعات الأربعة -->
     <section class="ph-grid">
-        <% for(let i=1; i<=4; i++) { %>
+        <% for (let i = 1; i <= 4; i++) { %>
             <div class="ph-card">
-                <h4><%= data ? data['pillar'+i+'Title'] : '' %></h4>
-                
-                <% if (data && data['pillar'+i+'Icon']) { %>
-                    <img src="/uploads/<%= data['pillar'+i+'Icon'] %>" alt="Icon <%= i %>">
+                <h4><%= (data && data['pillar' + i + 'Title']) ? data['pillar' + i + 'Title'] : '' %></h4>
+
+                <% if (data && data['pillar' + i + 'Icon']) { %>
+                    <img src="<%= assetPath(data['pillar' + i + 'Icon']) %>" alt="Icon <%= i %>">
                 <% } %>
-                
-                <p class="ar"><%= data ? data['pillar'+i+'DescAr'] : '' %></p>
-                <p class="en"><%= data ? data['pillar'+i+'DescEn'] : '' %></p>
+
+                <p class="ar"><%= (data && data['pillar' + i + 'DescAr']) ? data['pillar' + i + 'DescAr'] : '' %></p>
+                <p class="en"><%= (data && data['pillar' + i + 'DescEn']) ? data['pillar' + i + 'DescEn'] : '' %></p>
             </div>
         <% } %>
     </section>
+
 </main>
 
-<%- include('partials/footer') %>
+<%- include('partials/footer', { isEn: isEn }) %>
