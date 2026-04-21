@@ -7,7 +7,7 @@ require('dotenv').config();
 
 // التحقق من متغيرات هوستنجر الأساسية فقط إذا كان النوع MySQL
 const dialect = (process.env.DB_DIALECT || 'mysql').toLowerCase();
-
+    
 if (dialect === 'mysql') {
     if (!process.env.DB_NAME || !process.env.DB_HOST || !process.env.DB_USER) {
         const missing = [];
@@ -16,7 +16,7 @@ if (dialect === 'mysql') {
         if (!process.env.DB_USER) missing.push('DB_USER');
         console.error(`❌ Missing MySQL environment variables: ${missing.join(', ')}. Server stopped.`);
         process.exit(1);
-    }
+    }  
 }
 
 // تشخيص أولي للاتصال في السجلات لجعل الحل جذرياً
