@@ -54,8 +54,14 @@ const normalizeAsset = (value) => {
 const checkAssetExists = (rel) => {
     let exists = false;
     let fileSize = 0;
-    const clean = String(rel || '').replace(/^\/+/, '');
+    
+    // 🛠️ التعديل: تنظيف المسار جذرياً لاستخراج اسم الملف فقط بدون مجلدات
+    let clean = String(rel || '').replace(/^\/+/, '');
+    if (clean.startsWith('uploads/')) clean = clean.replace('uploads/', '');
+    if (clean.includes('/')) clean = clean.split('/').pop(); 
+
     if (!clean) return { exists, fileSize };
+    
     try {
         const primaryAbs = storageService.buildAbsolutePath(clean);
         if (fs.existsSync(primaryAbs) && fs.statSync(primaryAbs).isFile()) {
@@ -74,6 +80,57 @@ const checkAssetExists = (rel) => {
         }
     } catch { }
     return { exists, fileSize };
+};
+
+const collectMediaRefs = async () => {
+    const refs = [];
+    const pushRef = (type, entityId, field, value, title) => {
+        if (!value) return;
+        const raw = String(value).trim();
+        if (!raw) return;
+        const isExternal = /^https?:\/\//i.test(raw);
+        let rel = raw;
+        if (!isExternal) {
+            let filename = storageService.mapDbValueToLocal(raw);
+            // 🛠️ التعديل: ضمان استخراج اسم الملف الصافي فقط للمقارنة مع الملفات الفيزيائية
+            if (filename && filename.includes('/')) filename = filename.split('/').pop();
+            rel = filename ? filename : raw;
+        }
+        let exists = true;
+        let fileSize = 0;
+        if (!isExternal) {
+            const result = checkAssetExists(rel);
+            exists = result.exists;
+            fileSize = result.fileSize;
+        }
+        refs.push({
+            type, entityId, field, value: raw, rel,
+            isExternal, exists, fileSize,
+            mediaKind: classifyMediaKind(raw, field),
+            title: title || ''
+        });
+    };
+
+    const [partners, projects, posts, services, seo] = await Promise.all([
+        Partner.findAll(),
+        Project.findAll(),
+        Post.findAll(),
+        Service.findAll(),
+        GlobalSeo.findOne()
+    ]);
+
+    partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
+    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title_ar || pj.title));
+    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title_ar || po.title));
+    services.forEach(sv => pushRef('Service', sv.id, 'image', sv.image, sv.title_ar || sv.title_en));
+    if (seo) {
+        pushRef('GlobalSeo', seo.id, 'favicon', seo.favicon, 'Favicon');
+        pushRef('GlobalSeo', seo.id, 'ogImage', seo.ogImage, 'OG Image');
+        pushRef('GlobalSeo', seo.id, 'heroVideoFile', seo.heroVideoFile, 'Hero Video File');
+        pushRef('GlobalSeo', seo.id, 'heroBackgroundImage', seo.heroBackgroundImage, 'Hero Background');
+    }
+
+    return refs;
 };
 
 // Content-addressed storage: <sha256-32>.<ext>
