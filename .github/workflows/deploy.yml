@@ -41,18 +41,39 @@ jobs:
           script: |
             set -e
             mkdir -p "$TARGET_DIR"
+            
             if [ -d "$TARGET_DIR/.git" ]; then
               cd "$TARGET_DIR"
+              
+              # 1. الدرع الواقي: أخذ نسخة احتياطية من الصور قبل تحديث Git
+              if [ -d "frontend/public/uploads" ]; then
+                echo "Backing up uploads folder..."
+                cp -a frontend/public/uploads /tmp/cpoint_uploads_backup
+              fi
+              
               git fetch --all --prune
               git reset --hard origin/main
+              
+              # 2. استرجاع الصور بعد التحديث
+              mkdir -p frontend/public/uploads
+              if [ -d "/tmp/cpoint_uploads_backup" ]; then
+                echo "Restoring uploads folder..."
+                cp -a /tmp/cpoint_uploads_backup/. frontend/public/uploads/
+                rm -rf /tmp/cpoint_uploads_backup
+              fi
+              
             else
               git clone "$REPO_URL" "$TARGET_DIR"
               cd "$TARGET_DIR"
               git checkout main
             fi
+            
             npm ci --omit=optional
             export NODE_ENV=production
-            mkdir -p public/uploads sessions tmp
+            
+            # إصلاح المسار ليكون متوافق مع مشروعك
+            mkdir -p frontend/public/uploads backend/sessions tmp
+            
             if command -v pm2 >/dev/null 2>&1; then
               pm2 describe creative-point >/dev/null 2>&1 && pm2 reload creative-point || pm2 start app.js --name creative-point
               pm2 save || true
