@@ -1036,6 +1036,7 @@
                 <% } else { %>
                     <a href="/#journey" class="nav-link active">رحلتها <span class="nav-dot"></span></a>
                     <a href="/philosophy" class="nav-link">فلسفتها</a>
+                    <a href="/services" class="nav-link">خدماتها</a>
                     <a href="/portfolio" class="nav-link">أعمالها</a>
                     <a href="/#contact" class="nav-link">كن شريك إبداعي</a>
                     <a href="/en" class="lang-switch">English</a>
@@ -1103,25 +1104,7 @@
             });
         });
     </script>
-    <main>
-    </main>
-
-    <section class="grand-footer">
-        <div class="container">
-            <div class="footer-shell">
-                <div class="footer-bottom">
-                    <p>&copy; <%= new Date().getFullYear() %> Creative Point. <%= typeof isEn !== 'undefined' && isEn ? 'All rights reserved.' : 'جميع الحقوق محفوظة.' %></p>
-                    <div class="footer-links">
-                        <% if (typeof isEn !== 'undefined' && isEn) { %>
-                            <a href="/">العربية</a>
-                        <% } else { %>
-                            <a href="/en">English</a>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+   
 
     <!-- Scripts -->
     <script>
