@@ -523,7 +523,9 @@ const collectMediaRefs = async () => {
         const isExternal = /^https?:\/\//i.test(raw);
         let rel = raw;
         if (!isExternal) {
-            const filename = storageService.mapDbValueToLocal(raw);
+            let filename = storageService.mapDbValueToLocal(raw);
+            // 🛠️ التعديل: ضمان استخراج اسم الملف الصافي فقط للمقارنة مع الملفات الفيزيائية
+            if (filename && filename.includes('/')) filename = filename.split('/').pop();
             rel = filename ? filename : raw;
         }
         let exists = true;
