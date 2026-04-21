@@ -3,100 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/admin.css">
+    <title><%= typeof title !== 'undefined' ? title : 'لوحة التحكم' %></title>
+    
+    <!-- استدعاء الأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- التصميم الجذري المدمج لضمان عدم الانهيار -->
+    <style>
+        :root {
+            --primary-color: #D00000;
+            --primary-hover: #b00000;
+            --secondary-color: #1A1A1A;
+            --bg-light: #f4f6f9;
+            --sidebar-bg: #111111;
+            --sidebar-width: 280px;
+            --topbar-height: 70px;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-main); line-height: 1.6; direction: rtl; }
+        
+        /* Layout */
+        .admin-wrapper { display: flex; min-height: 100vh; }
+        .admin-main { flex: 1; margin-right: var(--sidebar-width); transition: var(--transition); display: flex; flex-direction: column; background-color: var(--bg-light); min-height: 100vh;}
+        .admin-content-inner { padding: 2rem; width: 100%; }
+        
+        /* Sidebar */
+        .admin-sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: var(--white); position: fixed; height: 100vh; right: 0; top: 0; z-index: 1000; transition: var(--transition); display: flex; flex-direction: column; overflow-y: auto;}
+        .admin-logo { padding: 1.5rem; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); background: #000; }
+        .admin-logo img { max-width: 50px; height: auto; } /* حل مشكلة اللوجو العملاق */
+        .admin-logo h2 { font-size: 1.25rem; font-weight: 700; color: var(--white); margin: 0; }
+        
+        /* Navigation Links */
+        .admin-nav { flex: 1; padding: 1rem 0; }
+        .admin-nav a { display: flex; align-items: center; padding: 0.85rem 1.5rem; color: #a0a0a0; text-decoration: none; transition: var(--transition); border-right: 4px solid transparent; gap: 15px; font-size: 0.95rem; }
+        .admin-nav a i { width: 20px; font-size: 1.1rem; text-align: center; }
+        .admin-nav a:hover, .admin-nav a.active { color: var(--white); background: rgba(255,255,255,0.05); border-right-color: var(--primary-color); }
+        .admin-nav a.active { background: rgba(208, 0, 0, 0.1); }
+        .nav-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 1rem 0; }
+        .logout { color: #ff7675 !important; }
+        .logout:hover { background: rgba(255, 118, 117, 0.1) !important; }
+        
+        /* Topbar */
+        .admin-topbar { height: var(--topbar-height); background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid #eee; }
+        .topbar-left h1 { font-size: 1.25rem; font-weight: 600; color: var(--secondary-color); margin: 0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; }
+        .profile-info { text-align: left; display: flex; flex-direction: column; }
+        .profile-name { font-weight: 600; font-size: 0.9rem; color: var(--secondary-color); }
+        .profile-role { font-size: 0.75rem; color: var(--text-muted); }
+        .profile-avatar { width: 40px; height: 40px; background: var(--bg-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-color); border: 1px solid #eee; }
+        
+        /* Cards & Stats */
+        .dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--white); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px; border: 1px solid #eee; }
+        .stat-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin: 0; }
+        .stat-card p { font-size: 1.8rem; font-weight: 700; color: var(--secondary-color); margin: 0; }
+        .admin-card { background: var(--white); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm); margin-bottom: 2rem; border: 1px solid #eee; }
+        
+        /* Forms & Inputs */
+        form .form-group { margin-bottom: 1.5rem; width: 100%; }
+        form label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; }
+        form input[type="text"], form input[type="email"], form input[type="password"], form input[type="number"], form textarea, form select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; background: #fff; color: #333; box-sizing: border-box; }
+        form input:focus, form textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(208, 0, 0, 0.1); }
+        
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; text-decoration: none; cursor: pointer; transition: var(--transition); border: none; font-size: 0.9rem; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #eee; color: #333; }
+        
+        /* Mobile Responsive */
+        .sidebar-toggle, .sidebar-close { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .sidebar-close { color: white; margin-right: auto; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+        
+        @media (max-width: 992px) { 
+            .admin-sidebar { right: -100%; } 
+            .admin-sidebar.active { right: 0; } 
+            .admin-main { margin-right: 0; } 
+            .sidebar-toggle { display: flex; position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background: var(--primary-color); color: white; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1100; align-items: center; justify-content: center; } 
+            .sidebar-overlay.active { display: block; } 
+            .sidebar-close { display: block; } 
+        }
+    </style>
 </head>
 <body>
     <div class="admin-wrapper">
-        <!-- Sidebar Toggle for Mobile -->
-        <button class="sidebar-toggle" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
+        <!-- زر فتح القائمة للموبايل -->
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
 
-        <!-- Sidebar -->
+        <!-- القائمة الجانبية -->
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="admin-logo">
                 <img src="/logo.png" alt="Logo" onerror="this.style.display='none'">
                 <h2>نقطة إبداعية</h2>
-                <button class="sidebar-close" id="sidebarClose">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
             </div>
             <nav class="admin-nav">
-                <a href="/admin" class="<%= path === '/admin' ? 'active' : '' %>">
-                    <i class="fas fa-chart-line"></i>
-                    <span>لوحة التحكم</span>
-                </a>
-                <a href="/admin/portfolio" class="<%= path.includes('/portfolio') ? 'active' : '' %>">
-                    <i class="fas fa-tasks"></i>
-                    <span>إدارة الأعمال</span>
-                </a>
-                <a href="/admin/services" class="<%= path.includes('/services') ? 'active' : '' %>">
-                    <i class="fas fa-layer-group"></i>
-                    <span>إدارة الخدمات</span>
-                </a>
-                <a href="/admin/stats" class="<%= path.includes('/stats') ? 'active' : '' %>">
-                    <i class="fas fa-hashtag"></i>
-                    <span>أرقامنا</span>
-                </a>
-                <a href="/admin/partners" class="<%= path.includes('/partners') ? 'active' : '' %>">
-                    <i class="fas fa-users"></i>
-                    <span>إدارة الشركاء</span>
-                </a>
-                <a href="/admin/contacts" class="<%= path.includes('/contacts') ? 'active' : '' %>">
-                    <i class="fas fa-envelope-open-text"></i>
-                    <span>استمارات التواصل</span>
-                </a>
-                <a href="/admin/blog" class="<%= path.includes('/blog') ? 'active' : '' %>">
-                    <i class="fas fa-newspaper"></i>
-                    <span>إدارة المدونة</span>
-                </a>
-                <a href="/admin/media" class="<%= path.includes('/media') ? 'active' : '' %>">
-                    <i class="fas fa-photo-film"></i>
-                    <span>الوسائط</span>
-                </a>
-                <a href="/admin/seo" class="<%= path.includes('/seo') ? 'active' : '' %>">
-                    <i class="fas fa-globe-americas"></i>
-                    <span>إعدادات SEO</span>
-                </a>
-                <a href="/admin/design" class="<%= path.includes('/design') ? 'active' : '' %>">
-                    <i class="fas fa-paint-brush"></i>
-                    <span>إعدادات التصميم</span>
-                </a>
-                <a href="/admin/logs" class="<%= path.includes('/logs') ? 'active' : '' %>">
-                    <i class="fas fa-terminal"></i>
-                    <span>سجلات النظام</span>
-                </a>
-                <a href="/admin/health" class="<%= path.includes('/health') ? 'active' : '' %>">
-                    <i class="fas fa-heartbeat"></i>
-                    <span>فحص الموقع</span>
-                </a>
-                <a href="/admin/account/password" class="<%= path.includes('/account/password') ? 'active' : '' %>">
-                    <i class="fas fa-key"></i>
-                    <span>تغيير كلمة المرور</span>
-                </a>
+                <a href="/admin" class="<%= typeof path !== 'undefined' && path === '/admin' ? 'active' : '' %>"><i class="fas fa-chart-line"></i><span>لوحة التحكم</span></a>
+                <a href="/admin/portfolio" class="<%= typeof path !== 'undefined' && path.includes('/portfolio') ? 'active' : '' %>"><i class="fas fa-tasks"></i><span>إدارة الأعمال</span></a>
+                <a href="/admin/services" class="<%= typeof path !== 'undefined' && path.includes('/services') ? 'active' : '' %>"><i class="fas fa-layer-group"></i><span>إدارة الخدمات</span></a>
+                <a href="/admin/stats" class="<%= typeof path !== 'undefined' && path.includes('/stats') ? 'active' : '' %>"><i class="fas fa-hashtag"></i><span>أرقامنا</span></a>
+                <a href="/admin/partners" class="<%= typeof path !== 'undefined' && path.includes('/partners') ? 'active' : '' %>"><i class="fas fa-users"></i><span>إدارة الشركاء</span></a>
+                <a href="/admin/contacts" class="<%= typeof path !== 'undefined' && path.includes('/contacts') ? 'active' : '' %>"><i class="fas fa-envelope-open-text"></i><span>استمارات التواصل</span></a>
+                <a href="/admin/blog" class="<%= typeof path !== 'undefined' && path.includes('/blog') ? 'active' : '' %>"><i class="fas fa-newspaper"></i><span>إدارة المدونة</span></a>
+                <a href="/admin/media" class="<%= typeof path !== 'undefined' && path.includes('/media') ? 'active' : '' %>"><i class="fas fa-photo-film"></i><span>الوسائط</span></a>
+                <a href="/admin/seo" class="<%= typeof path !== 'undefined' && path.includes('/seo') ? 'active' : '' %>"><i class="fas fa-globe-americas"></i><span>إعدادات SEO</span></a>
+                <a href="/admin/design" class="<%= typeof path !== 'undefined' && path.includes('/design') ? 'active' : '' %>"><i class="fas fa-paint-brush"></i><span>إعدادات التصميم</span></a>
+                <a href="/admin/logs" class="<%= typeof path !== 'undefined' && path.includes('/logs') ? 'active' : '' %>"><i class="fas fa-terminal"></i><span>سجلات النظام</span></a>
+                <a href="/admin/health" class="<%= typeof path !== 'undefined' && path.includes('/health') ? 'active' : '' %>"><i class="fas fa-heartbeat"></i><span>فحص الموقع</span></a>
+                <a href="/admin/account/password" class="<%= typeof path !== 'undefined' && path.includes('/account/password') ? 'active' : '' %>"><i class="fas fa-key"></i><span>تغيير كلمة المرور</span></a>
                 <div class="nav-divider"></div>
-                <a href="/" target="_blank">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span>زيارة الموقع</span>
-                </a>
-                <a href="/admin/logout" class="logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>تسجيل الخروج</span>
-                </a>
+                <a href="/" target="_blank"><i class="fas fa-external-link-alt"></i><span>زيارة الموقع</span></a>
+                <a href="/admin/logout" class="logout"><i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span></a>
             </nav>
         </aside>
 
-        <!-- Overlay for mobile sidebar -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- Main Content -->
+        <!-- المحتوى الرئيسي -->
         <main class="admin-main">
             <header class="admin-topbar">
                 <div class="topbar-left">
-                    <h1><%= title %></h1>
+                    <h1><%= typeof title !== 'undefined' ? title : 'لوحة التحكم' %></h1>
                 </div>
                 <div class="topbar-right">
                     <div class="admin-profile">
@@ -110,4 +145,5 @@
                     </div>
                 </div>
             </header>
-            <div class="admin-content-inner">
+            
+            <!-- يبدأ محتوى الصفحات الداخلية من هنا -->

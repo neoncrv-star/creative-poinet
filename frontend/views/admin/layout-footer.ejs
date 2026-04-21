@@ -1,15 +1,14 @@
-            </div> <!-- end admin-content-inner -->
-        </main>
+</main>
     </div> <!-- end admin-wrapper -->
 
     <script>
-        // Sidebar Toggle for Mobile
+        // سكربت فتح وإغلاق القائمة الجانبية في الجوال
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarClose = document.getElementById('sidebarClose');
         const sidebar = document.getElementById('adminSidebar');
         const overlay = document.getElementById('sidebarOverlay');
 
-        if (sidebarToggle) {
+        if (sidebarToggle && sidebar && overlay) {
             sidebarToggle.addEventListener('click', () => {
                 sidebar.classList.add('active');
                 overlay.classList.add('active');
@@ -17,7 +16,7 @@
             });
         }
 
-        if (sidebarClose) {
+        if (sidebarClose && sidebar && overlay) {
             sidebarClose.addEventListener('click', () => {
                 sidebar.classList.remove('active');
                 overlay.classList.remove('active');
@@ -25,7 +24,7 @@
             });
         }
 
-        if (overlay) {
+        if (overlay && sidebar) {
             overlay.addEventListener('click', () => {
                 sidebar.classList.remove('active');
                 overlay.classList.remove('active');
@@ -33,11 +32,13 @@
             });
         }
 
-        // Active link handling if not handled by server
+        // سكربت تفعيل الزر النشط في القائمة الجانبية
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.admin-nav a');
         navLinks.forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
+            const href = link.getAttribute('href');
+            // تفعيل الزر إذا كان المسار متطابقاً، أو إذا كنا داخل صفحة فرعية تابعة للقسم
+            if (href === currentPath || (href !== '/admin' && currentPath.startsWith(href))) {
                 link.classList.add('active');
             }
         });
