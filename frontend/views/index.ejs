@@ -7,13 +7,9 @@
             <span class="en">Every Creativity Start's With a <span class="highlight-point">Point</span></span>
             <span class="ar">كل إبداع يبدأ <span class="highlight-point">بنقطة</span></span>
         </h1>
-        
         <div class="hero-description">
             <div class="ar">
-                <p>هذا الشعار لا يختصر رؤيتنا فحسب، بل يعكس منهجنا العملي والاستراتيجي في نقطة إبداعية. نحن نؤمن بأن وضوح الرؤية هو أساس كل مشروع ناجح. فمن التخطيط الاستراتيجي، مرورا بالتطوير الإبداعي، وصولا إلى التنفيذ النهائي، يبقى الوضوح مبدأنا التوجيهي. ترسخ نقطة البداية الواضحة اتساق الرسائل، وتركيز الأهداف، والثقة في تحقيق النتائج الملموسة التي تسعى علامتك التجارية إلى تحقيقها.</p>
-            </div>
-            <div class="en">
-                <p>This slogan goes beyond summarizing our vision-it embodies our practical and strategic mindset at Creative Point. We believe that a clear point is the foundation upon which every successful project is built. From strategic planning, through creative development, and all the way to final execution, clarity remains our guiding principle. A clear starting point creates consistency in messaging, focus in objectives, and confidence in delivering the tangible results your brand strives for.</p>
+                <p><%= globalSeo && globalSeo.homeDescription ? globalSeo.homeDescription : 'وصف افتراضي للشركة...' %></p>
             </div>
         </div> 
     </div>
@@ -26,171 +22,103 @@
         <span class="en">Contents</span>
     </h2>
     <div class="nav-grid">
-        <a href="#journey" class="nav-item">
-            <span class="ar">رحلتها</span>
-            <span class="en">Journey</span>
-        </a>
-        <a href="/philosophy" class="nav-item">
-            <span class="ar">فلسفتها</span>
-            <span class="en">Philosophy</span>
-        </a>
-        <!-- تم تعديل هذا الرابط ليفتح صفحة الخدمات الجديدة -->
-        <a href="/services" class="nav-item">
-            <span class="ar">خدماتها</span>
-            <span class="en">Services</span>
-        </a>
-        <a href="#partners" class="nav-item">
-            <span class="ar">شركاؤها</span>
-            <span class="en">Partners</span>
-        </a>
+        <a href="#journey" class="nav-item"><span class="ar">رحلتها</span><span class="en">Journey</span></a>
+        <a href="/philosophy" class="nav-item"><span class="ar">فلسفتها</span><span class="en">Philosophy</span></a>
+        <a href="/services" class="nav-item"><span class="ar">خدماتها</span><span class="en">Services</span></a>
+        <a href="#portfolio" class="nav-item"><span class="ar">أعمالنا</span><span class="en">Portfolio</span></a>
+        <a href="#partners" class="nav-item"><span class="ar">شركاؤها</span><span class="en">Partners</span></a>
     </div>
 </section>
 
-<!-- Journey Section -->
-<section id="journey" class="content-section journey-section">
+<!-- Services Section (عرض الخدمات ديناميكياً) -->
+<section id="services" class="content-section">
     <div class="section-title-wrapper">
-        <h2>
-            <span class="ar">رحلتها</span>
-            <span class="en">Journey</span>
-        </h2>
+        <h2><span class="ar">خدماتنا</span><span class="en">Our Services</span></h2>
     </div>
-    
-    <div class="journey-content">
-        <div class="ar">
-            <h3>شركة وكالة نقطة إبداعية</h3>
-            <p>وكالة إبداعية وتسويقية متكاملة الخدمات، ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. في عالم يعج بالضجيج البصري والإعلاني، لا نبدأ بالزخرفة، بل بقرار استراتيجي ذكي ومتكامل.</p>
-            <p>من هذه النقطة، نعيد الإبداع إلى جوهره الحقيقي: هوية بصرية راسخة، حلول تصميم احترافية وتجهيزات عالية الجودة للمعارض والمؤتمرات، تقدم عبر نظام شامل وقابل للتطوير، خال من التشويش والفوضى.</p>
-            <p>انطلاقًا من هذا الأساس الواضح نبني منظومة إبداعية متكاملة، حيث تتحول المفاهيم المجردة إلى حضور قوي ونتائج ملموسة. تبدأ الرحلة بتصميم يخاطب العقل ثم تنتقل عبر صور فوتوغرافية تلتقط اللحظات وتروي قصصًا مؤثرة، وتتوج بطباعة وإنتاج ملموسين يحوّلان الأفكار إلى واقع. هنا تبدأ الوضوح، وهنا ينبض نظامنا الإبداعي المتكامل بالحياة.</p>
-        </div>
-        <div class="en">
-            <h3>CREATIVE POINT AGENCY .CO</h3>
-            <p>is a full-service creative and marketing agency built around one clear idea before any execution begins. In a world crowded with visual and advertising noise, we don't start with decoration; we start with a smart, unified strategic decision.</p>
-            <p>From this point, we bring creativity back to its true essence: a solid visual identity, professional design solutions, and high-quality exhibition and conference setups-delivered through a comprehensive, scalable system without distortion or clutter.</p>
-            <p>From this clear foundation, we create an integrated creative ecosystem where abstract concepts are transformed into a powerful presence and measurable results. The journey begins with design that speaks to the mind, flows through photography that captures moments and tells compelling stories, and culminates in tangible printing and production that brings ideas into the real world. This is where clarity begins and where an integrated creative system comes to life.</p>
-        </div>
+    <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px;">
+        <% if (services && services.length > 0) { %>
+            <% services.forEach(service => { %>
+                <div class="service-card" style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+                    <img src="<%= service.image %>" alt="<%= service.title_ar %>" style="width: 100%; height: 200px; object-fit: cover;">
+                    <h3><%= lang === 'ar' ? service.title_ar : service.title_en %></h3>
+                    <p><%= lang === 'ar' ? service.description_ar : service.description_en %></p>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p class="text-center">لا توجد خدمات حالياً</p>
+        <% } %>
     </div>
 </section>
 
-<!-- Philosophy Section -->
-<section id="philosophy" class="content-section philosophy-section">
+<!-- Portfolio Section (عرض الأعمال ديناميكياً) -->
+<section id="portfolio" class="content-section">
     <div class="section-title-wrapper">
-        <h2>
-            <span class="ar">فلسفتها</span>
-            <span class="en">Philosophy</span>
-        </h2>
+        <h2><span class="ar">آخر الأعمال</span><span class="en">Latest Works</span></h2>
     </div>
-    
-    <div class="philosophy-intro">
-        <div class="ar">
-            <h3>لم ولن نكن صدفة او حدث عشوائي</h3>
-            <p>في نقطة إبداعية بدأ الإبداع من الداخل قبل أن يصل إلى الخارج. صغنا هويتنا بمنهج واع، وبنينا نظامًا إبداعيا لأنفسنا أولا قبل أن نطبقه مع عملائنا. لم نكن صدفة ولا نعمل بعشوائية؛ فكل فكرة محسوبة، وكل قرار مقصود، وكل عنصر في هويتنا يحمل معنى ودورًا واضحا.</p>
-            <p>نؤمن أن وضوح البداية هو سر قوة النتيجة، لذلك تنطلق مع العلامات التجارية من نقطة واضحة، نحول فيها الأفكار إلى أنظمة، والأنظمة إلى حضور مؤثر، والنتائج إلى قيمة حقيقية ومستدامة.</p>
-        </div>
-        <div class="en">
-            <h3>We were not and will never be a coincidence or a random occurrence</h3>
-            <p>At Creative Point, creativity began from within before reaching the outside world. We shaped our identity through a conscious approach and built our creative system for ourselves first, before applying it with our clients. We were not a coincidence, nor do we work randomly: every idea is calculated, every decision is intentional, and every element of our identity carries a clear meaning and purpose.</p>
-            <p>We believe that clarity at the starting point is the key to strong results. That's why we begin with brands from a clear point-transforming ideas into systems, systems into impactful presence, and results into real, sustainable value.</p>
-        </div>
-    </div>
-    
-    <div class="philosophy-diagram">
-        <div class="diagram-item">
-            <div class="diagram-content">
-                <h4>Branding / Creative Direction</h4>
-                <div>
-                    <p class="ar">أساس ثابت ونظام متوازن ينطلق من فكرة واحدة ويبنى بثبات.</p>
-                    <p class="en">A stable foundation built from one clear idea.</p>
-                </div>
-                <div>
-                    <p class="ar">قرار إبداعي يقود الحركة ويحول الفكرة إلى مسار.</p>
-                    <p class="en">A clear creative decision that leads the direction.</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="diagram-connector">
-            <div class="point-marker"></div>
-        </div>
-
-        <div class="diagram-item">
-            <div class="diagram-content">
-                <h4>Photography / Content / Digital / Campaigns</h4>
-                <div>
-                    <p class="ar">تركيز بصري على لحظة واحدة بدون تشتيت.</p>
-                    <p class="en">Focused visuals capturing a single moment.</p>
-                </div>
-                <div>
-                    <p class="ar">انتشار من نقطة واحدة وتعدد نقاط التواصل.</p>
-                    <p class="en">Expansion from one core idea across multiple touchpoints.</p>
-                </div>
-            </div>
-        </div>
+    <div class="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; padding: 20px;">
+        <% if (projects && projects.length > 0) { %>
+            <% projects.forEach(project => { %>
+                <a href="/portfolio/<%= project.id %>" class="portfolio-item">
+                    <img src="<%= project.main_image %>" alt="<%= project.title_ar %>" style="width: 100%; border-radius: 10px;">
+                    <h4><%= lang === 'ar' ? project.title_ar : project.title_en %></h4>
+                </a>
+            <% }) %>
+        <% } %>
     </div>
 </section>
 
-<!-- Partners Section -->
+<!-- Partners Section (تحديث ليعمل ديناميكياً) -->
 <section id="partners" class="content-section partners-section">
     <div class="section-title-wrapper">
-        <h2>
-            <span class="ar">شركاؤها</span>
-            <span class="en">Partners</span>
-        </h2>
+        <h2><span class="ar">شركاؤها</span><span class="en">Partners</span></h2>
     </div>
     <div class="partners-grid">
-        <div class="partner-item">MM</div>
-        <div class="partner-item">
-            <span class="ar">طيران أديل</span>
-            <span class="en">flyadeal</span>
-        </div>
-        <div class="partner-item"><span class="ar">الأمن العام</span></div>
-        <div class="partner-item"><span class="ar">المرور</span></div>
-        <div class="partner-item"><span class="ar">المستشفى السعودي الألماني</span></div>
-        <div class="partner-item"><span class="ar">الملكية السعودية وات البحرية</span></div>
-        <div class="partner-item">
-            <span class="ar">وزارة الدفاع</span>
-            <span class="en">MINISTRY OF DEFENSE</span>
-        </div>
-        <div class="partner-item">
-            <span class="ar">وزارة الصحة</span>
-            <span class="en">Ministry of Health</span>
-        </div>
-        <div class="partner-item">
-            <span class="ar">المركز الطبي الدولي</span>
-            <span class="en">International Medical Center</span>
-        </div>
-        <div class="partner-item"><span class="ar">جامعة الملك عبد العزيز</span></div>
-        <div class="partner-item">
-            <span class="ar">جامعة جدة</span>
-            <span class="en">University of Jeddah</span>
-        </div>
-        <div class="partner-item">LEXUS</div>
-        <div class="partner-item">
-            <span class="ar">الماجد للعود</span>
-            <span class="en">Al majed oud</span>
-        </div>
-        <div class="partner-item">
-            <span class="ar">جدة بروميناد</span>
-            <span class="en">JEDDAH PROMENADE</span>
-        </div>
+        <% if (partners && partners.length > 0) { %>
+            <% partners.forEach(partner => { %>
+                <div class="partner-item">
+                    <% if (partner.logo) { %>
+                        <img src="<%= partner.logo %>" alt="<%= partner.name_ar %>" style="max-height: 60px;">
+                    <% } else { %>
+                        <span><%= lang === 'ar' ? partner.name_ar : partner.name_en %></span>
+                    <% } %>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <!-- بيانات احتياطية في حال كانت القاعدة فارغة -->
+            <div class="partner-item">Partner 1</div>
+            <div class="partner-item">Partner 2</div>
+        <% } %>
     </div>
 </section>
 
-<!-- Contact / Footer Section -->
+<!-- Blog Section (اختياري: عرض المقالات) -->
+<% if (posts && posts.length > 0) { %>
+<section id="blog" class="content-section">
+    <div class="section-title-wrapper">
+        <h2><span class="ar">المدونة</span><span class="en">Blog</span></h2>
+    </div>
+    <div class="blog-grid" style="display: flex; gap: 20px; overflow-x: auto; padding: 20px;">
+        <% posts.forEach(post => { %>
+            <div class="post-card" style="min-width: 250px;">
+                <img src="<%= post.thumbnail %>" style="width: 100%;">
+                <h5><%= post.title %></h5>
+                <a href="/blog/<%= post.id %>">اقرأ المزيد</a>
+            </div>
+        <% }) %>
+    </div>
+</section>
+<% } %>
+
+<!-- Contact Section -->
 <section class="contact-footer">
     <div class="contact-content">
-        <h2>
-            <span class="ar">لم ينتهي الإبداع</span>
-            <span class="en">Creativity has not ended</span>
-        </h2>
-        <a href="tel:+966568394945" class="contact-btn">
-            <span class="ar">اكتشفونا</span>
-            <span class="en">Discover us</span>
-        </a>
-        <p class="contact-number">+966 56 839 49 45</p>
-        <div class="social-links">
-            <span>in</span> <span>X</span> <span>CPOINT_SA</span>
-        </div>
-        <p class="website-link">WWW.CPOINT-SA.COM</p>
+        <h2><span class="ar">لم ينتهي الإبداع</span><span class="en">Creativity has not ended</span></h2>
+        <form action="/contact" method="POST" style="max-width: 500px; margin: 0 auto; padding: 20px;">
+            <input type="text" name="name" placeholder="الاسم" required style="width:100%; margin-bottom:10px;">
+            <input type="email" name="email" placeholder="البريد" required style="width:100%; margin-bottom:10px;">
+            <textarea name="message" placeholder="رسالتك" style="width:100%; margin-bottom:10px;"></textarea>
+            <button type="submit" class="contact-btn">إرسال</button>
+        </form>
     </div>
 </section>
 
