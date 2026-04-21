@@ -46,42 +46,28 @@ const diagnoseServiceImages = resolveServiceImageDiagnostics();
 
 exports.getHome = async (req, res) => {
     try {
-        // جلب البيانات مباشرة بدون Timeout لضمان ظهورها
-        const [projects, partners, posts, seo, stats, services] = await Promise.all([
-            Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }),
-            Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }),
-            Post.findAll({ limit: 3, order: [['date', 'DESC']] }),
-            GlobalSeo.findOne(),
-            StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }),
-            Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] })
-        ]);
-
-        const pageSeo = {
-            title: seo ? (seo.homeTitle || 'الرئيسية') : 'الرئيسية',
-            seoDescription: seo ? seo.homeDescription : ''
-        };
-
-        // دالة مساعدة للتأكد من مسار الصور
-        const getAsset = (path) => {
-            if (!path) return '';
-            return path.startsWith('http') ? path : (path.startsWith('/') ? path : '/' + path);
-        };
+        // جلب مباشر بدون تعقيدات Timeout
+        const projects = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
+        const partners = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const services = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const posts = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
+        const seo = await GlobalSeo.findOne();
+        const stats = await StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
 
         res.render('index-ar', { 
-            title: pageSeo.title, 
+            title: seo ? (seo.homeTitle || 'الرئيسية') : 'الرئيسية', 
             projects: projects || [],
             partners: partners || [],
             posts: posts || [],
-            seo,
             globalSeo: seo,
-            pageSeo,
+            seo: seo,
             stats: stats || [],
             services: services || [],
             lang: 'ar',
-            assetPath: getAsset // تمرير الدالة للـ View
+            assetPath: (p) => p ? (p.startsWith('http') ? p : (p.startsWith('/') ? p : '/' + p)) : ''
         });
     } catch (error) {
-        console.error("Home Controller Error:", error);
+        console.error("Home Error:", error);
         res.render('index-ar', { title: 'الرئيسية', projects: [], partners: [], posts: [], seo: null, globalSeo: null, stats: [], services: [], lang: 'ar', assetPath: (p)=>p });
     }
 };
