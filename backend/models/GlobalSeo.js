@@ -175,6 +175,16 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     heroBackgroundImage: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    
+    // الحقول الجديدة لأكواد التتبع والربط الخارجي
+    headerScripts: { 
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    footerScripts: { 
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 });
 

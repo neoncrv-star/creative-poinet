@@ -118,18 +118,22 @@
                     </div>
                 </div>
 
-                <!-- Advanced Scripts Card -->
-                <div class="admin-card">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-code"></i> أكواد مخصصة (Custom Scripts)
+                <!-- التعديل الجديد: Tracking & Scripts Card -->
+                <div class="admin-card" style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: #D00000; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-code"></i> أكواد التتبع والربط الخارجي (Tracking & Scripts)
                     </h3>
-                    <div class="form-group">
-                        <label>أكواد الهيدر (Header Scripts - &lt;head&gt;)</label>
-                        <textarea name="customScriptsHeader" rows="5" placeholder="Google Analytics, Tag Manager, Facebook Pixel..." style="direction: ltr; font-family: monospace; font-size: 0.85rem;"><%= seo ? seo.customScriptsHeader : "" %></textarea>
+                    
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="font-weight: bold;">أكواد الترويسة (Header Scripts)</label>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">توضع داخل وسم <code>&lt;head&gt;</code>. (مثل: Google Analytics, Meta Pixel, Google Site Verification)</p>
+                        <textarea name="headerScripts" rows="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; direction: ltr; text-align: left;" placeholder="<!-- الصق أكواد الهيدر هنا -->"><%= seo ? seo.headerScripts : '' %></textarea>
                     </div>
+
                     <div class="form-group">
-                        <label>أكواد الفوتر (Footer Scripts - before &lt;/body&gt;)</label>
-                        <textarea name="customScriptsFooter" rows="5" placeholder="Chat widgets, Tracking pixels..." style="direction: ltr; font-family: monospace; font-size: 0.85rem;"><%= seo ? seo.customScriptsFooter : "" %></textarea>
+                        <label style="font-weight: bold;">أكواد التذييل (Footer Scripts)</label>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">توضع قبل إغلاق وسم <code>&lt;/body&gt;</code>. (مثل: Google Tag Manager (noscript), أدوات المحادثة Chatbots)</p>
+                        <textarea name="footerScripts" rows="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; direction: ltr; text-align: left;" placeholder="<!-- الصق أكواد الفوتر هنا -->"><%= seo ? seo.footerScripts : '' %></textarea>
                     </div>
                 </div>
             </div>
