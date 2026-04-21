@@ -1,5 +1,3 @@
---- START OF FILE Paste April 21, 2026 - 3:29PM ---
-
 <% const isEn = false; %>
 <%- include('partials/header', { isEn: isEn }) %>
 
@@ -213,89 +211,42 @@
         .hero-eyebrow { font-size: 1rem; }
         .btn-hero-pill { padding: 14px 30px; font-size: 1rem; }
     }
-    
-    /* ================= Journey Section ================= */
-    .journey-scroll-section {
-        background-color: var(--bg-color, #050505);
-        background-image: radial-gradient(circle at 50% 50%, #1a0505 0%, #050505 60%);
-        padding: 150px 0;
-        min-height: 100vh;
+
+    /* ================= Achievements / Stats Section ================= */
+    .achievements-section {
+        background-color: #050505;
+        padding: 80px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .achievements-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 40px;
+        text-align: center;
+    }
+    .achievement-card {
+        flex: 1;
+        min-width: 200px;
+    }
+    .achievement-number {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--hero-accent);
+        margin-bottom: 10px;
+        font-family: Arial, sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-        overflow: hidden;
+        gap: 5px;
     }
-    
-    [data-theme="light"] .journey-scroll-section {
-        background-color: #fff;
-        background-image: none;
-    }
-    
-    .journey-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 40px;
-        text-align: center;
-        z-index: 2;
-        position: relative;
-    }
-    
-    .journey-eyebrow {
-        font-size: 1rem;
-        color: var(--primary-color, #e44b30);
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        margin-bottom: 3rem;
-        font-weight: 700;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    
-    .journey-text-content {
-        font-size: clamp(1.8rem, 4vw, 3.5rem);
-        font-weight: 900;
-        line-height: 1.2;
-        color: var(--text-color, #fff);
-        display: block;
-        text-align: center;
-        max-width: 90%;
-        margin: 0 auto;
-    }
-    
-    [data-theme="light"] .journey-text-content {
-        color: #000;
-    }
-    
-    .journey-line {
-        display: inline;
-        opacity: 0.1;
-        color: currentColor;
-        will-change: opacity, filter, color;
-        transition: opacity 0.4s ease, filter 0.4s ease, color 0.4s ease;
-        filter: blur(3px);
-        margin: 0;
-        padding: 2px 0;
-        box-decoration-break: clone;
-        -webkit-box-decoration-break: clone;
-    }
-    
-    [data-theme="light"] .journey-line {
-        opacity: 0.15;
-    }
-    
-    .journey-line.is-active {
-        opacity: 1;
-        color: currentColor;
-        filter: blur(0);
-    }
-    
-    @media (max-width: 768px) {
-        .journey-scroll-section { padding: 100px 0; }
-        .journey-text-content { font-size: 1.8rem; }
+    .achievement-label {
+        font-size: 1.1rem;
+        color: #a0a0a0;
+        font-weight: bold;
     }
 
-    /* ================= NEW: Services Section (Matched to Design) ================= */
+    /* ================= Services Section (NEW DESIGN) ================= */
     .cpoint-services-section {
         background-color: #000000;
         color: #ffffff;
@@ -440,7 +391,7 @@
         .cpoint-svc-img { height: 180px; }
     }
 
-    /* ================= NEW: Portfolio Grid Section (Matched to Design) ================= */
+    /* ================= Portfolio Grid Section (Matched to Design) ================= */
     .cpoint-portfolio-section {
         background-color: #ffffff;
         padding: 100px 0 0 0; /* No bottom padding so images touch footer or next section */
@@ -511,8 +462,7 @@
         transform: translateY(0);
     }
 
-    /* Grid Layout Pattern matching the exact image 
-       (Loops every 6 items perfectly) */
+    /* Grid Layout Pattern matching the exact image (Loops every 6 items perfectly) */
     .cpoint-project-item:nth-child(6n + 1) { grid-column: span 1; grid-row: span 1; }
     .cpoint-project-item:nth-child(6n + 2) { grid-column: span 2; grid-row: span 2; }
     .cpoint-project-item:nth-child(6n + 3) { grid-column: span 1; grid-row: span 1; }
@@ -529,14 +479,12 @@
             grid-auto-rows: 200px;
         }
         .cpoint-project-item:nth-child(n) { grid-column: span 1; grid-row: span 1; }
-        /* Make the 6th item span 2 columns instead of 4 on mobile */
         .cpoint-project-item:nth-child(6n + 6) { grid-column: span 2; }
     }
 
     /* ================= Blog & Contact Section ================= */
     .blog-home-section { padding: 100px 0; background: #fafafa; }
     .contact-section { padding: 100px 0; background: #111; color: #fff; position: relative; }
-    /* (Kept original styling for these as requested only to change services and portfolio) */
     
 </style>
 
@@ -562,8 +510,8 @@
                     <%= seo && seo.heroDescriptionAr ? seo.heroDescriptionAr : 'ترتكز على فكرة واضحة قبل البدء بأي تنفيذ. نحن نؤمن بأن وضوح الرؤية هو أساس كل مشروع ناجح.' %>
                 </p>
                 <div class="hero-actions fade-in">
-                    <a href="#journey" class="btn-hero-pill">
-                        <%= seo && seo.heroBtnTextAr ? seo.heroBtnTextAr : 'اكتشف الرحلة' %>
+                    <a href="#services" class="btn-hero-pill">
+                        <%= seo && seo.heroBtnTextAr ? seo.heroBtnTextAr : 'اكتشف خدماتنا' %>
                         <i class="ri-arrow-left-line"></i>
                     </a>
                 </div>
@@ -576,21 +524,23 @@
         </div>
     </section>
 
-    <!-- ========================= Stats Section ========================== -->
+    <!-- ========================= Stats / Achievements Section ========================== -->
     <% if (typeof stats !== 'undefined' && stats && stats.length) { %>
-    <section class="stats-section" style="background:#000; color:#fff; padding: 50px 0;">
-        <div class="stats-wrapper container" style="display:flex; justify-content:space-around; flex-wrap:wrap; text-align:center;">
-            <% stats.forEach(function(stat) { %>
-                <article class="stat-item" style="margin:20px;">
-                    <div class="stat-value" style="font-size:2.5rem; font-weight:bold; color:#ff3131;">
-                        <span class="stat-number" data-target="<%= stat.value %>">0</span>
-                        <% if (stat.suffix_ar) { %>
-                            <span class="stat-suffix"><%= stat.suffix_ar %></span>
-                        <% } %>
+    <section class="achievements-section">
+        <div class="container">
+            <div class="achievements-grid" data-gsap="fade-up">
+                <% stats.forEach(function(stat) { %>
+                    <div class="achievement-card">
+                        <div class="achievement-number">
+                            <span class="stat-number" data-target="<%= stat.value %>"><%= stat.value %></span>
+                            <% if (stat.suffix_ar) { %>
+                                <span class="stat-suffix"><%= stat.suffix_ar %></span>
+                            <% } %>
+                        </div>
+                        <p class="achievement-label"><%= stat.label_ar %></p>
                     </div>
-                    <p class="stat-label" style="font-size:1.1rem;"><%= stat.label_ar %></p>
-                </article>
-            <% }); %>
+                <% }); %>
+            </div>
         </div>
     </section>
     <% } %>
@@ -620,25 +570,7 @@
         </div>
     </section>
 
-    <!-- ========================= Journey Section ========================== -->
-    <section id="journey" class="journey-scroll-section">
-        <div class="journey-container" style="text-align: center;">
-            <p class="journey-eyebrow" style="text-align: center;">وكالة نقطة إبداعية</p>
-            <div class="journey-text-content" style="text-align: center;">
-                <span class="journey-line"><%= seo && seo.journeyLine1Ar ? seo.journeyLine1Ar : 'وكالة إبداعية وتسويقية متكاملة الخدمات' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine2Ar ? seo.journeyLine2Ar : 'ترتكز على فكرة واحدة واضحة قبل البدء بأي تنفيذ' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine3Ar ? seo.journeyLine3Ar : 'في عالم مزدحم بالضجيج البصري والإعلاني' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine4Ar ? seo.journeyLine4Ar : 'لا نبدأ بالزخرفة' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine5Ar ? seo.journeyLine5Ar : 'بل نبدأ بقرار استراتيجي ذكي وموحد' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine6Ar ? seo.journeyLine6Ar : 'من هذه النقطة، نعيد الإبداع إلى جوهره الحقيقي' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine7Ar ? seo.journeyLine7Ar : 'هوية بصرية راسخة' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine8Ar ? seo.journeyLine8Ar : 'حلول تصميم احترافية' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine9Ar ? seo.journeyLine9Ar : 'وتجهيزات معارض ومؤتمرات عالية الجودة' %></span>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================= Services Section (NEW DESIGN) ========================== -->
+    <!-- ========================= Services Section ========================== -->
     <section id="services" class="cpoint-services-section">
         <div class="container" style="max-width: 1400px; padding: 0 40px;">
             <div class="cpoint-services-header" data-gsap="fade-up">
@@ -656,20 +588,14 @@
                 <% if (servicesList.length) { %>
                     <% servicesList.forEach(function(service, index) { %>
                         <div class="cpoint-service-item" data-gsap="fade-up" data-delay="<%= index * 0.1 %>">
-                            <!-- رقم الخدمة -->
                             <span class="cpoint-svc-num"><%= (index + 1).toString().padStart(2, '0') %></span>
-                            
-                            <!-- صورة الخدمة (يفضل أن تكون بصيغة PNG مفرغة من لوحة التحكم) -->
                             <div class="cpoint-svc-img">
                                 <% if (service.image) { %>
                                     <img src="<%= assetPath(service.image) %>" alt="<%= service.title_ar || '' %>" loading="lazy">
                                 <% } else { %>
-                                    <!-- Placeholder in case no image -->
                                     <div style="width:100px; height:100px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
                                 <% } %>
                             </div>
-                            
-                            <!-- محتوى واسم الخدمة -->
                             <div class="cpoint-svc-content">
                                 <div class="cpoint-svc-title-row">
                                     <h3><%= service.title_ar || service.title_en || 'عنوان الخدمة' %></h3>
@@ -688,14 +614,13 @@
         </div>
     </section>
 
-    <!-- ========================= Portfolio Section (NEW DESIGN) ========================== -->
+    <!-- ========================= Portfolio Section ========================== -->
     <section id="portfolio" class="cpoint-portfolio-section">
         <div class="cpoint-portfolio-header" data-gsap="fade-up">
             <h2>آخر مشاريعها</h2>
             <p>نحول الأفكار إلى واقع ملموس وكل إبداع يبدأ من نقطة<br>استمتع بمشاهدة كافة أعمالنا</p>
         </div>
 
-        <!-- Grid Layout (Matches the exact collage structure automatically via CSS) -->
         <div class="cpoint-portfolio-grid">
             <% if (projects && projects.length > 0) { %>
                 <% projects.forEach(function(project) { %>
@@ -714,14 +639,12 @@
                                  alt="مشروع" loading="lazy">
                         <% } %>
 
-                        <!-- Hover Overlay -->
                         <div class="cpoint-project-overlay">
                             <h3><%= project.title_ar || 'مشروع إبداعي' %></h3>
                         </div>
                     </a>
                 <% }); %>
             <% } else { %>
-                <!-- Dummy Data matching the screenshot layout exactly if no dynamic data -->
                 <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="1"><div class="cpoint-project-overlay"><h3>تصميم إبداعي</h3></div></a>
                 <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="2"><div class="cpoint-project-overlay"><h3>الهوية البصرية</h3></div></a>
                 <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="3"><div class="cpoint-project-overlay"><h3>طباعة وإنتاج</h3></div></a>

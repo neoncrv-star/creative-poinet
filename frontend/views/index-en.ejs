@@ -1,5 +1,3 @@
---- START OF FILE Paste April 21, 2026 - 3:29PM ---
-
 <% const isEn = true; %>
 <%- include('partials/header', { isEn: isEn }) %>
 
@@ -109,7 +107,7 @@
     }
     
     .btn-hero-pill:hover i {
-        transform: translateX(5px); /* LTR direction */
+        transform: translateX(5px);
     }
     
     .hero-video-bg {
@@ -207,95 +205,42 @@
         .hero-description { margin-left: auto; margin-right: auto; }
         .hero-actions { justify-content: center; }
     }
-    
-    @media (max-width: 480px) {
-        .hero-title { font-size: 2.2rem; }
-        .hero-eyebrow { font-size: 1rem; }
-        .btn-hero-pill { padding: 14px 30px; font-size: 1rem; }
+
+    /* ================= Achievements / Stats Section ================= */
+    .achievements-section {
+        background-color: #050505;
+        padding: 80px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
     }
-    
-    /* ================= Journey Section ================= */
-    .journey-scroll-section {
-        background-color: var(--bg-color, #050505);
-        background-image: radial-gradient(circle at 50% 50%, #1a0505 0%, #050505 60%);
-        padding: 150px 0;
-        min-height: 100vh;
+    .achievements-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 40px;
+        text-align: center;
+    }
+    .achievement-card {
+        flex: 1;
+        min-width: 200px;
+    }
+    .achievement-number {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--hero-accent);
+        margin-bottom: 10px;
+        font-family: Arial, sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-        overflow: hidden;
+        gap: 5px;
     }
-    
-    [data-theme="light"] .journey-scroll-section {
-        background-color: #fff;
-        background-image: none;
-    }
-    
-    .journey-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 40px;
-        text-align: center;
-        z-index: 2;
-        position: relative;
-    }
-    
-    .journey-eyebrow {
-        font-size: 1rem;
-        color: var(--primary-color, #e44b30);
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        margin-bottom: 3rem;
-        font-weight: 700;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    
-    .journey-text-content {
-        font-size: clamp(1.8rem, 4vw, 3.5rem);
-        font-weight: 900;
-        line-height: 1.2;
-        color: var(--text-color, #fff);
-        display: block;
-        text-align: center;
-        max-width: 90%;
-        margin: 0 auto;
-    }
-    
-    [data-theme="light"] .journey-text-content {
-        color: #000;
-    }
-    
-    .journey-line {
-        display: inline;
-        opacity: 0.1;
-        color: currentColor;
-        will-change: opacity, filter, color;
-        transition: opacity 0.4s ease, filter 0.4s ease, color 0.4s ease;
-        filter: blur(3px);
-        margin: 0;
-        padding: 2px 0;
-        box-decoration-break: clone;
-        -webkit-box-decoration-break: clone;
-    }
-    
-    [data-theme="light"] .journey-line {
-        opacity: 0.15;
-    }
-    
-    .journey-line.is-active {
-        opacity: 1;
-        color: currentColor;
-        filter: blur(0);
-    }
-    
-    @media (max-width: 768px) {
-        .journey-scroll-section { padding: 100px 0; }
-        .journey-text-content { font-size: 1.8rem; }
+    .achievement-label {
+        font-size: 1.1rem;
+        color: #a0a0a0;
+        font-weight: bold;
     }
 
-    /* ================= NEW: Services Section (Matched to Design - English LTR) ================= */
+    /* ================= Services Section (NEW DESIGN - LTR) ================= */
     .cpoint-services-section {
         background-color: #000000;
         color: #ffffff;
@@ -338,7 +283,7 @@
         margin: 0 auto;
         position: relative;
     }
-    /* Staggering to match the scattered layout */
+    /* Staggering */
     .cpoint-service-item:nth-child(2) { margin-top: 100px; }
     .cpoint-service-item:nth-child(5) { margin-top: -60px; }
     .cpoint-service-item:nth-child(4) { margin-top: -40px; }
@@ -349,22 +294,20 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
-        /* Technical subtle borders resembling blueprint lines */
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         padding-bottom: 30px;
     }
     .cpoint-service-item::after {
         content: '';
         position: absolute;
-        right: -20px; /* LTR Adaptation: Divider on the right */
+        right: -20px;
         top: 20%;
         height: 60%;
         width: 1px;
         background: rgba(255, 255, 255, 0.05);
     }
-    .cpoint-service-item:nth-child(3n)::after {
-        display: none;
-    }
+    .cpoint-service-item:nth-child(3n)::after { display: none; }
+    
     .cpoint-svc-num {
         position: absolute;
         top: 0;
@@ -372,7 +315,6 @@
         font-size: 1.2rem;
         font-weight: 700;
         color: #ffffff;
-        font-family: sans-serif;
     }
     .cpoint-svc-img {
         width: 100%;
@@ -387,23 +329,19 @@
         max-width: 90%;
         max-height: 100%;
         object-fit: contain;
-        background: transparent;
         transition: transform 0.4s ease;
-    }
-    .cpoint-service-item:hover .cpoint-svc-img img {
-        transform: scale(1.05);
     }
     .cpoint-svc-content {
         width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: flex-start; /* LTR Adaptation: Left align text */
+        align-items: flex-start; /* LTR Adaptation */
         text-align: left;
     }
     .cpoint-svc-title-row {
         display: flex;
         align-items: center;
-        justify-content: flex-start; /* LTR Adaptation */
+        justify-content: flex-start;
         gap: 10px;
         margin-bottom: 5px;
         width: 100%;
@@ -419,31 +357,17 @@
         height: 8px;
         background-color: #ff3131;
         border-radius: 50%;
-        flex-shrink: 0;
     }
     .cpoint-svc-content p {
         font-size: 0.85rem;
         color: #888888;
         margin: 0;
-        margin-left: 18px; /* LTR Adaptation: align under title bypassing the dot */
-        font-family: Arial, sans-serif;
     }
 
-    @media (max-width: 991px) {
-        .cpoint-services-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
-        .cpoint-service-item:nth-child(n) { margin-top: 0 !important; }
-        .cpoint-service-item::after { display: none; }
-        .header-red-dot { display: none; }
-    }
-    @media (max-width: 768px) {
-        .cpoint-services-grid { grid-template-columns: 1fr; }
-        .cpoint-svc-img { height: 180px; }
-    }
-
-    /* ================= NEW: Portfolio Grid Section (Matched to Design) ================= */
+    /* ================= Portfolio Grid Section ================= */
     .cpoint-portfolio-section {
         background-color: #ffffff;
-        padding: 100px 0 0 0; /* No bottom padding so images touch footer or next section */
+        padding: 100px 0 0 0;
     }
     .cpoint-portfolio-header {
         text-align: center;
@@ -499,44 +423,28 @@
         font-weight: bold;
         transform: translateY(20px);
         transition: transform 0.4s ease;
-        margin: 0;
     }
-    .cpoint-project-item:hover img {
-        transform: scale(1.08);
-    }
-    .cpoint-project-item:hover .cpoint-project-overlay {
-        opacity: 1;
-    }
-    .cpoint-project-item:hover .cpoint-project-overlay h3 {
-        transform: translateY(0);
-    }
+    .cpoint-project-item:hover img { transform: scale(1.08); }
+    .cpoint-project-item:hover .cpoint-project-overlay { opacity: 1; }
+    .cpoint-project-item:hover .cpoint-project-overlay h3 { transform: translateY(0); }
 
-    /* Grid Layout Pattern matching the exact image 
-       (Loops every 6 items perfectly) */
+    /* Collage Layout Pattern */
     .cpoint-project-item:nth-child(6n + 1) { grid-column: span 1; grid-row: span 1; }
     .cpoint-project-item:nth-child(6n + 2) { grid-column: span 2; grid-row: span 2; }
     .cpoint-project-item:nth-child(6n + 3) { grid-column: span 1; grid-row: span 1; }
     .cpoint-project-item:nth-child(6n + 4) { grid-column: span 1; grid-row: span 1; }
     .cpoint-project-item:nth-child(6n + 5) { grid-column: span 1; grid-row: span 1; }
-    .cpoint-project-item:nth-child(6n + 6) { grid-column: span 4; grid-row: span 1; } /* Full width bottom */
+    .cpoint-project-item:nth-child(6n + 6) { grid-column: span 4; grid-row: span 1; }
 
-    @media (max-width: 1024px) {
-        .cpoint-portfolio-grid { grid-auto-rows: 250px; }
-    }
     @media (max-width: 768px) {
-        .cpoint-portfolio-grid { 
-            grid-template-columns: repeat(2, 1fr); 
-            grid-auto-rows: 200px;
-        }
+        .cpoint-portfolio-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px;}
         .cpoint-project-item:nth-child(n) { grid-column: span 1; grid-row: span 1; }
-        /* Make the 6th item span 2 columns instead of 4 on mobile */
         .cpoint-project-item:nth-child(6n + 6) { grid-column: span 2; }
     }
 
     /* ================= Blog & Contact Section ================= */
     .blog-home-section { padding: 100px 0; background: #fafafa; }
     .contact-section { padding: 100px 0; background: #111; color: #fff; position: relative; }
-    
 </style>
 
 <main>
@@ -552,17 +460,17 @@
         <div class="container hero-container">
             <div class="hero-content">
                 <p class="hero-eyebrow fade-in">
-                    <%= seo && seo.heroSmallTitleEn ? seo.heroSmallTitleEn : 'The Point' %>
+                    <%= seo && seo.heroSmallTitleEn ? seo.heroSmallTitleEn : 'Creative starts with a point' %>
                 </p>
                 <h1 class="hero-title fade-in">
-                    <%- (seo && seo.heroMainTitleEn ? seo.heroMainTitleEn : 'Every Creativity Starts <br> With a Point').replace(/\n/g, '<br>') %>
+                    <%- (seo && seo.heroMainTitleEn ? seo.heroMainTitleEn : 'Full Service Creative <br> & Marketing Agency').replace(/\n/g, '<br>') %>
                 </h1>
                 <p class="hero-description fade-in">
-                    <%= seo && seo.heroDescriptionEn ? seo.heroDescriptionEn : 'This slogan goes beyond summarizing our vision — it embodies our practical and strategic mindset.' %>
+                    <%= seo && seo.heroDescriptionEn ? seo.heroDescriptionEn : 'We believe that clarity of vision is the basis of every successful project.' %>
                 </p>
                 <div class="hero-actions fade-in">
-                    <a href="#journey" class="btn-hero-pill">
-                        <%= seo && seo.heroBtnTextEn ? seo.heroBtnTextEn : 'Explore' %>
+                    <a href="#services" class="btn-hero-pill">
+                        <%= seo && seo.heroBtnTextEn ? seo.heroBtnTextEn : 'Explore Services' %>
                         <i class="ri-arrow-right-line"></i>
                     </a>
                 </div>
@@ -575,21 +483,23 @@
         </div>
     </section>
 
-    <!-- ========================= Stats Section ========================== -->
+    <!-- ========================= Stats / Achievements Section ========================== -->
     <% if (typeof stats !== 'undefined' && stats && stats.length) { %>
-    <section class="stats-section" style="background:#000; color:#fff; padding: 50px 0;">
-        <div class="stats-wrapper container" style="display:flex; justify-content:space-around; flex-wrap:wrap; text-align:center;">
-            <% stats.forEach(function(stat) { %>
-                <article class="stat-item" style="margin:20px;">
-                    <div class="stat-value" style="font-size:2.5rem; font-weight:bold; color:#ff3131;">
-                        <span class="stat-number" data-target="<%= stat.value %>">0</span>
-                        <% if (stat.suffix_en) { %>
-                            <span class="stat-suffix"><%= stat.suffix_en %></span>
-                        <% } %>
+    <section class="achievements-section">
+        <div class="container">
+            <div class="achievements-grid" data-gsap="fade-up">
+                <% stats.forEach(function(stat) { %>
+                    <div class="achievement-card">
+                        <div class="achievement-number">
+                            <span class="stat-number" data-target="<%= stat.value %>"><%= stat.value %></span>
+                            <% if (stat.suffix_en) { %>
+                                <span class="stat-suffix"><%= stat.suffix_en %></span>
+                            <% } %>
+                        </div>
+                        <p class="achievement-label"><%= stat.label_en %></p>
                     </div>
-                    <p class="stat-label" style="font-size:1.1rem;"><%= stat.label_en %></p>
-                </article>
-            <% }); %>
+                <% }); %>
+            </div>
         </div>
     </section>
     <% } %>
@@ -598,16 +508,13 @@
     <section id="partners" class="partners-section" style="padding: 60px 0; background:#f9f9f9;">
         <div class="container">
             <div class="partners-header" data-gsap="fade-up" style="text-align:center; margin-bottom:40px;">
-                <h2 class="partners-title" style="font-size:1.8rem; font-weight:bold; color:#000;">We take pride in our work and are even more proud of the partnerships we've established.</h2>
+                <h2 class="partners-title" style="font-size:1.8rem; font-weight:bold; color:#000;">Proud of our work and our partnerships.</h2>
             </div>
             <div class="partners-grid" style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; align-items:center;">
                 <% if (partners && partners.length > 0) { %>
                     <% partners.forEach(function(partner) { %>
                         <div class="partner-item" data-gsap="fade-up">
-                            <img src="<%= assetPath(partner.logo || '') %>"
-                                 alt="<%= partner.name || '' %>"
-                                 title="<%= partner.name || '' %>"
-                                 loading="lazy" decoding="async" width="150" style="filter:grayscale(100%); opacity:0.7; transition:all 0.3s;">
+                            <img src="<%= assetPath(partner.logo || '') %>" alt="<%= partner.name || '' %>" width="150" style="filter:grayscale(100%); opacity:0.7; transition:all 0.3s;">
                         </div>
                     <% }); %>
                 <% } else { %>
@@ -619,114 +526,59 @@
         </div>
     </section>
 
-    <!-- ========================= Journey Section ========================== -->
-    <section id="journey" class="journey-scroll-section">
-        <div class="journey-container" style="text-align: center;">
-            <p class="journey-eyebrow" style="text-align: center;">Creative Point Agency</p>
-            <div class="journey-text-content" style="text-align: center;">
-                <span class="journey-line"><%= seo && seo.journeyLine1En ? seo.journeyLine1En : 'A full-service creative and marketing agency' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine2En ? seo.journeyLine2En : 'Built around one clear idea before any execution begins' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine3En ? seo.journeyLine3En : 'In a world crowded with visual and advertising noise' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine4En ? seo.journeyLine4En : "We don't start with decoration" %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine5En ? seo.journeyLine5En : 'We start with a smart, unified strategic decision' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine6En ? seo.journeyLine6En : "From this point, we bring creativity back to its true essence" %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine7En ? seo.journeyLine7En : 'A solid visual identity' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine8En ? seo.journeyLine8En : 'Professional design solutions' %></span>
-                <span class="journey-line"><%= seo && seo.journeyLine9En ? seo.journeyLine9En : 'And high-quality exhibition and conference setups' %></span>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================= Services Section (NEW DESIGN) ========================== -->
+    <!-- ========================= Services Section (LTR) ========================== -->
     <section id="services" class="cpoint-services-section">
         <div class="container" style="max-width: 1400px; padding: 0 40px;">
             <div class="cpoint-services-header" data-gsap="fade-up">
                 <div class="header-red-dot"></div>
                 <h2>Our Services</h2>
-                <p>
-                    Integrated solutions starting from a clear point<br>
-                    Every service here is built around a single strategic decision, transforming into a visual experience<br>
-                    and tangible applications stacked together to create a cohesive creative system.
-                </p>
+                <p>Integrated solutions starting from a clear point. Every service is built on strategic decisions to create a cohesive creative system.</p>
             </div>
 
             <div class="cpoint-services-grid">
                 <% var servicesList = (typeof services !== 'undefined' && services) ? services : []; %>
                 <% if (servicesList.length) { %>
                     <% servicesList.forEach(function(service, index) { %>
-                        <div class="cpoint-service-item" data-gsap="fade-up" data-delay="<%= index * 0.1 %>">
-                            <!-- Service Number -->
+                        <div class="cpoint-service-item" data-gsap="fade-up">
                             <span class="cpoint-svc-num"><%= (index + 1).toString().padStart(2, '0') %></span>
-                            
-                            <!-- Service Image -->
                             <div class="cpoint-svc-img">
                                 <% if (service.image) { %>
                                     <img src="<%= assetPath(service.image) %>" alt="<%= service.title_en || '' %>" loading="lazy">
-                                <% } else { %>
-                                    <!-- Placeholder in case no image -->
-                                    <div style="width:100px; height:100px; background:rgba(255,255,255,0.1); border-radius:10px;"></div>
                                 <% } %>
                             </div>
-                            
-                            <!-- Service Title & Content -->
                             <div class="cpoint-svc-content">
                                 <div class="cpoint-svc-title-row">
                                     <div class="item-red-dot"></div>
                                     <h3><%= service.title_en || service.title_ar || 'Service Title' %></h3>
                                 </div>
-                                <p><%= service.tag1_en || service.description_en || 'Service Description' %></p>
+                                <p><%= service.description_en || 'Service Description' %></p>
                             </div>
                         </div>
                     <% }); %>
-                <% } else { %>
-                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #888;">
-                        <p>No services added yet. Please add them from the dashboard.</p>
-                    </div>
                 <% } %>
             </div>
         </div>
     </section>
 
-    <!-- ========================= Portfolio Section (NEW DESIGN) ========================== -->
+    <!-- ========================= Portfolio Section ========================== -->
     <section id="portfolio" class="cpoint-portfolio-section">
         <div class="cpoint-portfolio-header" data-gsap="fade-up">
-            <h2>Our Latest Projects</h2>
-            <p>Turning ideas into tangible reality, and every creation starts with a point.<br>Enjoy exploring all our work.</p>
+            <h2>Latest Projects</h2>
+            <p>Turning ideas into tangible reality... explore our latest creative work.</p>
         </div>
 
-        <!-- Grid Layout (Matches the exact collage structure automatically via CSS) -->
         <div class="cpoint-portfolio-grid">
             <% if (projects && projects.length > 0) { %>
                 <% projects.forEach(function(project) { %>
-                    <a href="<%= project.externalLink || '/portfolio/' + project.id %>" 
-                       class="cpoint-project-item" 
-                       <%= project.externalLink ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
-                       
-                        <% if (project.image && (project.image.endsWith('.mp4') || project.image.endsWith('.webm'))) { %>
-                            <video src="<%= assetPath(project.image) %>" muted loop autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
-                        <% } else if (project.image) { %>
-                            <img src="<%= assetPath(project.image) %>" 
-                                 alt="<%= project.title_en || '' %>" 
-                                 loading="lazy" decoding="async">
-                        <% } else { %>
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                                 alt="Project" loading="lazy">
+                    <a href="<%= project.externalLink || '/portfolio/' + project.id %>" class="cpoint-project-item">
+                        <% if (project.image) { %>
+                            <img src="<%= assetPath(project.image) %>" alt="<%= project.title_en || '' %>" loading="lazy">
                         <% } %>
-
-                        <!-- Hover Overlay -->
                         <div class="cpoint-project-overlay">
                             <h3><%= project.title_en || 'Creative Project' %></h3>
                         </div>
                     </a>
                 <% }); %>
-            <% } else { %>
-                <!-- Dummy Data matching the screenshot layout exactly if no dynamic data -->
-                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="1"><div class="cpoint-project-overlay"><h3>Creative Design</h3></div></a>
-                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="2"><div class="cpoint-project-overlay"><h3>Visual Identity</h3></div></a>
-                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="3"><div class="cpoint-project-overlay"><h3>Printing & Production</h3></div></a>
-                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="4"><div class="cpoint-project-overlay"><h3>Photography</h3></div></a>
-                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="5"><div class="cpoint-project-overlay"><h3>Web Development</h3></div></a>
-                <a href="#" class="cpoint-project-item"><img src="https://images.unsplash.com/photo-1558655146-d09347e92766?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="6"><div class="cpoint-project-overlay"><h3>Strategic Planning</h3></div></a>
             <% } %>
         </div>
     </section>
@@ -734,166 +586,45 @@
     <!-- ========================= Blog Section ========================== -->
     <section id="blog" class="blog-home-section">
         <div class="container">
-            <div class="blog-section-inner" data-gsap="fade-up">
-                <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
-                    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem; color:#000;">Latest Articles</h2>
-                    <p style="color: #888; font-size: 1.1rem;">Insights and thoughts in the world of design and technology</p>
-                </div>
-
-                <div class="blog-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
-                    <% if (posts && posts.length > 0) { %>
-                        <% posts.forEach(function(post) { %>
-                            <article class="blog-card" style="background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
-                                <% if (post.image) { %>
-                                    <div class="blog-image" style="height:200px; overflow:hidden;">
-                                        <img src="<%= assetPath(post.image) %>"
-                                             alt="<%= post.title_en || post.title || '' %>"
-                                             loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">
-                                    </div>
-                                <% } %>
-                                <div class="blog-content" style="padding:25px;">
-                                    <span class="blog-date" style="color:#ff3131; font-size:0.85rem;"><%= post.date || '' %></span>
-                                    <h3 style="margin:10px 0; font-size:1.3rem; color:#000;"><%= post.title_en || post.title || '' %></h3>
-                                    <p class="blog-excerpt" style="color:#666; font-size:0.9rem; margin-bottom:20px;"><%= post.excerpt_en || post.excerpt || '' %></p>
-                                    <a href="/blog/<%= post.id %>" class="read-more" style="color:#000; font-weight:bold; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
-                                        <span>Read More</span>
-                                        <i class="ri-arrow-right-line"></i>
-                                    </a>
-                                </div>
-                            </article>
-                        <% }); %>
-                    <% } else { %>
-                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; background: #fff; border-radius: 20px; border: 1px solid #eee;">
-                            <p style="color: #666;">No articles available at the moment.</p>
-                        </div>
-                    <% } %>
-                </div>
-
-                <div class="view-all-container" style="text-align:center; margin-top:40px;">
-                    <a href="/blog" class="view-all-btn" style="background:#000; color:#fff; padding:12px 30px; border-radius:30px; text-decoration:none; font-weight:bold;">View All Articles</a>
-                </div>
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h2 class="section-title" style="font-size: 2.5rem; color:#000;">Latest Articles</h2>
+            </div>
+            <div class="blog-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
+                <% if (posts && posts.length > 0) { %>
+                    <% posts.forEach(function(post) { %>
+                        <article class="blog-card" style="background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+                            <div class="blog-content" style="padding:25px;">
+                                <span style="color:#ff3131; font-size:0.85rem;"><%= post.date || '' %></span>
+                                <h3 style="margin:10px 0; color:#000;"><%= post.title_en || post.title || '' %></h3>
+                                <a href="/blog/<%= post.id %>" style="color:#000; font-weight:bold; text-decoration:none;">Read More <i class="ri-arrow-right-line"></i></a>
+                            </div>
+                        </article>
+                    <% }); %>
+                <% } %>
             </div>
         </div>
     </section>
 
     <!-- ========================= Contact Section ========================== -->
     <section id="contact" class="contact-section">
-        <div class="marquee-wrapper contact-marquee" style="overflow:hidden; white-space:nowrap; margin-bottom:50px;">
-            <div class="marquee-content" aria-hidden="true" style="display:inline-block; font-size:4rem; font-weight:900; color:rgba(255,255,255,0.05); letter-spacing:5px;">
-                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
-                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
-                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
-            </div>
-        </div>
         <div class="container">
-            <div class="contact-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:60px;">
-                <div class="contact-info" data-gsap="fade-right">
-                    <h2 class="contact-title" style="font-size:2.5rem; margin-bottom:20px; font-weight:bold;">
-                        <%- (seo && seo.contactTitleEn ? seo.contactTitleEn : 'Start a New<br>Creative Journey').replace(/\n/g, '<br>') %>
-                    </h2>
-                    <p class="contact-subtitle" style="color:#aaa; margin-bottom:40px; line-height:1.6;">
-                        <%= seo && seo.contactSubtitleEn ? seo.contactSubtitleEn : 'We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.' %>
-                    </p>
-
-                    <div class="contact-details" style="display:flex; flex-direction:column; gap:20px;">
-                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
-                            <i class="ri-phone-line" style="font-size:1.5rem; color:#ff3131;"></i>
-                            <div>
-                                <span style="font-size:0.85rem; color:#888;">Call Us</span>
-                                <p dir="ltr" style="margin:0; font-weight:bold;"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
-                            </div>
-                        </div>
-                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
-                            <i class="ri-mail-line" style="font-size:1.5rem; color:#ff3131;"></i>
-                            <div>
-                                <span style="font-size:0.85rem; color:#888;">Email</span>
-                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
-                            </div>
-                        </div>
-                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
-                            <i class="ri-map-pin-line" style="font-size:1.5rem; color:#ff3131;"></i>
-                            <div>
-                                <span style="font-size:0.85rem; color:#888;">Location</span>
-                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="social-links" style="margin-top:40px; display:flex; gap:15px;">
-                        <% if (seo && seo.socialInstagram) { %>
-                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-instagram-line"></i></a>
-                        <% } %>
-                        <% if (seo && seo.socialTwitter) { %>
-                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-twitter-x-line"></i></a>
-                        <% } %>
-                        <% if (seo && seo.socialLinkedin) { %>
-                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-linkedin-box-line"></i></a>
-                        <% } %>
-                    </div>
+            <div class="contact-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:60px;">
+                <div class="contact-info">
+                    <h2 style="font-size:2.5rem; margin-bottom:20px;">Start a New Journey</h2>
+                    <p style="color:#aaa; line-height:1.6;">We are here to listen to your ideas and transform them into visual impact. Contact us today.</p>
                 </div>
-
-                <div class="contact-form-wrapper" data-gsap="fade-left">
+                <div class="contact-form-wrapper">
                     <form action="/contact" method="POST" class="contact-form" style="display:flex; flex-direction:column; gap:20px;">
-                        <div class="form-group">
-                            <input type="text" name="name" placeholder="Full Name" required autocomplete="name" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        </div>
-                        <div class="form-group">
-                            <input type="email" name="email" placeholder="Email Address" required autocomplete="email" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        </div>
-                        <div class="form-group">
-                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        </div>
-                        <div class="form-group">
-                            <select name="service" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                                <option value="" disabled selected>Select Service</option>
-                                <option value="branding">Branding</option>
-                                <option value="marketing">Digital Marketing</option>
-                                <option value="web">Web Development</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <textarea name="message" rows="5" placeholder="Project Details" required style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn" id="contact-submit-btn" style="background:#ff3131; color:#fff; padding:15px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
-                            <span>Send Request</span>
-                            <i class="ri-send-plane-fill"></i>
-                        </button>
+                        <input type="text" name="name" placeholder="Full Name" required style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
+                        <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
+                        <textarea name="message" rows="4" placeholder="Project Details" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
+                        <button type="submit" style="background:#ff3131; color:#fff; padding:15px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Send Request</button>
                     </form>
-
-                    <div id="contact-success" style="display:none; margin-top:20px; padding:15px; background:#222; border:1px solid #fff; border-radius:10px; color:#fff; text-align:center;" role="alert">
-                        <i class="ri-checkbox-circle-line" style="font-size:1.5rem; vertical-align:middle; margin-right:10px;"></i>
-                        Your request has been sent successfully! We will contact you soon.
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
 </main>
-
-<script>
-    (function () {
-        var urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('success')) {
-            var successEl = document.getElementById('contact-success');
-            var formEl    = document.querySelector('.contact-form');
-            if (successEl) successEl.style.display = 'block';
-            if (formEl)    formEl.style.display    = 'none';
-        }
-    })();
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-
-<script id="slider-config-data" type="application/json">
-    <%- JSON.stringify({
-        effect:           (seo && seo.sliderEffect)           ? seo.sliderEffect           : "slide",
-        autoplay:         (seo && seo.sliderAutoplay)         ? true                       : false,
-        autoplayDelay:    (seo && seo.sliderAutoplayDelay)    ? seo.sliderAutoplayDelay    : 3000,
-        slidesPerView:    (seo && seo.sliderSlidesPerView)    ? seo.sliderSlidesPerView    : 3,
-        spaceBetween:     (seo && seo.sliderSpaceBetween)     ? seo.sliderSpaceBetween     : 30
-    }) %>
-</script>
 
 <%- include('partials/footer', { isEn: isEn }) %>
