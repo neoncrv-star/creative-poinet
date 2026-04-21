@@ -27,11 +27,12 @@ async function ensureGlobalSeoModelSync() {
     }
 }
 
-// Helper to delete file
-// NOTE: Intentionally disabled physical deletion to keep assets immutable.
-// Files are content-addressed and never removed to avoid accidental loss.
+// ─── Storage helpers ────────────────────────────────────────────────────────
+
 const storageService = require('../src/storage/storage.service');
 
+// NOTE: Physical deletion intentionally disabled – assets are content-addressed
+// and immutable to avoid accidental loss.
 const deleteFile = (stored) => {
     try {
         const filename = storageService.mapDbValueToLocal(stored);
@@ -42,7 +43,6 @@ const deleteFile = (stored) => {
     }
 };
 
-// Normalize stored asset paths to canonical uploads URL based on storage service
 const normalizeAsset = (value) => {
     if (!value) return value;
     const filename = storageService.mapDbValueToLocal(value);
@@ -58,7 +58,7 @@ const checkAssetExists = (rel) => {
     try {
         const primaryAbs = storageService.buildAbsolutePath(clean);
         if (fs.existsSync(primaryAbs) && fs.statSync(primaryAbs).isFile()) {
-            try { fileSize = fs.statSync(primaryAbs).size; } catch {}
+            try { fileSize = fs.statSync(primaryAbs).size; } catch { }
             return { exists: true, fileSize };
         }
         const basename = path.basename(clean, path.extname(clean));
@@ -67,19 +67,18 @@ const checkAssetExists = (rel) => {
         for (const ext of exts) {
             const altAbs = storageService.buildAbsolutePath(basename + ext);
             if (fs.existsSync(altAbs) && fs.statSync(altAbs).isFile()) {
-                try { fileSize = fs.statSync(altAbs).size; } catch {}
+                try { fileSize = fs.statSync(altAbs).size; } catch { }
                 return { exists: true, fileSize };
             }
         }
-    } catch {
-    }
+    } catch { }
     return { exists, fileSize };
 };
 
-// Content-addressed storage: move uploaded file to <sha256>.<ext> and return canonical storage URL without format conversion
+// Content-addressed storage: <sha256-32>.<ext>
 const toHashedAsset = async (file) => {
     if (!file) return null;
-    const tmpPath = file.path; // absolute or relative from process cwd
+    const tmpPath = file.path;
     const absTmp = path.isAbsolute(tmpPath) ? tmpPath : path.join(process.cwd(), tmpPath);
     const buf = fs.readFileSync(absTmp);
     const sha = crypto.createHash('sha256').update(buf).digest('hex').slice(0, 32);
@@ -89,9 +88,11 @@ const toHashedAsset = async (file) => {
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
     const finalAbs = path.join(uploadsDir, finalName);
     if (!fs.existsSync(finalAbs)) fs.renameSync(absTmp, finalAbs);
-    else { try { fs.unlinkSync(absTmp); } catch {} }
+    else { try { fs.unlinkSync(absTmp); } catch { } }
     return storageService.toDbValue(finalName);
 };
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
 
 exports.getLogin = (req, res) => {
     res.render('admin/login', { title: 'تسجيل الدخول', error: null });
@@ -101,31 +102,30 @@ exports.postLogin = async (req, res) => {
     const { username, password } = req.body;
     try {
         debugLog(`Login attempt for username: ${username}`);
-        
-        // --- Development Fallback Login ---
+
         if (username === 'admin' && password === 'admin123') {
-            req.session.userId = 999; 
+            req.session.userId = 999;
             req.session.userRole = 'super_admin';
             debugLog('Using fallback dev login. Redirecting to /admin...');
             return res.redirect('/admin');
         }
-        
+
         debugLog(`Current DB dialect: ${sequelize.getDialect()}`);
         const user = await User.findOne({ where: { username } });
         if (!user) {
             debugLog(`User not found: ${username}`);
             return res.render('admin/login', { title: 'تسجيل الدخول', error: 'بيانات الدخول غير صحيحة' });
         }
-        
-        debugLog(`User found, comparing passwords...`);
+
+        debugLog('User found, comparing passwords...');
         const isMatch = await user.validPassword(password);
         debugLog(`Password match result: ${isMatch}`);
-        
+
         if (!isMatch) {
             debugLog(`Password mismatch for user: ${username}`);
             return res.render('admin/login', { title: 'تسجيل الدخول', error: 'بيانات الدخول غير صحيحة' });
         }
-        
+
         req.session.userId = user.id;
         req.session.userRole = user.role;
         debugLog(`Session set for user ID: ${user.id}. Redirecting to /admin...`);
@@ -138,13 +138,12 @@ exports.postLogin = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/admin/login');
-    });
+    req.session.destroy(() => res.redirect('/admin/login'));
 };
 
-// --- Account: Change Password ---
-exports.getChangePassword = async (req, res) => {
+// ─── Account: Change Password ─────────────────────────────────────────────
+
+exports.getChangePassword = (req, res) => {
     res.render('admin/change-password', {
         title: 'لوحة التحكم | تغيير كلمة المرور',
         path: '/admin/account/password',
@@ -155,121 +154,84 @@ exports.getChangePassword = async (req, res) => {
 
 exports.postChangePassword = async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
+    const renderPage = (error, success = null) =>
+        res.render('admin/change-password', {
+            title: 'لوحة التحكم | تغيير كلمة المرور',
+            path: '/admin/account/password',
+            error,
+            success
+        });
+
     try {
-        const userId = req.session.userId;
-        if (!userId) {
-            return res.redirect('/admin/login');
-        }
-        const user = await User.findByPk(userId);
-        if (!user) {
-            return res.render('admin/change-password', {
-                title: 'لوحة التحكم | تغيير كلمة المرور',
-                path: '/admin/account/password',
-                error: 'المستخدم غير موجود',
-                success: null
-            });
-        }
+        if (!req.session.userId) return res.redirect('/admin/login');
 
-        // Validate current password
-        const isMatch = await user.validPassword(currentPassword || '');
-        if (!isMatch) {
-            return res.render('admin/change-password', {
-                title: 'لوحة التحكم | تغيير كلمة المرور',
-                path: '/admin/account/password',
-                error: 'كلمة المرور الحالية غير صحيحة',
-                success: null
-            });
-        }
+        const user = await User.findByPk(req.session.userId);
+        if (!user) return renderPage('المستخدم غير موجود');
 
-        // Validate new password
-        if (!newPassword || newPassword.length < 8) {
-            return res.render('admin/change-password', {
-                title: 'لوحة التحكم | تغيير كلمة المرور',
-                path: '/admin/account/password',
-                error: 'يجب أن تكون كلمة المرور الجديدة 8 أحرف على الأقل',
-                success: null
-            });
-        }
-        if (newPassword !== confirmPassword) {
-            return res.render('admin/change-password', {
-                title: 'لوحة التحكم | تغيير كلمة المرور',
-                path: '/admin/account/password',
-                error: 'تأكيد كلمة المرور غير متطابق',
-                success: null
-            });
-        }
-        if (newPassword === currentPassword) {
-            return res.render('admin/change-password', {
-                title: 'لوحة التحكم | تغيير كلمة المرور',
-                path: '/admin/account/password',
-                error: 'كلمة المرور الجديدة لا يجب أن تطابق الحالية',
-                success: null
-            });
-        }
+        if (!(await user.validPassword(currentPassword || '')))
+            return renderPage('كلمة المرور الحالية غير صحيحة');
 
-        // Update and save (hashing handled by model hook)
+        if (!newPassword || newPassword.length < 8)
+            return renderPage('يجب أن تكون كلمة المرور الجديدة 8 أحرف على الأقل');
+
+        if (newPassword !== confirmPassword)
+            return renderPage('تأكيد كلمة المرور غير متطابق');
+
+        if (newPassword === currentPassword)
+            return renderPage('كلمة المرور الجديدة لا يجب أن تطابق الحالية');
+
         user.password = newPassword;
         await user.save();
 
-        return res.render('admin/change-password', {
-            title: 'لوحة التحكم | تغيير كلمة المرور',
-            path: '/admin/account/password',
-            error: null,
-            success: 'تم تغيير كلمة المرور بنجاح'
-        });
+        return renderPage(null, 'تم تغيير كلمة المرور بنجاح');
     } catch (error) {
         console.error('Change password error:', error);
-        return res.render('admin/change-password', {
-            title: 'لوحة التحكم | تغيير كلمة المرور',
-            path: '/admin/account/password',
-            error: 'حدث خطأ غير متوقع',
-            success: null
-        });
+        return renderPage('حدث خطأ غير متوقع');
     }
 };
 
-exports.getDashboard = async (req, res) => {
-    try {
-        const projectCount = await Project.count();
-        const postCount = await Post.count();
-        const serviceCount = await Service.count();
-        // Calculate total views
-        const projectViews = await Project.sum('views') || 0;
-        const postViews = await Post.sum('views') || 0;
-        const totalViews = projectViews + postViews;
-        const partnerCount = await Partner.count();
-        const newContactsCount = await Contact.count({ where: { status: 'new' } });
-        
-        const statCount = await StatBlock.count();
+// ─── Dashboard ────────────────────────────────────────────────────────────
 
-        res.render('admin/dashboard', { 
-            title: 'لوحة التحكم | الرئيسية',
-            path: '/admin',
+exports.getDashboard = async (req, res) => {
+    const defaults = {
+        title: 'لوحة التحكم | الرئيسية',
+        path: '/admin',
+        projectCount: 0,
+        postCount: 0,
+        serviceCount: 0,
+        partnerCount: 0,
+        newContactsCount: 0,
+        visitorCount: 0,
+        statCount: 0
+    };
+    try {
+        const [projectCount, postCount, serviceCount, partnerCount, newContactsCount, statCount, projectViews, postViews] = await Promise.all([
+            Project.count(),
+            Post.count(),
+            Service.count(),
+            Partner.count(),
+            Contact.count({ where: { status: 'new' } }),
+            StatBlock.count(),
+            Project.sum('views'),
+            Post.sum('views')
+        ]);
+        res.render('admin/dashboard', {
+            ...defaults,
             projectCount,
             postCount,
             serviceCount,
             partnerCount,
             newContactsCount,
-            visitorCount: totalViews,
-            statCount
+            statCount,
+            visitorCount: (projectViews || 0) + (postViews || 0)
         });
     } catch (error) {
         console.error(error);
-        res.render('admin/dashboard', { 
-            title: 'لوحة التحكم | الرئيسية',
-            path: '/admin',
-            projectCount: 0,
-            postCount: 0,
-            serviceCount: 0,
-            partnerCount: 0,
-            newContactsCount: 0,
-            visitorCount: 0,
-            statCount: 0
-        });
+        res.render('admin/dashboard', defaults);
     }
 };
 
-// --- Stat Blocks Management ---
+// ─── Stat Blocks ─────────────────────────────────────────────────────────
 
 exports.manageStats = async (req, res) => {
     try {
@@ -281,11 +243,7 @@ exports.manageStats = async (req, res) => {
         });
     } catch (error) {
         console.error('manageStats error:', error);
-        res.render('admin/stats-manage', {
-            title: 'لوحة التحكم | أرقامنا',
-            path: '/admin/stats',
-            stats: []
-        });
+        res.render('admin/stats-manage', { title: 'لوحة التحكم | أرقامنا', path: '/admin/stats', stats: [] });
     }
 };
 
@@ -326,12 +284,10 @@ exports.postAddStat = async (req, res) => {
 exports.getEditStat = async (req, res) => {
     try {
         const stat = await StatBlock.findByPk(req.params.id);
-        if (!stat) {
-            return res.redirect('/admin/stats');
-        }
+        if (!stat) return res.redirect('/admin/stats');
         res.render('admin/stat-form', {
             title: 'تعديل رقم',
-            path: '/admin/stats/edit/' + req.params.id,
+            path: `/admin/stats/edit/${req.params.id}`,
             stat,
             error: null
         });
@@ -344,26 +300,25 @@ exports.getEditStat = async (req, res) => {
 exports.postEditStat = async (req, res) => {
     try {
         const stat = await StatBlock.findByPk(req.params.id);
-        if (!stat) {
-            return res.redirect('/admin/stats');
-        }
+        if (!stat) return res.redirect('/admin/stats');
         const { key, label_ar, label_en, value, suffix_ar, suffix_en, display_order, is_active } = req.body;
-        stat.key = key;
-        stat.label_ar = label_ar;
-        stat.label_en = label_en;
-        stat.value = Number(value) || 0;
-        stat.suffix_ar = suffix_ar || null;
-        stat.suffix_en = suffix_en || null;
-        stat.display_order = Number(display_order) || 0;
-        stat.is_active = is_active === 'on';
-        await stat.save();
+        await stat.update({
+            key,
+            label_ar,
+            label_en,
+            value: Number(value) || 0,
+            suffix_ar: suffix_ar || null,
+            suffix_en: suffix_en || null,
+            display_order: Number(display_order) || 0,
+            is_active: is_active === 'on'
+        });
         res.redirect('/admin/stats');
     } catch (error) {
         console.error('postEditStat error:', error);
         res.render('admin/stat-form', {
             title: 'تعديل رقم',
-            path: '/admin/stats/edit/' + req.params.id,
-            stat: Object.assign({}, req.body, { id: req.params.id }),
+            path: `/admin/stats/edit/${req.params.id}`,
+            stat: { ...req.body, id: req.params.id },
             error: 'حدث خطأ أثناء الحفظ'
         });
     }
@@ -372,9 +327,7 @@ exports.postEditStat = async (req, res) => {
 exports.deleteStat = async (req, res) => {
     try {
         const stat = await StatBlock.findByPk(req.params.id);
-        if (stat) {
-            await stat.destroy();
-        }
+        if (stat) await stat.destroy();
         res.redirect('/admin/stats');
     } catch (error) {
         console.error('deleteStat error:', error);
@@ -382,50 +335,50 @@ exports.deleteStat = async (req, res) => {
     }
 };
 
+// ─── Logs ────────────────────────────────────────────────────────────────
+
 exports.getLogs = async (req, res) => {
     try {
         const filePath = path.join(__dirname, '../debug.log');
         let content = '';
         if (fs.existsSync(filePath)) {
-            const data = fs.readFileSync(filePath, 'utf8');
-            const lines = data.trim().split('\n');
+            const lines = fs.readFileSync(filePath, 'utf8').trim().split('\n');
             content = lines.slice(-200).join('\n');
         }
-        res.render('admin/logs', { 
+        res.render('admin/logs', {
             title: 'لوحة التحكم | سجلات النظام',
             path: '/admin/logs',
-            logs: content 
+            logs: content
         });
-    } catch (e) {
-        res.render('admin/logs', { 
+    } catch {
+        res.render('admin/logs', {
             title: 'لوحة التحكم | سجلات النظام',
             path: '/admin/logs',
-            logs: 'تعذر قراءة السجلات' 
+            logs: 'تعذر قراءة السجلات'
         });
     }
 };
 
-// --- Site Health ---
+// ─── Site Health ──────────────────────────────────────────────────────────
+
 exports.getSiteHealth = async (req, res) => {
     try {
         const childProcess = require('child_process');
         let version = process.env.APP_VERSION || '';
         if (!version) {
-            try { version = childProcess.execSync('git rev-parse --short HEAD').toString().trim(); } catch {}
+            try { version = childProcess.execSync('git rev-parse --short HEAD').toString().trim(); } catch { }
         }
         const dialect = (sequelize && sequelize.getDialect && sequelize.getDialect()) || 'unknown';
         const [prjCount, prtCount, postCount] = await Promise.all([
-            require('../models/Project').count(),
-            require('../models/Partner').count(),
-            require('../models/Post').count()
+            Project.count(),
+            Partner.count(),
+            Post.count()
         ]);
-        // Optional external ping using siteUrl from SEO
         let siteUrl = 'https://cpoint-sa.com';
         try {
-            const GlobalSeo = require('../models/GlobalSeo');
             const seo = await GlobalSeo.findOne();
             if (seo && seo.siteUrl) siteUrl = seo.siteUrl.replace(/\/+$/, '');
-        } catch {}
+        } catch { }
         const https = require('https');
         const tryHead = (url) => new Promise(resolve => {
             const t0 = Date.now();
@@ -459,7 +412,8 @@ exports.getSiteHealth = async (req, res) => {
     }
 };
 
-// --- Uploads Browser ---
+// ─── Uploads Browser ──────────────────────────────────────────────────────
+
 exports.listUploads = async (req, res) => {
     try {
         const dir = storageService.UPLOAD_PATH;
@@ -469,7 +423,7 @@ exports.listUploads = async (req, res) => {
         const files = entries.map(name => {
             const p = path.join(dir, name);
             let stat = { size: 0, mtimeMs: 0 };
-            try { stat = fs.statSync(p); } catch {}
+            try { stat = fs.statSync(p); } catch { }
             return {
                 name,
                 url: storageService.buildPublicUrl(name),
@@ -484,7 +438,8 @@ exports.listUploads = async (req, res) => {
     }
 };
 
-// --- Media Library (Images / Video / Audio) ---
+// ─── Media Library ────────────────────────────────────────────────────────
+
 const classifyMediaKind = (value, field) => {
     const v = String(value || '').toLowerCase();
     const match = v.match(/\.([a-z0-9]+)(?:[?#].*)?$/);
@@ -520,17 +475,10 @@ const collectMediaRefs = async () => {
             exists = result.exists;
             fileSize = result.fileSize;
         }
-        const mediaKind = classifyMediaKind(raw, field);
         refs.push({
-            type,
-            entityId,
-            field,
-            value: raw,
-            rel,
-            isExternal,
-            exists,
-            fileSize,
-            mediaKind,
+            type, entityId, field, value: raw, rel,
+            isExternal, exists, fileSize,
+            mediaKind: classifyMediaKind(raw, field),
             title: title || ''
         });
     };
@@ -544,13 +492,14 @@ const collectMediaRefs = async () => {
     ]);
 
     partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
-    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title));
-    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title));
+    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title_ar || pj.title));
+    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title_ar || po.title));
     services.forEach(sv => pushRef('Service', sv.id, 'image', sv.image, sv.title_ar || sv.title_en));
     if (seo) {
         pushRef('GlobalSeo', seo.id, 'favicon', seo.favicon, 'Favicon');
         pushRef('GlobalSeo', seo.id, 'ogImage', seo.ogImage, 'OG Image');
         pushRef('GlobalSeo', seo.id, 'heroVideoFile', seo.heroVideoFile, 'Hero Video File');
+        pushRef('GlobalSeo', seo.id, 'heroBackgroundImage', seo.heroBackgroundImage, 'Hero Background');
     }
 
     return refs;
@@ -562,10 +511,7 @@ exports.getMediaLibrary = async (req, res) => {
         const filterRaw = String(req.query.type || '').toLowerCase();
         const allowed = new Set(['image', 'video', 'audio']);
         const currentFilter = allowed.has(filterRaw) ? filterRaw : '';
-        let filteredRefs = refs;
-        if (currentFilter) {
-            filteredRefs = refs.filter(r => r.mediaKind === currentFilter);
-        }
+        const filteredRefs = currentFilter ? refs.filter(r => r.mediaKind === currentFilter) : refs;
         const stats = {
             total: refs.length,
             images: refs.filter(r => r.mediaKind === 'image').length,
@@ -589,42 +535,23 @@ exports.postMediaDelete = async (req, res) => {
     try {
         const body = req.body || {};
         const filterRaw = String(body.filter || '').trim();
-
-        const models = {
-            Partner,
-            Project,
-            Post,
-            Service,
-            GlobalSeo
-        };
-
+        const models = { Partner, Project, Post, Service, GlobalSeo };
         const ops = [];
 
         if (body.items) {
             const arr = Array.isArray(body.items) ? body.items : [body.items];
-            arr.forEach((item) => {
-                const s = String(item || '').trim();
-                if (!s) return;
-                const parts = s.split('|');
+            arr.forEach(item => {
+                const parts = String(item || '').trim().split('|');
                 if (parts.length < 3) return;
-                const entityType = parts[0];
-                const id = parts[1];
-                const fieldName = parts[2];
-                if (!entityType || !fieldName) return;
-                ops.push({ entityType, id, fieldName });
+                const [entityType, id, fieldName] = parts;
+                if (entityType && fieldName) ops.push({ entityType, id, fieldName });
             });
         } else if (body.type && body.id && body.field) {
-            const entityType = String(body.type || '').trim();
-            const id = String(body.id || '').trim();
-            const fieldName = String(body.field || '').trim();
-            if (entityType && fieldName) {
-                ops.push({ entityType, id, fieldName });
-            }
+            ops.push({ entityType: body.type, id: body.id, fieldName: body.field });
         }
 
         if (!ops.length) {
-            const qs = filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : '';
-            return res.redirect('/admin/media' + qs);
+            return res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
         }
 
         const affectedValues = [];
@@ -636,54 +563,39 @@ exports.postMediaDelete = async (req, res) => {
             let record = null;
             if (op.entityType === 'GlobalSeo') {
                 const numericId = parseInt(op.id, 10);
-                if (!Number.isNaN(numericId)) {
-                    record = await Model.findByPk(numericId);
-                }
-                if (!record) {
-                    record = await Model.findOne();
-                }
+                record = !isNaN(numericId) ? await Model.findByPk(numericId) : null;
+                if (!record) record = await Model.findOne();
             } else {
                 const numericId = parseInt(op.id, 10);
-                if (!Number.isNaN(numericId)) {
-                    record = await Model.findByPk(numericId);
-                }
+                if (!isNaN(numericId)) record = await Model.findByPk(numericId);
             }
 
             if (record && Object.prototype.hasOwnProperty.call(record.dataValues || {}, op.fieldName)) {
                 const prev = record[op.fieldName];
-                if (prev) {
-                    affectedValues.push(String(prev));
-                }
-                const data = {};
-                data[op.fieldName] = null;
-                await record.update(data);
+                if (prev) affectedValues.push(String(prev));
+                await record.update({ [op.fieldName]: null });
             }
         }
 
         if (affectedValues.length) {
-            const uniqueValues = Array.from(new Set(affectedValues));
             const refs = await collectMediaRefs();
-            uniqueValues.forEach((val) => {
+            Array.from(new Set(affectedValues)).forEach(val => {
                 const v = String(val || '').trim();
-                if (!v) return;
-                if (/^https?:\/\//i.test(v)) return;
-                const stillUsed = refs.filter(r => !r.isExternal && r.value === v);
-                if (stillUsed.length === 0) {
-                    deleteFile(v);
-                }
+                if (!v || /^https?:\/\//i.test(v)) return;
+                if (!refs.some(r => !r.isExternal && r.value === v)) deleteFile(v);
             });
         }
 
         pageCache.invalidateRoutes(['/', '/en']);
-        const qs = filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : '';
-        res.redirect('/admin/media' + qs);
+        res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
     } catch (e) {
         console.error(e);
         res.status(500).send('Server Error');
     }
 };
 
-// --- Assets Audit & Sync ---
+// ─── Assets Audit ────────────────────────────────────────────────────────
+
 const collectAssetRefs = async () => {
     const refs = [];
     const pushRef = (type, id, field, value, title) => {
@@ -705,14 +617,14 @@ const collectAssetRefs = async () => {
     };
 
     const [partners, projects, posts, services] = await Promise.all([
-        require('../models/Partner').findAll(),
-        require('../models/Project').findAll(),
-        require('../models/Post').findAll(),
-        require('../models/Service').findAll()
+        Partner.findAll(),
+        Project.findAll(),
+        Post.findAll(),
+        Service.findAll()
     ]);
     partners.forEach(p => pushRef('Partner', p.id, 'logo', p.logo, p.name));
-    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title));
-    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title));
+    projects.forEach(pj => pushRef('Project', pj.id, 'image', pj.image, pj.title_ar || pj.title));
+    posts.forEach(po => pushRef('Post', po.id, 'image', po.image, po.title_ar || po.title));
     services.forEach(sv => pushRef('Service', sv.id, 'image', sv.image, sv.title_ar || sv.title_en));
     return refs;
 };
@@ -720,13 +632,12 @@ const collectAssetRefs = async () => {
 exports.getAssetsAudit = async (req, res) => {
     try {
         const refs = await collectAssetRefs();
-        const total = refs.length;
         const missing = refs.filter(r => !r.isExternal && !r.exists);
         res.render('admin/assets-audit', {
             title: 'لوحة التحكم | تدقيق الأصول ومزامنتها',
             path: '/admin/assets/audit',
             refs,
-            stats: { total, missing: missing.length }
+            stats: { total: refs.length, missing: missing.length }
         });
     } catch (e) {
         console.error(e);
@@ -737,9 +648,7 @@ exports.getAssetsAudit = async (req, res) => {
 exports.postAssetsUpload = async (req, res) => {
     try {
         const filename = (req.params.filename || '').replace(/[^a-zA-Z0-9._-]/g, '');
-        if (!filename || !req.file) {
-            return res.status(400).send('Bad Request');
-        }
+        if (!filename || !req.file) return res.status(400).send('Bad Request');
         debugLog(`ASSET UPLOAD: ${filename} -> OK`);
         res.redirect('/admin/assets/audit');
     } catch (e) {
@@ -748,13 +657,13 @@ exports.postAssetsUpload = async (req, res) => {
     }
 };
 
-// --- SEO Settings ---
+// ─── SEO Settings ────────────────────────────────────────────────────────
+// Handles: meta SEO fields + contact info + social links + journey lines
+
 exports.getSeoSettings = async (req, res) => {
     try {
         let seo = await GlobalSeo.findOne();
-        if (!seo) {
-            seo = await GlobalSeo.create({});
-        }
+        if (!seo) seo = await GlobalSeo.create({});
         res.render('admin/seo', { title: 'لوحة التحكم | إعدادات SEO', seo, path: '/admin/seo' });
     } catch (error) {
         console.error(error);
@@ -762,12 +671,53 @@ exports.getSeoSettings = async (req, res) => {
     }
 };
 
+exports.postSeoSettings = async (req, res) => {
+    try {
+        await ensureGlobalSeoModelSync();
+        let seo = await GlobalSeo.findOne();
+        const data = { ...req.body };
+
+        // ── File uploads ──────────────────────────────────────────────
+        if (req.files) {
+            if (req.files['favicon']) data.favicon = await toHashedAsset(req.files['favicon'][0]);
+            if (req.files['ogImage']) data.ogImage = await toHashedAsset(req.files['ogImage'][0]);
+        }
+        if (data.favicon) data.favicon = normalizeAsset(data.favicon);
+        if (data.ogImage) data.ogImage = normalizeAsset(data.ogImage);
+
+        // ── Contact info (from template) ──────────────────────────────
+        // contactTitleAr, contactTitleEn, contactSubtitleAr, contactSubtitleEn
+        // contactPhone, contactEmail, contactLocationAr, contactLocationEn
+        // (passed as-is from req.body – no special handling needed)
+
+        // ── Social links (from template) ──────────────────────────────
+        // socialInstagram, socialTwitter, socialLinkedin
+        // (passed as-is from req.body)
+
+        // ── Journey lines (from template) ─────────────────────────────
+        // journeyLine1Ar … journeyLine9Ar
+        // journeyLine1En … journeyLine9En
+        // (passed as-is from req.body)
+
+        if (!seo) {
+            seo = await GlobalSeo.create(data);
+        } else {
+            await seo.update(data);
+        }
+        res.redirect('/admin/seo');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// ─── Design Settings ─────────────────────────────────────────────────────
+// Handles: hero video/image, slider config, service overlay
+
 exports.getDesignSettings = async (req, res) => {
     try {
         let seo = await GlobalSeo.findOne();
-        if (!seo) {
-            seo = await GlobalSeo.create({});
-        }
+        if (!seo) seo = await GlobalSeo.create({});
         res.render('admin/design', { title: 'لوحة التحكم | إعدادات التصميم', seo, path: '/admin/design' });
     } catch (error) {
         console.error(error);
@@ -780,35 +730,37 @@ exports.postDesignSettings = async (req, res) => {
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
 
+        // ── Slider ────────────────────────────────────────────────────
         data.sliderAutoplay = req.body.sliderAutoplay === 'on';
 
+        // ── Hero video mode ───────────────────────────────────────────
         const modeRaw = (req.body.heroVideoMode || '').toLowerCase();
-        const allowedModes = ['url', 'youtube', 'vimeo', 'file'];
-        data.heroVideoMode = allowedModes.includes(modeRaw) ? modeRaw : 'url';
+        const allowedModes = ['url', 'youtube', 'vimeo', 'file', 'none'];
+        data.heroVideoMode = allowedModes.includes(modeRaw) ? modeRaw : 'none';
 
+        // ── Hero video file ───────────────────────────────────────────
         let heroVideoFile = seo && seo.heroVideoFile ? seo.heroVideoFile : null;
         if (req.file) {
             const stored = await toHashedAsset(req.file);
-            if (stored) {
-                heroVideoFile = stored;
-            }
+            if (stored) heroVideoFile = stored;
         }
-
-        if (data.heroVideoMode !== 'file') {
-            heroVideoFile = null;
-        }
-
-        if (heroVideoFile) {
-            heroVideoFile = normalizeAsset(heroVideoFile);
-        }
-
+        // Clear file ref if mode is not 'file'
+        if (data.heroVideoMode !== 'file') heroVideoFile = null;
+        if (heroVideoFile) heroVideoFile = normalizeAsset(heroVideoFile);
         data.heroVideoFile = heroVideoFile;
+
+        // ── Hero background image (optional separate upload field) ────
+        if (req.files && req.files['heroBackgroundImage']) {
+            data.heroBackgroundImage = await toHashedAsset(req.files['heroBackgroundImage'][0]);
+        }
+        if (data.heroBackgroundImage) data.heroBackgroundImage = normalizeAsset(data.heroBackgroundImage);
 
         if (!seo) {
             seo = await GlobalSeo.create(data);
         } else {
             await seo.update(data);
         }
+        pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/design');
     } catch (error) {
         console.error(error);
@@ -816,14 +768,15 @@ exports.postDesignSettings = async (req, res) => {
     }
 };
 
-// --- Partner Management ---
+// ─── Partner Management ───────────────────────────────────────────────────
+
 exports.managePartners = async (req, res) => {
     try {
         const partners = await Partner.findAll({ order: [['display_order', 'ASC']] });
-        res.render('admin/partners-manage', { 
-            title: 'لوحة التحكم | إدارة الشركاء', 
-            partners,
-            path: '/admin/partners'
+        res.render('admin/partners-manage', {
+            title: 'لوحة التحكم | إدارة الشركاء',
+            path: '/admin/partners',
+            partners
         });
     } catch (error) {
         console.error(error);
@@ -832,28 +785,25 @@ exports.managePartners = async (req, res) => {
 };
 
 exports.getAddPartner = (req, res) => {
-    res.render('admin/partner-form', { 
-        title: 'لوحة التحكم | إضافة شريك', 
-        partner: null,
-        path: '/admin/partners'
+    res.render('admin/partner-form', {
+        title: 'لوحة التحكم | إضافة شريك',
+        path: '/admin/partners',
+        partner: null
     });
 };
 
 exports.postAddPartner = async (req, res) => {
     try {
         const { name, display_order, is_active, existingLogo } = req.body;
-        let logo = null;
-        if (existingLogo) logo = normalizeAsset(existingLogo);
-        else if (req.file) logo = await toHashedAsset(req.file);
-
+        let logo = existingLogo ? normalizeAsset(existingLogo) : null;
+        if (!logo && req.file) logo = await toHashedAsset(req.file);
         await Partner.create({
             name,
             logo,
             display_order: display_order || 0,
             is_active: is_active === 'on'
         });
-        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
-
+        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio']);
         res.redirect('/admin/partners');
     } catch (error) {
         console.error(error);
@@ -865,10 +815,10 @@ exports.getEditPartner = async (req, res) => {
     try {
         const partner = await Partner.findByPk(req.params.id);
         if (!partner) return res.redirect('/admin/partners');
-        res.render('admin/partner-form', { 
-            title: 'لوحة التحكم | تعديل شريك', 
-            partner,
-            path: '/admin/partners'
+        res.render('admin/partner-form', {
+            title: 'لوحة التحكم | تعديل شريك',
+            path: '/admin/partners',
+            partner
         });
     } catch (error) {
         console.error(error);
@@ -878,25 +828,19 @@ exports.getEditPartner = async (req, res) => {
 
 exports.postEditPartner = async (req, res) => {
     try {
-        const { name, display_order, is_active, existingLogo } = req.body;
         const partner = await Partner.findByPk(req.params.id);
         if (!partner) return res.redirect('/admin/partners');
-
+        const { name, display_order, is_active, existingLogo } = req.body;
         let logo = normalizeAsset(partner.logo);
-        if (existingLogo) {
-            logo = normalizeAsset(existingLogo);
-        } else if (req.file) {
-            logo = await toHashedAsset(req.file);
-        }
-
+        if (existingLogo) logo = normalizeAsset(existingLogo);
+        else if (req.file) logo = await toHashedAsset(req.file);
         await partner.update({
             name,
             logo,
             display_order: display_order || 0,
             is_active: is_active === 'on'
         });
-        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
-
+        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio']);
         res.redirect('/admin/partners');
     } catch (error) {
         console.error(error);
@@ -918,44 +862,24 @@ exports.deletePartner = async (req, res) => {
     }
 };
 
-exports.postSeoSettings = async (req, res) => {
-    try {
-        let seo = await GlobalSeo.findOne();
-        const data = { ...req.body };
+// ─── Portfolio Management ─────────────────────────────────────────────────
+// Supports bilingual: title_ar / title_en, description_ar / description_en
 
-        // Handle file uploads
-        if (req.files) {
-            if (req.files['favicon']) {
-                data.favicon = await toHashedAsset(req.files['favicon'][0]);
-            }
-            if (req.files['ogImage']) {
-                data.ogImage = await toHashedAsset(req.files['ogImage'][0]);
-            }
-        }
-        // Normalize existing absolute/relative values coming from form
-        if (data.favicon) data.favicon = normalizeAsset(data.favicon);
-        if (data.ogImage) data.ogImage = normalizeAsset(data.ogImage);
-
-        if (!seo) {
-            seo = await GlobalSeo.create(data);
-        } else {
-            await seo.update(data);
-        }
-        res.redirect('/admin/seo');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-// --- Portfolio Management ---
 exports.managePortfolio = async (req, res) => {
     try {
-        const projects = await Project.findAll();
-        res.render('admin/portfolio-manage', { title: 'لوحة التحكم | إدارة الأعمال', projects });
+        const projects = await Project.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/portfolio-manage', {
+            title: 'لوحة التحكم | إدارة الأعمال',
+            path: '/admin/portfolio',
+            projects
+        });
     } catch (error) {
         console.error(error);
-        res.render('admin/portfolio-manage', { title: 'لوحة التحكم | إدارة الأعمال', projects: [] });
+        res.render('admin/portfolio-manage', {
+            title: 'لوحة التحكم | إدارة الأعمال',
+            path: '/admin/portfolio',
+            projects: []
+        });
     }
 };
 
@@ -964,9 +888,9 @@ exports.getAddProject = async (req, res) => {
         const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
         res.render('admin/portfolio-form', {
             title: 'إضافة مشروع جديد',
+            path: '/admin/portfolio',
             project: null,
-            categories,
-            path: '/admin/portfolio'
+            categories
         });
     } catch (error) {
         console.error(error);
@@ -976,10 +900,24 @@ exports.getAddProject = async (req, res) => {
 
 exports.postAddProject = async (req, res) => {
     try {
-        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
+        const {
+            title, title_ar, title_en,
+            description, description_ar, description_en,
+            content, externalLink, category,
+            display_order, is_active,
+            seoTitle, seoDescription, seoKeywords,
+            existingImage
+        } = req.body;
+
         const data = {
-            title,
-            description,
+            // Legacy single-lang (kept for backward compat)
+            title: title_ar || title_en || title || '',
+            description: description_ar || description_en || description || '',
+            // Bilingual
+            title_ar: title_ar || title || null,
+            title_en: title_en || title || null,
+            description_ar: description_ar || description || null,
+            description_en: description_en || description || null,
             content,
             externalLink,
             category,
@@ -990,13 +928,9 @@ exports.postAddProject = async (req, res) => {
             seoKeywords
         };
 
-        if (existingImage) {
-            data.image = existingImage;
-        } else if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
+        if (existingImage) data.image = normalizeAsset(existingImage);
+        else if (req.file) data.image = await toHashedAsset(req.file);
 
-        // Handle CategoryId
         if (data.category && !isNaN(data.category)) {
             data.CategoryId = parseInt(data.category);
             const cat = await Category.findByPk(data.CategoryId);
@@ -1004,97 +938,8 @@ exports.postAddProject = async (req, res) => {
         }
 
         await Project.create(data);
-        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
+        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio']);
         res.redirect('/admin/portfolio');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-// --- Category Management ---
-exports.manageCategories = async (req, res) => {
-    try {
-        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
-        res.render('admin/categories-manage', { 
-            title: 'لوحة التحكم | إدارة التصنيفات', 
-            categories,
-            path: '/admin/categories'
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-exports.getAddCategory = (req, res) => {
-    res.render('admin/category-form', { 
-        title: 'لوحة التحكم | إضافة تصنيف', 
-        category: null,
-        path: '/admin/categories'
-    });
-};
-
-exports.postAddCategory = async (req, res) => {
-    try {
-        const { name, slug, description, display_order } = req.body;
-        await Category.create({
-            name,
-            slug: slug || name.toLowerCase().replace(/ /g, '-'),
-            description,
-            display_order: display_order || 0
-        });
-        
-        const backURL = req.header('Referer') || '/admin/portfolio';
-        res.redirect(backURL);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-exports.getEditCategory = async (req, res) => {
-    try {
-        const category = await Category.findByPk(req.params.id);
-        if (!category) return res.redirect('/admin/categories');
-        res.render('admin/category-form', { 
-            title: 'لوحة التحكم | تعديل تصنيف', 
-            category,
-            path: '/admin/categories'
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-exports.postEditCategory = async (req, res) => {
-    try {
-        const { name, slug, description, display_order } = req.body;
-        const category = await Category.findByPk(req.params.id);
-        if (!category) return res.redirect('/admin/categories');
-
-        await category.update({
-            name,
-            slug: slug || name.toLowerCase().replace(/ /g, '-'),
-            description,
-            display_order: display_order || 0
-        });
-
-        res.redirect('/admin/categories');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-};
-
-exports.deleteCategory = async (req, res) => {
-    try {
-        const category = await Category.findByPk(req.params.id);
-        if (category) {
-            await category.destroy();
-        }
-        res.redirect('/admin/categories');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -1108,9 +953,9 @@ exports.getEditProject = async (req, res) => {
         const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
         res.render('admin/portfolio-form', {
             title: 'تعديل المشروع',
+            path: '/admin/portfolio',
             project,
-            categories,
-            path: '/admin/portfolio'
+            categories
         });
     } catch (error) {
         console.error(error);
@@ -1120,14 +965,25 @@ exports.getEditProject = async (req, res) => {
 
 exports.postEditProject = async (req, res) => {
     try {
-        const { id } = req.params;
-        const project = await Project.findByPk(id);
+        const project = await Project.findByPk(req.params.id);
         if (!project) return res.redirect('/admin/portfolio');
 
-        const { title, description, content, externalLink, category, display_order, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
+        const {
+            title, title_ar, title_en,
+            description, description_ar, description_en,
+            content, externalLink, category,
+            display_order, is_active,
+            seoTitle, seoDescription, seoKeywords,
+            existingImage
+        } = req.body;
+
         const data = {
-            title,
-            description,
+            title: title_ar || title_en || title || '',
+            description: description_ar || description_en || description || '',
+            title_ar: title_ar || title || null,
+            title_en: title_en || title || null,
+            description_ar: description_ar || description || null,
+            description_en: description_en || description || null,
             content,
             externalLink,
             category,
@@ -1138,13 +994,9 @@ exports.postEditProject = async (req, res) => {
             seoKeywords
         };
 
-        if (existingImage) {
-            data.image = existingImage;
-        } else if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
+        if (existingImage) data.image = normalizeAsset(existingImage);
+        else if (req.file) data.image = await toHashedAsset(req.file);
 
-        // Handle CategoryId
         if (data.category && !isNaN(data.category)) {
             data.CategoryId = parseInt(data.category);
             const cat = await Category.findByPk(data.CategoryId);
@@ -1152,7 +1004,7 @@ exports.postEditProject = async (req, res) => {
         }
 
         await project.update(data);
-        pageCache.invalidateRoutes(['/','/en','/portfolio','/en/portfolio']);
+        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio']);
         res.redirect('/admin/portfolio');
     } catch (error) {
         console.error(error);
@@ -1163,8 +1015,11 @@ exports.postEditProject = async (req, res) => {
 exports.deleteProject = async (req, res) => {
     try {
         const project = await Project.findByPk(req.params.id);
-        deleteFile(project.image);
-        await project.destroy();
+        if (project) {
+            deleteFile(project.image);
+            await project.destroy();
+        }
+        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio']);
         res.redirect('/admin/portfolio');
     } catch (error) {
         console.error(error);
@@ -1172,27 +1027,138 @@ exports.deleteProject = async (req, res) => {
     }
 };
 
-// --- Blog Management ---
-exports.manageBlog = async (req, res) => {
+// ─── Category Management ──────────────────────────────────────────────────
+
+exports.manageCategories = async (req, res) => {
     try {
-        const posts = await Post.findAll();
-        res.render('admin/blog-manage', { title: 'لوحة التحكم | إدارة المدونة', posts });
+        const categories = await Category.findAll({ order: [['display_order', 'ASC']] });
+        res.render('admin/categories-manage', {
+            title: 'لوحة التحكم | إدارة التصنيفات',
+            path: '/admin/categories',
+            categories
+        });
     } catch (error) {
         console.error(error);
-        res.render('admin/blog-manage', { title: 'لوحة التحكم | إدارة المدونة', posts: [] });
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getAddCategory = (req, res) => {
+    res.render('admin/category-form', {
+        title: 'لوحة التحكم | إضافة تصنيف',
+        path: '/admin/categories',
+        category: null
+    });
+};
+
+exports.postAddCategory = async (req, res) => {
+    try {
+        const { name, slug, description, display_order } = req.body;
+        await Category.create({
+            name,
+            slug: slug || name.toLowerCase().replace(/ /g, '-'),
+            description,
+            display_order: display_order || 0
+        });
+        res.redirect(req.header('Referer') || '/admin/portfolio');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.getEditCategory = async (req, res) => {
+    try {
+        const category = await Category.findByPk(req.params.id);
+        if (!category) return res.redirect('/admin/categories');
+        res.render('admin/category-form', {
+            title: 'لوحة التحكم | تعديل تصنيف',
+            path: '/admin/categories',
+            category
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postEditCategory = async (req, res) => {
+    try {
+        const category = await Category.findByPk(req.params.id);
+        if (!category) return res.redirect('/admin/categories');
+        const { name, slug, description, display_order } = req.body;
+        await category.update({
+            name,
+            slug: slug || name.toLowerCase().replace(/ /g, '-'),
+            description,
+            display_order: display_order || 0
+        });
+        res.redirect('/admin/categories');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.deleteCategory = async (req, res) => {
+    try {
+        const category = await Category.findByPk(req.params.id);
+        if (category) await category.destroy();
+        res.redirect('/admin/categories');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// ─── Blog Management ──────────────────────────────────────────────────────
+// Supports bilingual: title_ar / title_en, excerpt_ar / excerpt_en
+
+exports.manageBlog = async (req, res) => {
+    try {
+        const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
+        res.render('admin/blog-manage', {
+            title: 'لوحة التحكم | إدارة المدونة',
+            path: '/admin/blog',
+            posts
+        });
+    } catch (error) {
+        console.error(error);
+        res.render('admin/blog-manage', {
+            title: 'لوحة التحكم | إدارة المدونة',
+            path: '/admin/blog',
+            posts: []
+        });
     }
 };
 
 exports.getAddPost = (req, res) => {
-    res.render('admin/blog-form', { title: 'إضافة مقال جديد', post: null });
+    res.render('admin/blog-form', {
+        title: 'إضافة مقال جديد',
+        path: '/admin/blog',
+        post: null
+    });
 };
 
 exports.postAddPost = async (req, res) => {
     try {
-        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
+        const {
+            title, title_ar, title_en,
+            excerpt, excerpt_ar, excerpt_en,
+            content, date, is_active,
+            seoTitle, seoDescription, seoKeywords,
+            existingImage
+        } = req.body;
+
         const data = {
-            title,
-            excerpt,
+            // Legacy single-lang (kept for backward compat)
+            title: title_ar || title_en || title || '',
+            excerpt: excerpt_ar || excerpt_en || excerpt || '',
+            // Bilingual
+            title_ar: title_ar || title || null,
+            title_en: title_en || title || null,
+            excerpt_ar: excerpt_ar || excerpt || null,
+            excerpt_en: excerpt_en || excerpt || null,
             content,
             date,
             is_active: is_active === 'on',
@@ -1200,13 +1166,12 @@ exports.postAddPost = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-        if (existingImage) {
-            data.image = existingImage;
-        } else if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
+
+        if (existingImage) data.image = normalizeAsset(existingImage);
+        else if (req.file) data.image = await toHashedAsset(req.file);
+
         await Post.create(data);
-        pageCache.invalidateRoutes(['/','/en','/blog']);
+        pageCache.invalidateRoutes(['/', '/en', '/blog']);
         res.redirect('/admin/blog');
     } catch (error) {
         console.error(error);
@@ -1217,7 +1182,12 @@ exports.postAddPost = async (req, res) => {
 exports.getEditPost = async (req, res) => {
     try {
         const post = await Post.findByPk(req.params.id);
-        res.render('admin/blog-form', { title: 'تعديل المقال', post });
+        if (!post) return res.redirect('/admin/blog');
+        res.render('admin/blog-form', {
+            title: 'تعديل المقال',
+            path: '/admin/blog',
+            post
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -1226,11 +1196,24 @@ exports.getEditPost = async (req, res) => {
 
 exports.postEditPost = async (req, res) => {
     try {
-        const { title, excerpt, content, date, is_active, seoTitle, seoDescription, seoKeywords, existingImage } = req.body;
         const post = await Post.findByPk(req.params.id);
+        if (!post) return res.redirect('/admin/blog');
+
+        const {
+            title, title_ar, title_en,
+            excerpt, excerpt_ar, excerpt_en,
+            content, date, is_active,
+            seoTitle, seoDescription, seoKeywords,
+            existingImage
+        } = req.body;
+
         const data = {
-            title,
-            excerpt,
+            title: title_ar || title_en || title || '',
+            excerpt: excerpt_ar || excerpt_en || excerpt || '',
+            title_ar: title_ar || title || null,
+            title_en: title_en || title || null,
+            excerpt_ar: excerpt_ar || excerpt || null,
+            excerpt_en: excerpt_en || excerpt || null,
             content,
             date,
             is_active: is_active === 'on',
@@ -1238,13 +1221,12 @@ exports.postEditPost = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-        if (existingImage) {
-            data.image = existingImage;
-        } else if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
+
+        if (existingImage) data.image = normalizeAsset(existingImage);
+        else if (req.file) data.image = await toHashedAsset(req.file);
+
         await post.update(data);
-        pageCache.invalidateRoutes(['/','/en','/blog']);
+        pageCache.invalidateRoutes(['/', '/en', '/blog']);
         res.redirect('/admin/blog');
     } catch (error) {
         console.error(error);
@@ -1255,8 +1237,11 @@ exports.postEditPost = async (req, res) => {
 exports.deletePost = async (req, res) => {
     try {
         const post = await Post.findByPk(req.params.id);
-        deleteFile(post.image);
-        await post.destroy();
+        if (post) {
+            deleteFile(post.image);
+            await post.destroy();
+        }
+        pageCache.invalidateRoutes(['/', '/en', '/blog']);
         res.redirect('/admin/blog');
     } catch (error) {
         console.error(error);
@@ -1264,23 +1249,30 @@ exports.deletePost = async (req, res) => {
     }
 };
 
-// --- Contact Management ---
+// ─── Contact Management ───────────────────────────────────────────────────
+
 exports.manageContacts = async (req, res) => {
     try {
         const contacts = await Contact.findAll({ order: [['createdAt', 'DESC']] });
-        res.render('admin/contacts-manage', { title: 'لوحة التحكم | استمارات التواصل', contacts });
+        res.render('admin/contacts-manage', {
+            title: 'لوحة التحكم | استمارات التواصل',
+            path: '/admin/contacts',
+            contacts
+        });
     } catch (error) {
         console.error(error);
-        res.render('admin/contacts-manage', { title: 'لوحة التحكم | استمارات التواصل', contacts: [] });
+        res.render('admin/contacts-manage', {
+            title: 'لوحة التحكم | استمارات التواصل',
+            path: '/admin/contacts',
+            contacts: []
+        });
     }
 };
 
 exports.deleteContact = async (req, res) => {
     try {
         const contact = await Contact.findByPk(req.params.id);
-        if (contact) {
-            await contact.destroy();
-        }
+        if (contact) await contact.destroy();
         res.redirect('/admin/contacts');
     } catch (error) {
         console.error(error);
@@ -1292,15 +1284,15 @@ exports.updateContactStatus = async (req, res) => {
     try {
         const { status } = req.body;
         const contact = await Contact.findByPk(req.params.id);
-        if (contact) {
-            await contact.update({ status });
-        }
+        if (contact) await contact.update({ status });
         res.json({ success: true });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false });
     }
 };
+
+// ─── Service Management ───────────────────────────────────────────────────
 
 exports.manageServices = async (req, res) => {
     try {
@@ -1324,35 +1316,24 @@ exports.fixServiceImages = async (req, res) => {
     try {
         const services = await Service.findAll();
         let fixed = 0;
-        let total = services.length;
-
         for (const service of services) {
             const raw = service.image || '';
             if (!raw) continue;
-
-            let filename = null;
             let exists = false;
             try {
-                filename = storageService.mapDbValueToLocal(raw);
+                const filename = storageService.mapDbValueToLocal(raw);
                 if (filename) {
                     const abs = storageService.buildAbsolutePath(filename);
                     exists = fs.existsSync(abs);
                 }
-            } catch {
-                exists = false;
-            }
-
+            } catch { exists = false; }
             if (!exists) {
                 await service.update({ image: null });
                 fixed++;
             }
         }
-
-        try {
-            pageCache.invalidateRoutes(['/', '/en']);
-        } catch {}
-
-        res.send(`Service images fix completed. Total services: ${total}, cleaned: ${fixed}.`);
+        try { pageCache.invalidateRoutes(['/', '/en']); } catch { }
+        res.send(`Service images fix completed. Total: ${services.length}, cleaned: ${fixed}.`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -1367,71 +1348,57 @@ exports.getAddService = (req, res) => {
     });
 };
 
+// Shared helper to build service data from request body
+const buildServiceData = (body) => {
+    const {
+        title_ar, title_en,
+        description_ar, description_en,
+        tag1_ar, tag2_ar, tag3_ar,
+        tag1_en, tag2_en, tag3_en,
+        display_order, is_active,
+        imageAlt_ar, imageAlt_en,
+        seoTitle, seoDescription, seoKeywords
+    } = body;
+    return {
+        title_ar, title_en,
+        description_ar, description_en,
+        tag1_ar: tag1_ar || null,
+        tag2_ar: tag2_ar || null,
+        tag3_ar: tag3_ar || null,
+        tag1_en: tag1_en || null,
+        tag2_en: tag2_en || null,
+        tag3_en: tag3_en || null,
+        display_order: Number(display_order) || 0,
+        is_active: is_active === 'on',
+        imageAlt_ar: imageAlt_ar || null,
+        imageAlt_en: imageAlt_en || null,
+        seoTitle: seoTitle || null,
+        seoDescription: seoDescription || null,
+        seoKeywords: seoKeywords || null
+    };
+};
+
+const resolveServiceImage = async (existingImage, currentImage, file) => {
+    const normalized = normalizeAsset(existingImage);
+    let finalImage = normalized;
+    if (finalImage) {
+        try {
+            const filename = storageService.mapDbValueToLocal(finalImage);
+            if (filename) {
+                const abs = storageService.buildAbsolutePath(filename);
+                if (!fs.existsSync(abs)) finalImage = '';
+            }
+        } catch { finalImage = ''; }
+    }
+    if (finalImage) return finalImage;
+    if (file) return await toHashedAsset(file);
+    return currentImage || null;
+};
+
 exports.postAddService = async (req, res) => {
     try {
-        const {
-            title_ar,
-            title_en,
-            description_ar,
-            description_en,
-            tag1_ar,
-            tag2_ar,
-            tag3_ar,
-            tag1_en,
-            tag2_en,
-            tag3_en,
-            display_order,
-            is_active,
-            imageAlt_ar,
-            imageAlt_en,
-            seoTitle,
-            seoDescription,
-            seoKeywords,
-            existingImage
-        } = req.body;
-
-        const normalizedExistingImage = normalizeAsset(existingImage);
-        let finalExistingImage = normalizedExistingImage;
-        if (finalExistingImage) {
-            try {
-                const filename = storageService.mapDbValueToLocal(finalExistingImage);
-                if (filename) {
-                    const abs = storageService.buildAbsolutePath(filename);
-                    if (!fs.existsSync(abs)) {
-                        finalExistingImage = '';
-                    }
-                }
-            } catch {
-                finalExistingImage = '';
-            }
-        }
-
-        const data = {
-            title_ar,
-            title_en,
-            description_ar,
-            description_en,
-            tag1_ar: tag1_ar || null,
-            tag2_ar: tag2_ar || null,
-            tag3_ar: tag3_ar || null,
-            tag1_en: tag1_en || null,
-            tag2_en: tag2_en || null,
-            tag3_en: tag3_en || null,
-            display_order: Number(display_order) || 0,
-            is_active: is_active === 'on',
-            imageAlt_ar: imageAlt_ar || null,
-            imageAlt_en: imageAlt_en || null,
-            seoTitle: seoTitle || null,
-            seoDescription: seoDescription || null,
-            seoKeywords: seoKeywords || null
-        };
-
-        if (finalExistingImage) {
-            data.image = finalExistingImage;
-        } else if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
-
+        const data = buildServiceData(req.body);
+        data.image = await resolveServiceImage(req.body.existingImage, null, req.file);
         await Service.create(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
@@ -1460,70 +1427,8 @@ exports.postEditService = async (req, res) => {
     try {
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
-
-        const {
-            title_ar,
-            title_en,
-            description_ar,
-            description_en,
-            tag1_ar,
-            tag2_ar,
-            tag3_ar,
-            tag1_en,
-            tag2_en,
-            tag3_en,
-            display_order,
-            is_active,
-            imageAlt_ar,
-            imageAlt_en,
-            seoTitle,
-            seoDescription,
-            seoKeywords,
-            existingImage
-        } = req.body;
-
-        const normalizedExistingImage = normalizeAsset(existingImage);
-        let finalExistingImage = normalizedExistingImage;
-        if (finalExistingImage) {
-            try {
-                const filename = storageService.mapDbValueToLocal(finalExistingImage);
-                if (filename) {
-                    const abs = storageService.buildAbsolutePath(filename);
-                    if (!fs.existsSync(abs)) {
-                        finalExistingImage = '';
-                    }
-                }
-            } catch {
-                finalExistingImage = '';
-            }
-        }
-
-        const data = {
-            title_ar,
-            title_en,
-            description_ar,
-            description_en,
-            tag1_ar: tag1_ar || null,
-            tag2_ar: tag2_ar || null,
-            tag3_ar: tag3_ar || null,
-            tag1_en: tag1_en || null,
-            tag2_en: tag2_en || null,
-            tag3_en: tag3_en || null,
-            display_order: Number(display_order) || 0,
-            is_active: is_active === 'on',
-            imageAlt_ar: imageAlt_ar || null,
-            imageAlt_en: imageAlt_en || null,
-            seoTitle: seoTitle || null,
-            seoDescription: seoDescription || null,
-            seoKeywords: seoKeywords || null
-        };
-
-        if (finalExistingImage) {
-            data.image = finalExistingImage;
-        } else if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
-
+        const data = buildServiceData(req.body);
+        data.image = await resolveServiceImage(req.body.existingImage, service.image, req.file);
         await service.update(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
