@@ -532,7 +532,6 @@ exports.getMediaLibrary = async (req, res) => {
     }
 };
 
-// استبدل الدالة القديمة بهذا الكود النهائي والمصحح
 exports.postMediaDelete = async (req, res) => {
     try {
         const body = req.body || {};
@@ -540,55 +539,59 @@ exports.postMediaDelete = async (req, res) => {
         const models = { Partner, Project, Post, Service, GlobalSeo };
         const ops = [];
 
-        // جمع العناصر المراد حذفها من الطلب
-        const items = body.items ? (Array.isArray(body.items) ? body.items : [body.items]) : [];
-        items.forEach(item => {
-            const parts = String(item || '').trim().split('|');
-            if (parts.length >= 3) {
+        if (body.items) {
+            const arr = Array.isArray(body.items) ? body.items : [body.items];
+            arr.forEach(item => {
+                const parts = String(item || '').trim().split('|');
+                if (parts.length < 3) return;
                 const [entityType, id, fieldName] = parts;
-                ops.push({ entityType, id, fieldName });
-            }
-        });
+                if (entityType && fieldName) ops.push({ entityType, id, fieldName });
+            });
+        } else if (body.type && body.id && body.field) {
+            ops.push({ entityType: body.type, id: body.id, fieldName: body.field });
+        }
 
         if (!ops.length) {
             return res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
         }
-        
-        // التكرار على العناصر وتحديث قاعدة البيانات
+
+        const affectedValues = [];
+
         for (const op of ops) {
             const Model = models[op.entityType];
             if (!Model || !op.fieldName) continue;
 
-            let record;
+            let record = null;
             if (op.entityType === 'GlobalSeo') {
-                record = await Model.findOne();
+                const numericId = parseInt(op.id, 10);
+                record = !isNaN(numericId) ? await Model.findByPk(numericId) : null;
+                if (!record) record = await Model.findOne();
             } else {
-                // FIX 2: إزالة علامة # من المعرف (ID) قبل تحويله لرقم
-                const cleanId = String(op.id || '').replace('#', '');
-                const numericId = parseInt(cleanId, 10);
-                if (!isNaN(numericId)) {
-                    record = await Model.findByPk(numericId);
-                }
+                const numericId = parseInt(op.id, 10);
+                if (!isNaN(numericId)) record = await Model.findByPk(numericId);
             }
 
-            // تحديث الحقل إلى null في قاعدة البيانات
-            if (record && record.dataValues.hasOwnProperty(op.fieldName)) {
+            if (record && Object.prototype.hasOwnProperty.call(record.dataValues || {}, op.fieldName)) {
+                const prev = record[op.fieldName];
+                if (prev) affectedValues.push(String(prev));
                 await record.update({ [op.fieldName]: null });
             }
         }
 
-        // FIX 1: استخدام الدالة الصحيحة لمسح الكاش
-        pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio', '/blog']);
-        
-        res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
-
-    } catch (e) {
-        console.error('Error in postMediaDelete:', e);
-        // يمكنك إظهار الخطأ الفعلي أثناء التطوير لتسهيل التصحيح
-        if (process.env.NODE_ENV !== 'production') {
-            return res.status(500).send(`Server Error: ${e.message}`);
+        if (affectedValues.length) {
+            const refs = await collectMediaRefs();
+            Array.from(new Set(affectedValues)).forEach(val => {
+                const v = String(val || '').trim();
+                if (!v || /^https?:\/\//i.test(v)) return;
+                if (!refs.some(r => !r.isExternal && r.value === v)) deleteFile(v);
+            });
         }
-        res.status(500).send('Server Error occurred during media deletion.');
+
+        pageCache.invalidateRoutes(['/', '/en']);
+        res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
     }
 };
 
@@ -1295,31 +1298,7 @@ exports.manageServices = async (req, res) => {
 };
 
 exports.fixServiceImages = async (req, res) => {
-    try {
-        const services = await Service.findAll();
-        let fixed = 0;
-        for (const service of services) {
-            const raw = service.image || '';
-            if (!raw) continue;
-            let exists = false;
-            try {
-                const filename = storageService.mapDbValueToLocal(raw);
-                if (filename) {
-                    const abs = storageService.buildAbsolutePath(filename);
-                    exists = fs.existsSync(abs);
-                }
-            } catch { exists = false; }
-            if (!exists) {
-                await service.update({ image: null });
-                fixed++;
-            }
-        }
-        try { pageCache.invalidateRoutes(['/', '/en']); } catch { }
-        res.send(`Service images fix completed. Total: ${services.length}, cleaned: ${fixed}.`);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
+    res.send(`تم تعطيل هذه الدالة لحماية الصور في بيئة الإنتاج من الحذف العشوائي.`);
 };
 
 exports.getAddService = (req, res) => {
@@ -1360,27 +1339,15 @@ const buildServiceData = (body) => {
     };
 };
 
-const resolveServiceImage = async (existingImage, currentImage, file) => {
-    const normalized = normalizeAsset(existingImage);
-    let finalImage = normalized;
-    if (finalImage) {
-        try {
-            const filename = storageService.mapDbValueToLocal(finalImage);
-            if (filename) {
-                const abs = storageService.buildAbsolutePath(filename);
-                if (!fs.existsSync(abs)) finalImage = '';
-            }
-        } catch { finalImage = ''; }
-    }
-    if (finalImage) return finalImage;
-    if (file) return await toHashedAsset(file);
-    return currentImage || null;
-};
-
 exports.postAddService = async (req, res) => {
     try {
         const data = buildServiceData(req.body);
-        data.image = await resolveServiceImage(req.body.existingImage, null, req.file);
+        
+        // الطريقة الصحيحة والآمنة (مثل الشركاء)
+        let image = req.body.existingImage ? normalizeAsset(req.body.existingImage) : null;
+        if (!image && req.file) image = await toHashedAsset(req.file);
+        data.image = image;
+
         await Service.create(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
@@ -1409,8 +1376,16 @@ exports.postEditService = async (req, res) => {
     try {
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
+        
         const data = buildServiceData(req.body);
-        data.image = await resolveServiceImage(req.body.existingImage, service.image, req.file);
+        
+        // الطريقة الصحيحة والآمنة لتحديث الصورة بدون حذفها بالخطأ
+        if (req.body.existingImage) {
+            data.image = normalizeAsset(req.body.existingImage);
+        } else if (req.file) {
+            data.image = await toHashedAsset(req.file);
+        }
+
         await service.update(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
@@ -1434,6 +1409,7 @@ exports.deleteService = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 // ─── Philosophy Page Settings ─────────────────────────────────────────────
 
