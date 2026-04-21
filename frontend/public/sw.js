@@ -13,6 +13,7 @@ const PRECACHE_URLS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // تفعيل فوري للنسخة الجديدة
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)).catch(() => {})
   );
@@ -43,6 +44,12 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
+  
+  // 🛑 [الحل الجذري للخطأ الأحمر]: تجاهل أي طلب ليس GET (مثل POST لرفع الصور أو حفظ البيانات)
+  if (req.method !== 'GET') {
+    return; 
+  }
+
   const url = new URL(req.url);
 
   if (req.mode === 'navigate') {
@@ -61,7 +68,6 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (
-    req.method === 'GET' &&
     url.origin === location.origin &&
     (url.pathname.endsWith('.css') ||
       url.pathname.endsWith('.js') ||
@@ -78,5 +84,4 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
-}
-);
+});

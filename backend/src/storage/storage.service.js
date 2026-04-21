@@ -34,8 +34,14 @@ function ensureUploadDir() {
 ensureUploadDir();
 
 function buildPublicUrl(filename) {
-    const clean = String(filename || '').replace(/^\/+/, '');
+    let clean = String(filename || '').trim().replace(/^\/+/, '');
     if (!clean) return '';
+    
+    // 🛑 منع تكرار مجلد الرفع في قاعدة البيانات
+    if (clean.startsWith('uploads/')) {
+        clean = clean.replace('uploads/', '');
+    }
+
     if (UPLOAD_URL) {
         return `${UPLOAD_URL}/${clean}`;
     }
@@ -43,7 +49,10 @@ function buildPublicUrl(filename) {
 }
 
 function buildAbsolutePath(filename) {
-    const clean = String(filename || '').replace(/^\/+/, '');
+    let clean = String(filename || '').replace(/^\/+/, '');
+    if (clean.startsWith('uploads/')) {
+        clean = clean.replace('uploads/', '');
+    }
     return path.join(UPLOAD_PATH, clean);
 }
 
