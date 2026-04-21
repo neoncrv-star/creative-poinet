@@ -32,8 +32,6 @@ async function ensureGlobalSeoModelSync() {
 
 const storageService = require('../src/storage/storage.service');
 
-// NOTE: Physical deletion intentionally disabled – assets are content-addressed
-// and immutable to avoid accidental loss.
 const deleteFile = (stored) => {
     try {
         const filename = storageService.mapDbValueToLocal(stored);
@@ -54,14 +52,13 @@ const normalizeAsset = (value) => {
 const checkAssetExists = (rel) => {
     let exists = false;
     let fileSize = 0;
-    
-    // 🛠️ التعديل: تنظيف المسار جذرياً لاستخراج اسم الملف فقط بدون مجلدات
+
     let clean = String(rel || '').replace(/^\/+/, '');
     if (clean.startsWith('uploads/')) clean = clean.replace('uploads/', '');
-    if (clean.includes('/')) clean = clean.split('/').pop(); 
+    if (clean.includes('/')) clean = clean.split('/').pop();
 
     if (!clean) return { exists, fileSize };
-    
+
     try {
         const primaryAbs = storageService.buildAbsolutePath(clean);
         if (fs.existsSync(primaryAbs) && fs.statSync(primaryAbs).isFile()) {
@@ -82,6 +79,24 @@ const checkAssetExists = (rel) => {
     return { exists, fileSize };
 };
 
+// ─── Media helpers ────────────────────────────────────────────────────────
+
+const classifyMediaKind = (value, field) => {
+    const v = String(value || '').toLowerCase();
+    const match = v.match(/\.([a-z0-9]+)(?:[?#].*)?$/);
+    const ext = match ? `.${match[1]}` : '';
+    const imageExts = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.avif', '.jfif']);
+    const videoExts = new Set(['.mp4', '.webm', '.ogg', '.ogv', '.m4v']);
+    const audioExts = new Set(['.mp3', '.wav', '.ogg', '.oga', '.m4a']);
+    if (ext && imageExts.has(ext)) return 'image';
+    if (ext && videoExts.has(ext)) return 'video';
+    if (ext && audioExts.has(ext)) return 'audio';
+    const f = String(field || '').toLowerCase();
+    if (f.includes('video')) return 'video';
+    if (f.includes('audio') || f.includes('voice') || f.includes('sound')) return 'audio';
+    return 'image';
+};
+
 const collectMediaRefs = async () => {
     const refs = [];
     const pushRef = (type, entityId, field, value, title) => {
@@ -92,7 +107,6 @@ const collectMediaRefs = async () => {
         let rel = raw;
         if (!isExternal) {
             let filename = storageService.mapDbValueToLocal(raw);
-            // 🛠️ التعديل: ضمان استخراج اسم الملف الصافي فقط للمقارنة مع الملفات الفيزيائية
             if (filename && filename.includes('/')) filename = filename.split('/').pop();
             rel = filename ? filename : raw;
         }
@@ -496,6 +510,96 @@ exports.listUploads = async (req, res) => {
     }
 };
 
+// ─── Media Library ────────────────────────────────────────────────────────
+
+exports.getMediaLibrary = async (req, res) => {
+    try {
+        const refs = await collectMediaRefs();
+        const filterRaw = String(req.query.type || '').toLowerCase();
+        const allowed = new Set(['image', 'video', 'audio']);
+        const currentFilter = allowed.has(filterRaw) ? filterRaw : '';
+        const filteredRefs = currentFilter ? refs.filter(r => r.mediaKind === currentFilter) : refs;
+        const stats = {
+            total: refs.length,
+            images: refs.filter(r => r.mediaKind === 'image').length,
+            videos: refs.filter(r => r.mediaKind === 'video').length,
+            audios: refs.filter(r => r.mediaKind === 'audio').length
+        };
+        res.render('admin/media-library', {
+            title: 'لوحة التحكم | الوسائط',
+            path: '/admin/media',
+            refs: filteredRefs,
+            stats,
+            currentFilter
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postMediaDelete = async (req, res) => {
+    try {
+        const body = req.body || {};
+        const filterRaw = String(body.filter || '').trim();
+        const models = { Partner, Project, Post, Service, GlobalSeo };
+        const ops = [];
+
+        if (body.items) {
+            const arr = Array.isArray(body.items) ? body.items : [body.items];
+            arr.forEach(item => {
+                const parts = String(item || '').trim().split('|');
+                if (parts.length < 3) return;
+                const [entityType, id, fieldName] = parts;
+                if (entityType && fieldName) ops.push({ entityType, id, fieldName });
+            });
+        } else if (body.type && body.id && body.field) {
+            ops.push({ entityType: body.type, id: body.id, fieldName: body.field });
+        }
+
+        if (!ops.length) {
+            return res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
+        }
+
+        const affectedValues = [];
+
+        for (const op of ops) {
+            const Model = models[op.entityType];
+            if (!Model || !op.fieldName) continue;
+
+            let record = null;
+            if (op.entityType === 'GlobalSeo') {
+                const numericId = parseInt(op.id, 10);
+                record = !isNaN(numericId) ? await Model.findByPk(numericId) : null;
+                if (!record) record = await Model.findOne();
+            } else {
+                const numericId = parseInt(op.id, 10);
+                if (!isNaN(numericId)) record = await Model.findByPk(numericId);
+            }
+
+            if (record && Object.prototype.hasOwnProperty.call(record.dataValues || {}, op.fieldName)) {
+                const prev = record[op.fieldName];
+                if (prev) affectedValues.push(String(prev));
+                await record.update({ [op.fieldName]: null });
+            }
+        }
+
+        if (affectedValues.length) {
+            const refs = await collectMediaRefs();
+            Array.from(new Set(affectedValues)).forEach(val => {
+                const v = String(val || '').trim();
+                if (!v || /^https?:\/\//i.test(v)) return;
+                if (!refs.some(r => !r.isExternal && r.value === v)) deleteFile(v);
+            });
+        }
+
+        pageCache.invalidateRoutes(['/', '/en']);
+        res.redirect('/admin/media' + (filterRaw ? `?type=${encodeURIComponent(filterRaw)}` : ''));
+    } catch (e) {
+        console.error(e);
+        res.status(500).send('Server Error');
+    }
+};
 
 // ─── Assets Audit ────────────────────────────────────────────────────────
 
@@ -561,7 +665,6 @@ exports.postAssetsUpload = async (req, res) => {
 };
 
 // ─── SEO Settings ────────────────────────────────────────────────────────
-// Handles: meta SEO fields + contact info + social links + journey lines
 
 exports.getSeoSettings = async (req, res) => {
     try {
@@ -580,27 +683,12 @@ exports.postSeoSettings = async (req, res) => {
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
 
-        // ── File uploads ──────────────────────────────────────────────
         if (req.files) {
             if (req.files['favicon']) data.favicon = await toHashedAsset(req.files['favicon'][0]);
             if (req.files['ogImage']) data.ogImage = await toHashedAsset(req.files['ogImage'][0]);
         }
         if (data.favicon) data.favicon = normalizeAsset(data.favicon);
         if (data.ogImage) data.ogImage = normalizeAsset(data.ogImage);
-
-        // ── Contact info (from template) ──────────────────────────────
-        // contactTitleAr, contactTitleEn, contactSubtitleAr, contactSubtitleEn
-        // contactPhone, contactEmail, contactLocationAr, contactLocationEn
-        // (passed as-is from req.body – no special handling needed)
-
-        // ── Social links (from template) ──────────────────────────────
-        // socialInstagram, socialTwitter, socialLinkedin
-        // (passed as-is from req.body)
-
-        // ── Journey lines (from template) ─────────────────────────────
-        // journeyLine1Ar … journeyLine9Ar
-        // journeyLine1En … journeyLine9En
-        // (passed as-is from req.body)
 
         if (!seo) {
             seo = await GlobalSeo.create(data);
@@ -615,7 +703,6 @@ exports.postSeoSettings = async (req, res) => {
 };
 
 // ─── Design Settings ─────────────────────────────────────────────────────
-// Handles: hero video/image, slider config, service overlay
 
 exports.getDesignSettings = async (req, res) => {
     try {
@@ -633,10 +720,8 @@ exports.postDesignSettings = async (req, res) => {
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
 
-        // ── Slider ────────────────────────────────────────────────────
         data.sliderAutoplay = req.body.sliderAutoplay === 'on';
 
-        // ── Hero background image (optional separate upload field) ────
         if (req.files && req.files['heroBackgroundImage']) {
             data.heroBackgroundImage = await toHashedAsset(req.files['heroBackgroundImage'][0]);
         }
@@ -750,10 +835,6 @@ exports.deletePartner = async (req, res) => {
 };
 
 // ─── Portfolio Management ─────────────────────────────────────────────────
-// Supports bilingual: title_ar / title_en, description_ar / description_en
-
-// ─── Portfolio Management ─────────────────────────────────────────────────
-// Supports bilingual: title_ar / title_en, description_ar / description_en
 
 exports.managePortfolio = async (req, res) => {
     try {
@@ -816,11 +897,8 @@ exports.postAddProject = async (req, res) => {
             seoKeywords
         };
 
-        // الكود الآمن لإضافة الصورة
         let image = existingImage ? normalizeAsset(existingImage) : null;
-        if (req.file) {
-            image = await toHashedAsset(req.file);
-        }
+        if (req.file) image = await toHashedAsset(req.file);
         data.image = image;
 
         if (data.category && !isNaN(data.category)) {
@@ -884,11 +962,8 @@ exports.postEditProject = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-        
-        // الكود الآمن لتحديث الصورة (لا يحذف القديمة إلا عند رفع جديدة)
-        if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
+
+        if (req.file) data.image = await toHashedAsset(req.file);
 
         if (data.category && !isNaN(data.category)) {
             data.CategoryId = parseInt(data.category);
@@ -1005,10 +1080,6 @@ exports.deleteCategory = async (req, res) => {
 };
 
 // ─── Blog Management ──────────────────────────────────────────────────────
-// Supports bilingual: title_ar / title_en, excerpt_ar / excerpt_en
-
-// ─── Blog Management ──────────────────────────────────────────────────────
-// Supports bilingual: title_ar / title_en, excerpt_ar / excerpt_en
 
 exports.manageBlog = async (req, res) => {
     try {
@@ -1060,12 +1131,9 @@ exports.postAddPost = async (req, res) => {
             seoDescription,
             seoKeywords
         };
-        
-        // الكود الآمن لإضافة الصورة
+
         let image = existingImage ? normalizeAsset(existingImage) : null;
-        if (req.file) {
-            image = await toHashedAsset(req.file);
-        }
+        if (req.file) image = await toHashedAsset(req.file);
         data.image = image;
 
         await Post.create(data);
@@ -1119,10 +1187,7 @@ exports.postEditPost = async (req, res) => {
             seoKeywords
         };
 
-        // الكود الآمن لتحديث الصورة (لا يلمس القديمة إلا عند رفع جديدة)
-        if (req.file) {
-            data.image = await toHashedAsset(req.file);
-        }
+        if (req.file) data.image = await toHashedAsset(req.file);
 
         await post.update(data);
         pageCache.invalidateRoutes(['/', '/en', '/blog']);
@@ -1223,7 +1288,6 @@ exports.getAddService = (req, res) => {
     });
 };
 
-// Shared helper to build service data from request body
 const buildServiceData = (body) => {
     const {
         title_ar, title_en,
@@ -1256,12 +1320,9 @@ const buildServiceData = (body) => {
 exports.postAddService = async (req, res) => {
     try {
         const data = buildServiceData(req.body);
-        
-        // الطريقة الصحيحة والآمنة (مثل الشركاء)
         let image = req.body.existingImage ? normalizeAsset(req.body.existingImage) : null;
         if (!image && req.file) image = await toHashedAsset(req.file);
         data.image = image;
-
         await Service.create(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
@@ -1290,16 +1351,12 @@ exports.postEditService = async (req, res) => {
     try {
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
-        
         const data = buildServiceData(req.body);
-        
-        // الطريقة الصحيحة والآمنة لتحديث الصورة بدون حذفها بالخطأ
         if (req.body.existingImage) {
             data.image = normalizeAsset(req.body.existingImage);
         } else if (req.file) {
             data.image = await toHashedAsset(req.file);
         }
-
         await service.update(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
@@ -1324,18 +1381,17 @@ exports.deleteService = async (req, res) => {
     }
 };
 
-
 // ─── Philosophy Page Settings ─────────────────────────────────────────────
 
 exports.getPhilosophySettings = async (req, res) => {
     try {
-        await Philosophy.sync(); // التأكد من إنشاء الجدول
+        await Philosophy.sync();
         let data = await Philosophy.findOne();
         if (!data) data = await Philosophy.create({});
-        res.render('admin/philosophy-settings', { 
-            title: 'لوحة التحكم | إعدادات صفحة فلسفتنا', 
-            path: '/admin/philosophy', 
-            data 
+        res.render('admin/philosophy-settings', {
+            title: 'لوحة التحكم | إعدادات صفحة فلسفتنا',
+            path: '/admin/philosophy',
+            data
         });
     } catch (error) {
         console.error(error);
@@ -1348,7 +1404,6 @@ exports.postPhilosophySettings = async (req, res) => {
         let data = await Philosophy.findOne();
         const bodyData = { ...req.body };
 
-        // معالجة رفع الصور والأيقونات
         if (req.files) {
             if (req.files['heroImage']) bodyData.heroImage = await toHashedAsset(req.files['heroImage'][0]);
             if (req.files['pillar1Icon']) bodyData.pillar1Icon = await toHashedAsset(req.files['pillar1Icon'][0]);
@@ -1357,7 +1412,6 @@ exports.postPhilosophySettings = async (req, res) => {
             if (req.files['pillar4Icon']) bodyData.pillar4Icon = await toHashedAsset(req.files['pillar4Icon'][0]);
         }
 
-        // الحفاظ على الصور القديمة إذا لم يتم رفع جديد
         if (bodyData.heroImage) bodyData.heroImage = normalizeAsset(bodyData.heroImage);
         if (bodyData.pillar1Icon) bodyData.pillar1Icon = normalizeAsset(bodyData.pillar1Icon);
         if (bodyData.pillar2Icon) bodyData.pillar2Icon = normalizeAsset(bodyData.pillar2Icon);
@@ -1369,7 +1423,7 @@ exports.postPhilosophySettings = async (req, res) => {
         } else {
             await data.update(bodyData);
         }
-        
+
         pageCache.invalidateRoutes(['/philosophy', '/en/philosophy']);
         res.redirect('/admin/philosophy');
     } catch (error) {
