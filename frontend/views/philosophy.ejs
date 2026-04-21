@@ -1,0 +1,146 @@
+<%- include('partials/header') %>
+
+<style>
+    /* تنسيقات صفحة فلسفتنا لتطابق الـ PDF */
+    .philosophy-page {
+        background-color: #ffffff;
+        color: #1A1A1A;
+        font-family: 'TheSansArabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding-bottom: 5rem;
+    }
+    .ph-hero {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 3rem;
+        overflow: hidden;
+    }
+    .ph-hero img {
+        width: 100%;
+        max-width: 800px;
+        height: auto;
+    }
+    .ph-content {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 20px;
+    }
+    .ph-title-ar {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        color: #1A1A1A;
+    }
+    .ph-desc-ar {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 3rem;
+        text-align: justify;
+        text-align-last: center;
+    }
+    .ph-title-en {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        color: #D00000;
+        direction: ltr;
+    }
+    .ph-desc-en {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #555;
+        direction: ltr;
+        margin-bottom: 4rem;
+        text-align: justify;
+        text-align-last: center;
+    }
+    .ph-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    .ph-card {
+        background-color: #f4f5f7;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    .ph-card:hover {
+        transform: translateY(-5px);
+    }
+    .ph-card h4 {
+        color: #D00000;
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        font-weight: bold;
+    }
+    .ph-card img {
+        height: 60px;
+        margin-bottom: 2rem;
+        object-fit: contain;
+    }
+    .ph-card p.ar {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    .ph-card p.en {
+        font-size: 0.95rem;
+        color: #666;
+        direction: ltr;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .ph-grid { grid-template-columns: 1fr; }
+        .ph-title-ar { font-size: 2rem; }
+        .ph-title-en { font-size: 1.8rem; }
+    }
+</style>
+
+<main class="philosophy-page">
+    <!-- صورة الهيرو (الخطوط الحمراء) -->
+    <section class="ph-hero">
+        <% if (data && data.heroImage) { %>
+            <img src="/uploads/<%= data.heroImage %>" alt="Creative Point Philosophy">
+        <% } %>
+    </section>
+
+    <!-- النصوص الرئيسية -->
+    <section class="ph-content">
+        <!-- القسم العربي -->
+        <h1 class="ph-title-ar"><%- data ? data.mainTitleAr : 'لم <span style="color:#D00000">ولن</span> نكن صدفة او حدث عشوائي' %></h1>
+        <p class="ph-desc-ar"><%= data ? data.mainDescAr : '' %></p>
+
+        <!-- القسم الإنجليزي -->
+        <h2 class="ph-title-en"><%- data ? data.mainTitleEn : 'We were not and will never be <br><span style="color:#1A1A1A">a coincidence or a random occurrence</span>' %></h2>
+        <p class="ph-desc-en"><%= data ? data.mainDescEn : '' %></p>
+    </section>
+
+    <!-- شبكة المربعات الأربعة -->
+    <section class="ph-grid">
+        <% for(let i=1; i<=4; i++) { %>
+            <div class="ph-card">
+                <h4><%= data ? data['pillar'+i+'Title'] : '' %></h4>
+                
+                <% if (data && data['pillar'+i+'Icon']) { %>
+                    <img src="/uploads/<%= data['pillar'+i+'Icon'] %>" alt="Icon <%= i %>">
+                <% } %>
+                
+                <p class="ar"><%= data ? data['pillar'+i+'DescAr'] : '' %></p>
+                <p class="en"><%= data ? data['pillar'+i+'DescEn'] : '' %></p>
+            </div>
+        <% } %>
+    </section>
+</main>
+
+<%- include('partials/footer') %>

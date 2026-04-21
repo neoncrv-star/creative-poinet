@@ -1,0 +1,91 @@
+<%- include('layout-header') %>
+
+<div class="admin-content-inner">
+    <div class="admin-topbar-actions" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-weight: 700; color: var(--secondary-color, #1A1A1A);">إعدادات صفحة "فلسفتنا"</h2>
+    </div>
+
+    <form action="/admin/philosophy" method="POST" enctype="multipart/form-data">
+        <div class="admin-card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: #D00000; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <i class="fas fa-image"></i> الصورة العلوية (Hero Image)
+            </h3>
+            <% if (data && data.heroImage) { %>
+                <div style="margin-bottom: 1rem; border: 1px solid #eee; border-radius: 8px; overflow: hidden; max-width: 400px;">
+                    <img src="/uploads/<%= data.heroImage %>" style="width: 100%; height: auto; display: block;">
+                </div>
+            <% } %>
+            <div class="form-group">
+                <input type="file" name="heroImage" accept="image/*" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                <small style="color: #888;">يفضل رفع صورة بخلفية شفافة (PNG) أو بيضاء للخطوط الحمراء.</small>
+            </div>
+        </div>
+
+        <div class="admin-card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: #D00000; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <i class="fas fa-align-center"></i> النصوص الرئيسية
+            </h3>
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label>العنوان الرئيسي (عربي)</label>
+                    <input type="text" name="mainTitleAr" value="<%= data ? data.mainTitleAr : '' %>">
+                    <small style="color:#888">يمكنك استخدام <code>&lt;span style="color:red"&gt;كلمة&lt;/span&gt;</code> لتلوين كلمة باللون الأحمر.</small>
+                </div>
+                <div class="form-group">
+                    <label>العنوان الرئيسي (إنجليزي)</label>
+                    <input type="text" name="mainTitleEn" value="<%= data ? data.mainTitleEn : '' %>">
+                </div>
+            </div>
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label>الوصف الرئيسي (عربي)</label>
+                    <textarea name="mainDescAr" rows="5"><%= data ? data.mainDescAr : '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>الوصف الرئيسي (إنجليزي)</label>
+                    <textarea name="mainDescEn" rows="5"><%= data ? data.mainDescEn : '' %></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: #D00000; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <i class="fas fa-th-large"></i> المربعات الأربعة (Pillars)
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <!-- Loop for 4 Pillars -->
+                <% for(let i=1; i<=4; i++) { %>
+                    <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+                        <h4 style="margin-bottom: 1rem; color: #333;">المربع رقم <%= i %></h4>
+                        <div class="form-group">
+                            <label>العنوان (أحمر)</label>
+                            <input type="text" name="pillar<%= i %>Title" value="<%= data ? data['pillar'+i+'Title'] : '' %>">
+                        </div>
+                        <div class="form-group">
+                            <label>الأيقونة</label>
+                            <% if (data && data['pillar'+i+'Icon']) { %>
+                                <img src="/uploads/<%= data['pillar'+i+'Icon'] %>" style="height: 40px; margin-bottom: 10px; display: block;">
+                            <% } %>
+                            <input type="file" name="pillar<%= i %>Icon" accept="image/*" style="width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label>النص (عربي)</label>
+                            <textarea name="pillar<%= i %>DescAr" rows="3"><%= data ? data['pillar'+i+'DescAr'] : '' %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>النص (إنجليزي)</label>
+                            <textarea name="pillar<%= i %>DescEn" rows="3"><%= data ? data['pillar'+i+'DescEn'] : '' %></textarea>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; justify-content: center;">
+            <i class="fas fa-save"></i> حفظ التعديلات
+        </button>
+    </form>
+</div>
+
+<%- include('layout-footer') %>

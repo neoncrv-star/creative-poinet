@@ -144,4 +144,15 @@ router.get('/stats/edit/:id', adminController.getEditStat);
 router.post('/stats/edit/:id', adminController.postEditStat);
 router.get('/stats/delete/:id', adminController.deleteStat);
 
+
+// Philosophy Routes
+router.get('/philosophy', adminController.getPhilosophySettings);
+router.post('/philosophy', upload.fields([
+    { name: 'heroImage', maxCount: 1 },
+    { name: 'pillar1Icon', maxCount: 1 },
+    { name: 'pillar2Icon', maxCount: 1 },
+    { name: 'pillar3Icon', maxCount: 1 },
+    { name: 'pillar4Icon', maxCount: 1 }
+]), adminController.postPhilosophySettings);
+
 module.exports = router;

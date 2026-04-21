@@ -15,6 +15,10 @@ router.get('/en/portfolio', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), port
 router.get('/portfolio/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
 router.get('/en/portfolio/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
 
+// Philosophy Page Route
+router.get('/philosophy', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getPhilosophyPage);
+router.get('/en/philosophy', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getPhilosophyPage);
+
 // Blog Routes
 router.get('/blog', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getBlog);
 router.get('/blog/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getPost);

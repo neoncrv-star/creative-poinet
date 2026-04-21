@@ -6,6 +6,7 @@ const GlobalSeo = require('../models/GlobalSeo');
 const Partner = require('../models/Partner');
 const Contact = require('../models/Contact');
 const StatBlock = require('../models/StatBlock');
+const Philosophy = require('../models/Philosophy');
 const Service = require('../models/Service');
 const sequelize = require('../config/database');
 const fs = require('fs');
@@ -1431,6 +1432,59 @@ exports.deleteService = async (req, res) => {
         }
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// ─── Philosophy Page Settings ─────────────────────────────────────────────
+
+exports.getPhilosophySettings = async (req, res) => {
+    try {
+        await Philosophy.sync(); // التأكد من إنشاء الجدول
+        let data = await Philosophy.findOne();
+        if (!data) data = await Philosophy.create({});
+        res.render('admin/philosophy-settings', { 
+            title: 'لوحة التحكم | إعدادات صفحة فلسفتنا', 
+            path: '/admin/philosophy', 
+            data 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.postPhilosophySettings = async (req, res) => {
+    try {
+        let data = await Philosophy.findOne();
+        const bodyData = { ...req.body };
+
+        // معالجة رفع الصور والأيقونات
+        if (req.files) {
+            if (req.files['heroImage']) bodyData.heroImage = await toHashedAsset(req.files['heroImage'][0]);
+            if (req.files['pillar1Icon']) bodyData.pillar1Icon = await toHashedAsset(req.files['pillar1Icon'][0]);
+            if (req.files['pillar2Icon']) bodyData.pillar2Icon = await toHashedAsset(req.files['pillar2Icon'][0]);
+            if (req.files['pillar3Icon']) bodyData.pillar3Icon = await toHashedAsset(req.files['pillar3Icon'][0]);
+            if (req.files['pillar4Icon']) bodyData.pillar4Icon = await toHashedAsset(req.files['pillar4Icon'][0]);
+        }
+
+        // الحفاظ على الصور القديمة إذا لم يتم رفع جديد
+        if (bodyData.heroImage) bodyData.heroImage = normalizeAsset(bodyData.heroImage);
+        if (bodyData.pillar1Icon) bodyData.pillar1Icon = normalizeAsset(bodyData.pillar1Icon);
+        if (bodyData.pillar2Icon) bodyData.pillar2Icon = normalizeAsset(bodyData.pillar2Icon);
+        if (bodyData.pillar3Icon) bodyData.pillar3Icon = normalizeAsset(bodyData.pillar3Icon);
+        if (bodyData.pillar4Icon) bodyData.pillar4Icon = normalizeAsset(bodyData.pillar4Icon);
+
+        if (!data) {
+            await Philosophy.create(bodyData);
+        } else {
+            await data.update(bodyData);
+        }
+        
+        pageCache.invalidateRoutes(['/philosophy', '/en/philosophy']);
+        res.redirect('/admin/philosophy');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');

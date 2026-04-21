@@ -4,6 +4,7 @@ const Service = require('../models/Service');
 const Partner = require('../models/Partner');
 const Contact = require('../models/Contact');
 const StatBlock = require('../models/StatBlock');
+const Philosophy = require('../models/Philosophy');
 const Post = require('../models/Post');
 const fs = require('fs');
 const path = require('path');
@@ -143,5 +144,23 @@ exports.postContact = async (req, res) => {
     } catch (error) {
         console.error('Contact form error:', error);
         res.redirect('/?error=true#contact');
+    }
+};
+exports.getPhilosophyPage = async (req, res) => {
+    try {
+        const seo = await GlobalSeo.findOne();
+        let data = await Philosophy.findOne();
+        if (!data) data = {}; // في حال لم يتم إدخال بيانات بعد
+        
+        res.render('philosophy', { 
+            title: data.mainTitleAr || 'فلسفتنا', 
+            data,
+            seo,
+            globalSeo: seo,
+            lang: req.path.includes('/en') ? 'en' : 'ar'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
     }
 };
