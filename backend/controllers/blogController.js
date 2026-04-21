@@ -11,13 +11,13 @@ exports.getBlog = async (req, res) => {
         ]);
         res.render('blog/index', {
             title: seo && seo.blogTitle ? seo.blogTitle : 'المدونة',
-            posts,
+            posts,   
             seo,
             pageSeo: {
                 seoTitle: seo && seo.blogTitle,
                 seoDescription: seo && seo.blogDescription
             }
-        });
+        });  
     } catch (error) {
         console.error(error);
         res.render('blog/index', { title: 'المدونة', posts: [], seo: null });
