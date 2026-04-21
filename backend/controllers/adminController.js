@@ -733,22 +733,6 @@ exports.postDesignSettings = async (req, res) => {
         // ── Slider ────────────────────────────────────────────────────
         data.sliderAutoplay = req.body.sliderAutoplay === 'on';
 
-        // ── Hero video mode ───────────────────────────────────────────
-        const modeRaw = (req.body.heroVideoMode || '').toLowerCase();
-        const allowedModes = ['url', 'youtube', 'vimeo', 'file', 'none'];
-        data.heroVideoMode = allowedModes.includes(modeRaw) ? modeRaw : 'none';
-
-        // ── Hero video file ───────────────────────────────────────────
-        let heroVideoFile = seo && seo.heroVideoFile ? seo.heroVideoFile : null;
-        if (req.file) {
-            const stored = await toHashedAsset(req.file);
-            if (stored) heroVideoFile = stored;
-        }
-        // Clear file ref if mode is not 'file'
-        if (data.heroVideoMode !== 'file') heroVideoFile = null;
-        if (heroVideoFile) heroVideoFile = normalizeAsset(heroVideoFile);
-        data.heroVideoFile = heroVideoFile;
-
         // ── Hero background image (optional separate upload field) ────
         if (req.files && req.files['heroBackgroundImage']) {
             data.heroBackgroundImage = await toHashedAsset(req.files['heroBackgroundImage'][0]);

@@ -60,22 +60,6 @@ exports.getHome = async (req, res) => {
         await diagnoseServiceImages(services);
         
         
-        // Temporary override for video URL - using a direct MP4 link for reliability
-        // Using a highly reliable test video first to ensure player works, then we can switch to a themed one
-        const defaultVideoUrl = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'; 
-        const oldDefaultUrls = [
-            'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1&playlist=dQw4w9WgXcQ',
-            'https://www.youtube.com/embed/kDqTPT1SQbU?autoplay=1&mute=1&controls=0&loop=1&playlist=kDqTPT1SQbU',
-            'https://www.youtube.com/embed/kDqTPT1SQbU?autoplay=1&mute=1&controls=0&loop=1&playlist=kDqTPT1SQbU&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1',
-            'https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&mute=1&controls=0&loop=1&playlist=M7FIvfx5J10&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1',
-            'https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&mute=1&controls=0&loop=1&playlist=M7FIvfx5J10&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1&origin=http://localhost:3000'
-        ];
-        
-        if (seo && (!seo.heroVideoUrl || (!seo.heroVideoMode || seo.heroVideoMode === 'url') && (oldDefaultUrls.includes(seo.heroVideoUrl) || seo.heroVideoUrl.includes('youtube.com/embed/M7FIvfx5J10')))) {
-            console.log('Replacing Hero Video URL:', seo.heroVideoUrl, 'with', defaultVideoUrl);
-            seo.heroVideoUrl = defaultVideoUrl;
-        }
-
         const pageSeo = {
             title: seo ? (seo.homeTitle || 'الرئيسية') : 'الرئيسية',
             seoDescription: seo ? seo.homeDescription : ''
@@ -117,22 +101,6 @@ exports.getHomeEn = async (req, res) => {
         await diagnoseServiceImages(services);
         
         
-        // Temporary override for video URL - using a direct MP4 link for reliability
-        // Using a highly reliable test video first to ensure player works
-        const defaultVideoUrl = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'; 
-        const oldDefaultUrls = [
-            'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1&playlist=dQw4w9WgXcQ',
-            'https://www.youtube.com/embed/kDqTPT1SQbU?autoplay=1&mute=1&controls=0&loop=1&playlist=kDqTPT1SQbU',
-            'https://www.youtube.com/embed/kDqTPT1SQbU?autoplay=1&mute=1&controls=0&loop=1&playlist=kDqTPT1SQbU&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1',
-            'https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&mute=1&controls=0&loop=1&playlist=M7FIvfx5J10&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1',
-            'https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&mute=1&controls=0&loop=1&playlist=M7FIvfx5J10&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1&origin=http://localhost:3000'
-        ];
-        
-        if (seo && (!seo.heroVideoUrl || (!seo.heroVideoMode || seo.heroVideoMode === 'url') && (oldDefaultUrls.includes(seo.heroVideoUrl) || seo.heroVideoUrl.includes('youtube.com/embed/M7FIvfx5J10')))) {
-            console.log('Replacing EN Hero Video URL:', seo.heroVideoUrl, 'with', defaultVideoUrl);
-            seo.heroVideoUrl = defaultVideoUrl;
-        }
-
         const pageSeo = {
             title: 'Home',
             seoDescription: seo ? seo.homeDescription : '' // Ideally should have English field
