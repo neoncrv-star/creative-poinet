@@ -41,15 +41,26 @@ app.use((req, res, next) => {
     next();
 });
 
-// 📂 إعداد مسارات الملفات الثابتة والمرفقات
-const uploadsDir = storageService.UPLOAD_PATH || path.join(__dirname, '..', 'frontend', 'public', 'uploads');
+// 📂 إعداد مسارات الملفات الثابتة والمرفقات (تم التعديل ليدعم التخزين الخارجي الآمن)
+const uploadsDir = process.env.UPLOAD_PATH || path.join(__dirname, '..', 'frontend', 'public', 'uploads');
 const publicDir = path.join(__dirname, '..', 'frontend', 'public');
 const sessionsDir = path.join(__dirname, 'sessions');
 
+// طباعة المسار عند الإقلاع للتأكد من أنه يقرأ من الجذر
+console.log(`📂 Uploads Directory resolving to: ${uploadsDir}`);
+
 [uploadsDir, sessionsDir].forEach(dir => {
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(dir)) {
+        try {
+            fs.mkdirSync(dir, { recursive: true });
+            console.log(`✅ Created directory: ${dir}`);
+        } catch (err) {
+            console.error(`❌ CRITICAL: Cannot create directory ${dir}. Check permissions!`, err.message);
+        }
+    }
 });
 
+// تقديم الملفات الثابتة
 app.use('/uploads', express.static(uploadsDir, { maxAge: '365d', etag: true }));
 app.use(express.static(publicDir, { maxAge: '30d', etag: true }));
 
@@ -102,6 +113,14 @@ const ServiceModel = require('./models/Service');
 
 // 🗃️ نظام التخزين المؤقت للبيانات العامة (Cache)
 let globalDataCache = { seo: null, categories: [], lastFetch: 0 };
+
+// 🧹 دالة تفريغ الكاش المتاحة في كل التطبيق (تستخدم عند التعديل من لوحة التحكم)
+app.locals.bustPageCache = () => {
+    globalDataCache.lastFetch = 0;
+    debugLog('System cache cleared successfully.');
+    console.log('🧹 System cache cleared via bustPageCache.');
+};
+
 app.use(async (req, res, next) => {
     if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) return next();
 
@@ -134,8 +153,14 @@ app.use(async (req, res, next) => {
 app.use('/admin', require('./routes/admin'));
 app.use('/', require('./routes/index'));
 
-// 🩺 فحص صحة الخادم (Health Check)
-app.get('/healthz', (req, res) => res.json({ status: 'ok', version: app.locals.assetVersion }));
+// 🩺 فحص صحة الخادم (Health Check) - تم التحديث لإظهار حالة مجلد الصور
+app.get('/healthz', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        version: app.locals.assetVersion,
+        uploadPathExists: fs.existsSync(uploadsDir) 
+    });
+});
 
 // 🛑 معالجة الأخطاء غير المتوقعة (لمنع توقف الخادم نهائياً)
 process.on('unhandledRejection', (reason) => debugLog(`Unhandled Rejection: ${reason}`));
@@ -193,10 +218,10 @@ async function initDatabase() {
     require('./models/StatBlock');
     require('./models/User');
     require('./models/Contact');
-    require('./models/Philosophy');  // ← هذا كان ناقصاً
-    require('./models/GlobalSeo');   // ← احتياطي
-    require('./models/Category');    // ← احتياطي
-    require('./models/Service');     // ← احتياطي
+    require('./models/Philosophy');
+    require('./models/GlobalSeo');
+    require('./models/Category');
+    require('./models/Service');
 
     try {
         await sequelize.sync({ alter: true });
@@ -207,7 +232,5 @@ async function initDatabase() {
 }
 
 initDatabase();
-
-
 
 module.exports = app;
