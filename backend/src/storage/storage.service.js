@@ -138,7 +138,7 @@ function removeFile(filename) {
 
 module.exports = {
     UPLOAD_PATH: resolvedUploadPath,
-    UPLOAD_URL,
+    UPLOAD_URL,    
     ensureUploadDir,
     buildPublicUrl,
     buildAbsolutePath,

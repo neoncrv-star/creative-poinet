@@ -9,6 +9,7 @@ exports.getBlog = async (req, res) => {
             withTimeout(Post.findAll({ where: { is_active: true } }), cap, []),
             withTimeout(GlobalSeo.findOne(), cap, null)
         ]);
+        
         res.render('blog/index', {
             title: seo && seo.blogTitle ? seo.blogTitle : 'المدونة',
             posts,   
