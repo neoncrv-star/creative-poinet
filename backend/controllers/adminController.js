@@ -1005,6 +1005,9 @@ exports.postEditProject = async (req, res) => {
             seoKeywords
         };
 
+        if (req.body.existingImage && !req.file) {
+            data.image = normalizeAsset(req.body.existingImage);
+        }
         if (req.file) data.image = await toHashedAsset(req.file);
 
         if (data.category && !isNaN(data.category)) {
@@ -1239,6 +1242,9 @@ exports.postEditPost = async (req, res) => {
             seoKeywords
         };
 
+        if (req.body.existingImage && !req.file) {
+            data.image = normalizeAsset(req.body.existingImage);
+        }
         if (req.file) data.image = await toHashedAsset(req.file);
 
         if (req.body.slug) {
@@ -1393,8 +1399,12 @@ const buildServiceData = (body) => {
 exports.postAddService = async (req, res) => {
     try {
         const data = buildServiceData(req.body);
-        let image = req.body.existingImage ? normalizeAsset(req.body.existingImage) : null;
-        if (!image && req.file) image = await toHashedAsset(req.file);
+        let image = null;
+        if (req.file) {
+            image = await toHashedAsset(req.file);
+        } else if (req.body.existingImage) {
+            image = normalizeAsset(req.body.existingImage);
+        }
         data.image = image;
         if (!data.slug) {
             data.slug = await ensureUniqueSlug(Service, data.title_ar || data.title_en, 'slug');
@@ -1428,10 +1438,10 @@ exports.postEditService = async (req, res) => {
         const service = await Service.findByPk(req.params.id);
         if (!service) return res.redirect('/admin/services');
         const data = buildServiceData(req.body);
-        if (req.body.existingImage) {
-            data.image = normalizeAsset(req.body.existingImage);
-        } else if (req.file) {
+        if (req.file) {
             data.image = await toHashedAsset(req.file);
+        } else if (req.body.existingImage) {
+            data.image = normalizeAsset(req.body.existingImage);
         }
         if (!data.slug) {
             // keep existing slug if body slug is empty

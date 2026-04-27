@@ -207,8 +207,9 @@
         
         <!-- أزرار التنقل (تتولد تلقائياً من الإدارة) -->
     <div class="services-nav">
+        <% const hasActive = typeof activeService !== 'undefined' && activeService; %>
         <% services.forEach((service, index) => { %>
-            <button class="service-tab-btn <%= (!activeService && index === 0) || (activeService && activeService.id === service.id) ? 'active' : '' %>" data-index="<%= index %>" onclick="switchService(this.getAttribute('data-index'))">
+            <button class="service-tab-btn <%= (!hasActive && index === 0) || (hasActive && activeService.id === service.id) ? 'active' : '' %>" data-index="<%= index %>" onclick="switchService(this.getAttribute('data-index'))">
                 <%= lang === 'en' ? service.title_en : service.title_ar %>
             </button>
         <% }) %>
@@ -216,7 +217,7 @@
 
     <!-- محتوى الخدمات -->
     <% services.forEach((service, index) => { %>
-        <div class="service-content <%= (!activeService && index === 0) || (activeService && activeService.id === service.id) ? 'active' : '' %>" id="service-<%= index %>">
+        <div class="service-content <%= (!hasActive && index === 0) || (hasActive && activeService.id === service.id) ? 'active' : '' %>" id="service-<%= index %>">
                 
                 <!-- القسم العلوي -->
                 <div class="service-hero">

@@ -109,7 +109,7 @@
                 
                 <% if (project && project.image) { %>
                     <div style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                        <img id="current-project-image" src="<%= project.image %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
+                        <img id="current-project-image" src="<%= assetPath(project.image) %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
                     </div>
                 <% } else { %>
                     <div id="current-project-image-wrapper" style="margin-bottom: 15px; border: 1px dashed #eee; border-radius: 8px; height:150px; display:flex;align-items:center;justify-content:center;color:#999;">
@@ -125,7 +125,7 @@
                     <button type="button" class="btn btn-secondary btn-block" style="justify-content:center;" onclick="openUploadsBrowser('project')">
                         <i class="fas fa-folder-open"></i> اختيار من الملفات المرفوعة
                     </button>
-                    <input type="hidden" name="existingImage" id="existingImageProject">
+                    <input type="hidden" name="existingImage" id="existingImageProject" value="<%= project && project.image ? project.image : '' %>">
                     <div id="file-name" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; text-align: center;"></div>
                 </div>
             </div>

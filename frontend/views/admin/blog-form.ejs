@@ -84,7 +84,7 @@
                     
                     <% if (post && post.image) { %>
                         <div class="current-image" style="margin-bottom: 1rem; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                            <img src="<%= post.image %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
+                            <img src="<%= assetPath(post.image) %>" alt="Current Image" style="width: 100%; height: auto; display: block;">
                         </div>
                     <% } else { %>
                         <div class="no-image" style="background: #f8f9fa; height: 150px; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; border-radius: 8px; margin-bottom: 1rem; color: var(--text-muted);">
@@ -100,7 +100,7 @@
                         <button type="button" class="btn btn-secondary" style="justify-content:center;" onclick="openUploadsBrowser('blog')" id="open-server-blog-btn">
                             <i class="fas fa-folder-open"></i> اختيار من الخادم
                         </button>
-                        <input type="hidden" name="existingImage" id="existingImageBlog">
+                        <input type="hidden" name="existingImage" id="existingImageBlog" value="<%= post && post.image ? post.image : '' %>">
                         <div id="file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
                     </div>
                     <small style="display: block; margin-top: 10px; color: var(--text-muted); text-align: center;">يفضل مقاس 1200×800 بكسل</small>

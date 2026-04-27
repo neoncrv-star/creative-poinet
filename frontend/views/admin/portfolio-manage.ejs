@@ -29,7 +29,7 @@
                     <tr>
                         <td>
                             <% if(project.image) { %>
-                                <img src="<%= project.image %>" alt="<%= project.title %>" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                <img src="<%= assetPath(project.image) %>" alt="<%= project.title %>" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
                             <% } else { %>
                                 <div style="width: 60px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-image text-muted"></i>

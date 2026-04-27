@@ -137,8 +137,14 @@ app.use(async (req, res, next) => {
         res.locals.globalCategories = globalDataCache.categories;
         res.locals.path = req.path;
 
-        // مسار المرفقات للقوالب
-        res.locals.assetPath = (val) => val ? (val.startsWith('/') ? val : '/' + val) : val;
+        // مسار المرفقات للقوالب - يدعم جميع الحالات
+        res.locals.assetPath = (val) => {
+            if (!val) return val;
+            const s = String(val);
+            if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('//')) return s;
+            if (s.startsWith('/')) return s;
+            return '/' + s;
+        };
         next();
     } catch (error) {
         debugLog('Global Data Error: ' + error.message);
