@@ -184,34 +184,14 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
-// 🔌 تشغيل الخادم فوراً لإرضاء بيئة هوستنجر ومنع خطأ 503
 const port = process.env.PORT || 3000;
 
-const server = app.listen(port, () => {
-    console.log(`🚀 Server running on port ${port}`);
-});
+// 🗄️ بدء قاعدة البيانات أولاً ثم تشغيل الخادم بعدها
+// هذا يمنع تعارض ALTER TABLE مع SELECT أثناء الطلبات الواردة
+(async () => {
+    console.log('⏳ Initializing database...');
 
-server.keepAliveTimeout = 65000;
-server.headersTimeout = 70000;
-
-// 🗄️ الاتصال بقاعدة البيانات في الخلفية بعد تشغيل الخادم
-async function initDatabase() {
-    let connected = false;
-    for (let i = 0; i < 5; i++) {
-        try {
-            await sequelize.authenticate();
-            console.log('✅ MySQL Connected Successfully.');
-            connected = true;
-            break;
-        } catch (err) {
-            console.error(`⚠️ DB Connection Failed:`, err.message);
-            await new Promise(res => setTimeout(res, 3000));
-        }
-    }
-
-    if (!connected) return;
-
-    // ← تحميل جميع الموديلات بدون استثناء
+    // تحميل جميع الموديلات
     require('./models/Project');
     require('./models/Post');
     require('./models/Partner');
@@ -223,56 +203,66 @@ async function initDatabase() {
     require('./models/Category');
     require('./models/Service');
 
-    try {
-        // استخدام sync() فقط لإنشاء الجداول الجديدة إن لم تكن موجودة
-        // بدون alter: true لمنع أي تعديل على جداول موجودة
-        await sequelize.sync();
-        console.log('✅ Database tables checked successfully.');
-    } catch (e) {
-        console.error('Sync Error: ' + e.message);
+    // الاتصال بقاعدة البيانات
+    let connected = false;
+    for (let i = 0; i < 8; i++) {
+        try {
+            await sequelize.authenticate();
+            console.log('✅ MySQL Connected Successfully.');
+            connected = true;
+            break;
+        } catch (err) {
+            console.error(`⚠️ DB attempt ${i + 1}/8 failed:`, err.message);
+            await new Promise(res => setTimeout(res, 3000));
+        }
     }
 
-    // إضافة الأعمدة الجديدة المفقودة بأمان باستخدام SQL خام
-    const safeAddColumn = async (table, column, definition) => {
-        try {
-            await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
-            console.log(`✅ Added column ${column} to ${table}`);
-        } catch (e) {
-            if (e.message.includes('Duplicate column') || e.message.includes('already exists')) {
-                // العمود موجود مسبقاً - لا مشكلة
-            } else {
-                console.error(`⚠️ Could not add ${column} to ${table}: ${e.message}`);
+    if (!connected) {
+        console.error('❌ FATAL: Could not connect to database. Starting server anyway.');
+    } else {
+        // إضافة الأعمدة الجديدة المفقودة فقط إذا لزم الأمر
+        const safeAddColumn = async (table, column, definition) => {
+            try {
+                await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+                console.log(`✅ Added column ${column} to ${table}`);
+            } catch (e) {
+                const msg = e.message || '';
+                if (msg.includes('Duplicate column') || msg.includes('already exists') || msg.includes('Duplicate key')) {
+                    // موجود مسبقاً
+                } else {
+                    console.error(`⚠️ ${table}.${column}: ${msg.slice(0, 200)}`);
+                }
             }
-        }
-    };
+        };
 
-    const slugColumn = 'VARCHAR(255) NULL';
+        const col = 'VARCHAR(255) NULL';
+        await safeAddColumn('Projects', 'slug', col);
+        await safeAddColumn('Posts', 'slug', col);
+        await safeAddColumn('Services', 'slug', col);
+        await safeAddColumn('GlobalSeos', 'homeKeywords', col);
+        await safeAddColumn('GlobalSeos', 'homeSlug', "VARCHAR(255) NULL DEFAULT ''");
+        await safeAddColumn('GlobalSeos', 'portfolioKeywords', col);
+        await safeAddColumn('GlobalSeos', 'portfolioSlug', "VARCHAR(255) NULL DEFAULT 'portfolio'");
+        await safeAddColumn('GlobalSeos', 'blogKeywords', col);
+        await safeAddColumn('GlobalSeos', 'blogSlug', "VARCHAR(255) NULL DEFAULT 'blog'");
+        await safeAddColumn('GlobalSeos', 'servicesTitle', col);
+        await safeAddColumn('GlobalSeos', 'servicesDescription', 'TEXT NULL');
+        await safeAddColumn('GlobalSeos', 'servicesKeywords', col);
+        await safeAddColumn('GlobalSeos', 'servicesSlug', "VARCHAR(255) NULL DEFAULT 'services'");
+        await safeAddColumn('GlobalSeos', 'philosophyTitle', col);
+        await safeAddColumn('GlobalSeos', 'philosophyDescription', 'TEXT NULL');
+        await safeAddColumn('GlobalSeos', 'philosophyKeywords', col);
+        await safeAddColumn('GlobalSeos', 'philosophySlug', "VARCHAR(255) NULL DEFAULT 'philosophy'");
 
-    await safeAddColumn('Projects', 'slug', slugColumn);
-    await safeAddColumn('Posts', 'slug', slugColumn);
-    await safeAddColumn('Services', 'slug', slugColumn);
+        console.log('✅ Database ready.');
+    }
 
-    const seoColumn = 'VARCHAR(255) NULL';
-    const textSeoColumn = 'TEXT NULL';
-
-    await safeAddColumn('GlobalSeos', 'homeKeywords', seoColumn);
-    await safeAddColumn('GlobalSeos', 'homeSlug', 'VARCHAR(255) NULL DEFAULT \'\'');
-    await safeAddColumn('GlobalSeos', 'portfolioKeywords', seoColumn);
-    await safeAddColumn('GlobalSeos', 'portfolioSlug', 'VARCHAR(255) NULL DEFAULT \'portfolio\'');
-    await safeAddColumn('GlobalSeos', 'blogKeywords', seoColumn);
-    await safeAddColumn('GlobalSeos', 'blogSlug', 'VARCHAR(255) NULL DEFAULT \'blog\'');
-    await safeAddColumn('GlobalSeos', 'servicesTitle', seoColumn);
-    await safeAddColumn('GlobalSeos', 'servicesDescription', textSeoColumn);
-    await safeAddColumn('GlobalSeos', 'servicesKeywords', seoColumn);
-    await safeAddColumn('GlobalSeos', 'servicesSlug', 'VARCHAR(255) NULL DEFAULT \'services\'');
-    await safeAddColumn('GlobalSeos', 'philosophyTitle', seoColumn);
-    await safeAddColumn('GlobalSeos', 'philosophyDescription', textSeoColumn);
-    await safeAddColumn('GlobalSeos', 'philosophyKeywords', seoColumn);
-    await safeAddColumn('GlobalSeos', 'philosophySlug', 'VARCHAR(255) NULL DEFAULT \'philosophy\'');
-
-    console.log('✅ Migration complete.');
-}
-
-initDatabase();
+    console.log(`🚀 Starting server on port ${port}...`);
+    const server = app.listen(port, () => {
+        console.log(`🚀 Server running on port ${port}`);
+    });
+    server.keepAliveTimeout = 65000;
+    server.headersTimeout = 70000;
+})();
 
 module.exports = app;
