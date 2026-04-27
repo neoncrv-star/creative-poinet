@@ -224,11 +224,53 @@ async function initDatabase() {
     require('./models/Service');
 
     try {
-        await sequelize.sync({ alter: true });
-        console.log('✅ All Database Tables Synced Successfully.');
+        // استخدام sync() فقط لإنشاء الجداول الجديدة إن لم تكن موجودة
+        // بدون alter: true لمنع أي تعديل على جداول موجودة
+        await sequelize.sync();
+        console.log('✅ Database tables checked successfully.');
     } catch (e) {
-        console.error('Sync Warning: ' + e.message);
+        console.error('Sync Error: ' + e.message);
     }
+
+    // إضافة الأعمدة الجديدة المفقودة بأمان باستخدام SQL خام
+    const safeAddColumn = async (table, column, definition) => {
+        try {
+            await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+            console.log(`✅ Added column ${column} to ${table}`);
+        } catch (e) {
+            if (e.message.includes('Duplicate column') || e.message.includes('already exists')) {
+                // العمود موجود مسبقاً - لا مشكلة
+            } else {
+                console.error(`⚠️ Could not add ${column} to ${table}: ${e.message}`);
+            }
+        }
+    };
+
+    const slugColumn = 'VARCHAR(255) NULL';
+
+    await safeAddColumn('Projects', 'slug', slugColumn);
+    await safeAddColumn('Posts', 'slug', slugColumn);
+    await safeAddColumn('Services', 'slug', slugColumn);
+
+    const seoColumn = 'VARCHAR(255) NULL';
+    const textSeoColumn = 'TEXT NULL';
+
+    await safeAddColumn('GlobalSeos', 'homeKeywords', seoColumn);
+    await safeAddColumn('GlobalSeos', 'homeSlug', 'VARCHAR(255) NULL DEFAULT \'\'');
+    await safeAddColumn('GlobalSeos', 'portfolioKeywords', seoColumn);
+    await safeAddColumn('GlobalSeos', 'portfolioSlug', 'VARCHAR(255) NULL DEFAULT \'portfolio\'');
+    await safeAddColumn('GlobalSeos', 'blogKeywords', seoColumn);
+    await safeAddColumn('GlobalSeos', 'blogSlug', 'VARCHAR(255) NULL DEFAULT \'blog\'');
+    await safeAddColumn('GlobalSeos', 'servicesTitle', seoColumn);
+    await safeAddColumn('GlobalSeos', 'servicesDescription', textSeoColumn);
+    await safeAddColumn('GlobalSeos', 'servicesKeywords', seoColumn);
+    await safeAddColumn('GlobalSeos', 'servicesSlug', 'VARCHAR(255) NULL DEFAULT \'services\'');
+    await safeAddColumn('GlobalSeos', 'philosophyTitle', seoColumn);
+    await safeAddColumn('GlobalSeos', 'philosophyDescription', textSeoColumn);
+    await safeAddColumn('GlobalSeos', 'philosophyKeywords', seoColumn);
+    await safeAddColumn('GlobalSeos', 'philosophySlug', 'VARCHAR(255) NULL DEFAULT \'philosophy\'');
+
+    console.log('✅ Migration complete.');
 }
 
 initDatabase();
