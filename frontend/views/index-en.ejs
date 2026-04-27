@@ -672,106 +672,71 @@
 
     <!-- ========================= Contact Section ========================== -->
     <section id="contact" class="contact-section">
-        <div class="marquee-wrapper contact-marquee" style="overflow:hidden; white-space:nowrap; margin-bottom:50px;">
-            <div class="marquee-content" aria-hidden="true"
-                 style="display:inline-block; font-size:4rem; font-weight:900; color:rgba(255,255,255,0.05); letter-spacing:5px;">
-                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
-                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
-                <h2 class="finale-text" style="display:inline-block; margin:0 20px;">CREATIVE POINT</h2>
-            </div>
-        </div>
         <div class="container">
-            <div class="contact-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:60px;">
-
-                <div class="contact-info" data-gsap="fade-right">
-                    <h2 class="contact-title" style="font-size:2.5rem; margin-bottom:20px; font-weight:bold;">
-                        <%- (seo && seo.contactTitleEn ? seo.contactTitleEn : 'Start a New<br>Creative Journey').replace(/\n/g, '<br>') %>
-                    </h2>
-                    <p class="contact-subtitle" style="color:#aaa; margin-bottom:40px; line-height:1.6;">
-                        <%= seo && seo.contactSubtitleEn ? seo.contactSubtitleEn : 'We are here to listen to your ideas and turn them into an impactful visual strategy. Contact us today.' %>
-                    </p>
-
-                    <div class="contact-details" style="display:flex; flex-direction:column; gap:20px;">
-                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
-                            <i class="ri-phone-line" style="font-size:1.5rem; color:#ff3131;"></i>
-                            <div>
-                                <span style="font-size:0.85rem; color:#888;">Call Us</span>
-                                <p dir="ltr" style="margin:0; font-weight:bold;"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
-                            </div>
-                        </div>
-                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
-                            <i class="ri-mail-line" style="font-size:1.5rem; color:#ff3131;"></i>
-                            <div>
-                                <span style="font-size:0.85rem; color:#888;">Email</span>
-                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
-                            </div>
-                        </div>
-                        <div class="contact-item" style="display:flex; align-items:center; gap:15px;">
-                            <i class="ri-map-pin-line" style="font-size:1.5rem; color:#ff3131;"></i>
-                            <div>
-                                <span style="font-size:0.85rem; color:#888;">Location</span>
-                                <p style="margin:0; font-weight:bold;"><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="social-links" style="margin-top:40px; display:flex; gap:15px;">
-                        <% if (seo && seo.socialInstagram) { %>
-                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-instagram-line"></i></a>
-                        <% } %>
-                        <% if (seo && seo.socialTwitter) { %>
-                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-twitter-x-line"></i></a>
-                        <% } %>
-                        <% if (seo && seo.socialLinkedin) { %>
-                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" style="color:#fff; font-size:1.5rem;"><i class="ri-linkedin-box-line"></i></a>
-                        <% } %>
-                    </div>
-                </div>
-
-                <div class="contact-form-wrapper" data-gsap="fade-left">
-                    <form action="/contact" method="POST" class="contact-form"
-                          style="display:flex; flex-direction:column; gap:20px;">
-                        <div class="form-group">
-                            <input type="text" name="name" placeholder="Full Name" required autocomplete="name"
-                                   style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        </div>
-                        <div class="form-group">
-                            <input type="email" name="email" placeholder="Email Address" required autocomplete="email"
-                                   style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        </div>
-                        <div class="form-group">
-                            <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel"
-                                   style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                        </div>
-                        <div class="form-group">
-                            <select name="service"
-                                    style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;">
-                                <option value="" disabled selected>Select a Service</option>
-                                <option value="branding">Branding</option>
-                                <option value="marketing">Digital Marketing</option>
-                                <option value="web">Web Development</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <textarea name="message" rows="5" placeholder="Project Details" required
-                                      style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn" id="contact-submit-btn"
-                                style="background:#ff3131; color:#fff; padding:15px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
+            <div class="contact-layout">
+                <div class="contact-form-panel" data-gsap="fade-left">
+                    <form action="/contact" method="POST" class="contact-form">
+                        <input type="text" class="contact-field" name="name" placeholder="Full Name" required autocomplete="name">
+                        <input type="email" class="contact-field" name="email" placeholder="Email Address" required autocomplete="email">
+                        <input type="tel" class="contact-field" name="phone" placeholder="Phone Number" autocomplete="tel">
+                        <input type="text" class="contact-field" name="service" placeholder="Required Service">
+                        <textarea class="contact-field" name="message" rows="4" placeholder="Tell us what you need" required></textarea>
+                        <button type="submit" class="contact-submit-btn" id="contact-submit-btn">
                             <span>Send Request</span>
                             <i class="ri-send-plane-fill"></i>
                         </button>
                     </form>
 
-                    <div id="contact-success"
-                         style="display:none; margin-top:20px; padding:15px; background:#222; border:1px solid #fff; border-radius:10px; color:#fff; text-align:center;"
-                         role="alert">
-                        <i class="ri-checkbox-circle-line" style="font-size:1.5rem; vertical-align:middle; margin-right:10px;"></i>
+                    <div id="contact-success" class="contact-success-box" style="display:none;" role="alert">
+                        <i class="ri-checkbox-circle-line" style="font-size:1.2rem; vertical-align:middle; margin-right:8px;"></i>
                         Your request has been sent successfully! We will contact you soon.
                     </div>
                 </div>
 
+                <div class="contact-info-panel" data-gsap="fade-right">
+                    <h2 class="contact-title-custom">
+                        <%- (seo && seo.contactTitleEn ? seo.contactTitleEn : 'Let’s Start a New<br>Creative Journey').replace(/\n/g, '<br>') %>
+                    </h2>
+                    <p class="contact-subtitle-custom">
+                        <%= seo && seo.contactSubtitleEn ? seo.contactSubtitleEn : 'We listen to your ideas and transform them into an impactful visual strategy. Contact us today.' %>
+                    </p>
+
+                    <div class="contact-meta-list">
+                        <div class="contact-meta-item">
+                            <i class="ri-phone-line contact-meta-icon"></i>
+                            <div>
+                                <p class="contact-meta-label">Call Us</p>
+                                <p class="contact-meta-value" dir="ltr"><%= seo && seo.contactPhone ? seo.contactPhone : '+966 56 839 49 45' %></p>
+                            </div>
+                        </div>
+                        <div class="contact-meta-item">
+                            <i class="ri-mail-line contact-meta-icon"></i>
+                            <div>
+                                <p class="contact-meta-label">Email</p>
+                                <p class="contact-meta-value"><%= seo && seo.contactEmail ? seo.contactEmail : 'info@cpoint-sa.com' %></p>
+                            </div>
+                        </div>
+                        <div class="contact-meta-item">
+                            <i class="ri-map-pin-line contact-meta-icon"></i>
+                            <div>
+                                <p class="contact-meta-label">Location</p>
+                                <p class="contact-meta-value"><%= seo && seo.contactLocationEn ? seo.contactLocationEn : 'Riyadh, Saudi Arabia' %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-social-list">
+                        <% if (seo && seo.socialLinkedin) { %>
+                            <a href="<%= seo.socialLinkedin %>" target="_blank" rel="noopener noreferrer" class="contact-social-link"><i class="ri-linkedin-box-line"></i></a>
+                        <% } %>
+                        <% if (seo && seo.socialTwitter) { %>
+                            <a href="<%= seo.socialTwitter %>" target="_blank" rel="noopener noreferrer" class="contact-social-link"><i class="ri-twitter-x-line"></i></a>
+                        <% } %>
+                        <% if (seo && seo.socialInstagram) { %>
+                            <a href="<%= seo.socialInstagram %>" target="_blank" rel="noopener noreferrer" class="contact-social-link"><i class="ri-instagram-line"></i></a>
+                        <% } %>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

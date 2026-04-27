@@ -378,7 +378,7 @@
                     <% if (projects && projects.length > 0) { %>
                         <% projects.forEach((project, index) => { %>
                             <div class="portfolio-item" data-category="<%= project.Category ? project.Category.slug : (project.category || 'other') %>" data-gsap="fade-up">
-                                <a href="/portfolio/<%= project.id %>" class="item-link">
+                                <a href="/portfolio/<%= project.slug || project.id %>" class="item-link">
                                     <div class="item-image-wrapper">
                                         <% if (project.image) { %>
                                             <img src="<%= assetPath(project.image) %>" alt="<%= project.title %>">

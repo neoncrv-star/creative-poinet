@@ -23,6 +23,11 @@ const Post = sequelize.define('Post', {
         allowNull: true
     },
     // SEO Fields
+    slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true
+    },
     seoTitle: {
         type: DataTypes.STRING,
         allowNull: true

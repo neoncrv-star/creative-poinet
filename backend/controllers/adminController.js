@@ -14,6 +14,7 @@ const path = require('path');
 const crypto = require('crypto');
 const logFile = path.join(__dirname, '../debug.log');
 const pageCache = require('../utils/pageCache');
+const { toAsciiSlug, ensureUniqueSlug } = require('../utils/seoSlug');
 const debugLog = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
 
 let ensuredGlobalSeo = false;
@@ -47,6 +48,20 @@ const normalizeAsset = (value) => {
     const filename = storageService.mapDbValueToLocal(value);
     if (!filename) return value;
     return storageService.toDbValue(filename);
+};
+
+const sanitizeCustomScriptBlock = (value) => {
+    if (value === undefined || value === null) return null;
+    const cleaned = String(value).replace(/\0/g, '').trim();
+    if (!cleaned) return null;
+    const maxLength = 100_000;
+    return cleaned.length > maxLength ? cleaned.slice(0, maxLength) : cleaned;
+};
+
+const normalizePageSlug = (value, fallback) => {
+    const source = (value || '').trim();
+    if (!source) return fallback;
+    return toAsciiSlug(source);
 };
 
 const checkAssetExists = (rel) => {
@@ -682,6 +697,14 @@ exports.postSeoSettings = async (req, res) => {
         await ensureGlobalSeoModelSync();
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
+        data.headerScripts = sanitizeCustomScriptBlock(data.headerScripts);
+        data.bodyScripts = sanitizeCustomScriptBlock(data.bodyScripts);
+        data.footerScripts = sanitizeCustomScriptBlock(data.footerScripts);
+        data.homeSlug = normalizePageSlug(data.homeSlug, '');
+        data.portfolioSlug = normalizePageSlug(data.portfolioSlug, 'portfolio');
+        data.blogSlug = normalizePageSlug(data.blogSlug, 'blog');
+        data.servicesSlug = normalizePageSlug(data.servicesSlug, 'services');
+        data.philosophySlug = normalizePageSlug(data.philosophySlug, 'philosophy');
 
         if (req.files) {
             if (req.files['favicon']) data.favicon = await toHashedAsset(req.files['favicon'][0]);
@@ -695,6 +718,18 @@ exports.postSeoSettings = async (req, res) => {
         } else {
             await seo.update(data);
         }
+        pageCache.invalidateRoutes([
+            '/',
+            '/en',
+            '/portfolio',
+            '/en/portfolio',
+            '/blog',
+            '/en/blog',
+            '/services',
+            '/en/services',
+            '/philosophy',
+            '/en/philosophy'
+        ]);
         res.redirect('/admin/seo');
     } catch (error) {
         console.error(error);
@@ -907,6 +942,13 @@ exports.postAddProject = async (req, res) => {
             if (cat) data.category = cat.slug;
         }
 
+        if (!data.slug && !req.body.slug) {
+            const titleForSlug = data.title_ar || data.title_en || data.title;
+            data.slug = await ensureUniqueSlug(Project, titleForSlug, 'slug');
+        } else if (req.body.slug) {
+            data.slug = toAsciiSlug(req.body.slug);
+        }
+
         await Project.create(data);
         pageCache.invalidateRoutes(['/', '/en', '/portfolio', '/en/portfolio']);
         res.redirect('/admin/portfolio');
@@ -969,6 +1011,10 @@ exports.postEditProject = async (req, res) => {
             data.CategoryId = parseInt(data.category);
             const cat = await Category.findByPk(data.CategoryId);
             if (cat) data.category = cat.slug;
+        }
+
+        if (req.body.slug) {
+            data.slug = toAsciiSlug(req.body.slug);
         }
 
         await project.update(data);
@@ -1136,6 +1182,12 @@ exports.postAddPost = async (req, res) => {
         if (req.file) image = await toHashedAsset(req.file);
         data.image = image;
 
+        if (!data.slug && !req.body.slug) {
+            data.slug = await ensureUniqueSlug(Post, data.title, 'slug');
+        } else if (req.body.slug) {
+            data.slug = toAsciiSlug(req.body.slug);
+        }
+
         await Post.create(data);
         pageCache.invalidateRoutes(['/', '/en', '/blog']);
         res.redirect('/admin/blog');
@@ -1188,6 +1240,10 @@ exports.postEditPost = async (req, res) => {
         };
 
         if (req.file) data.image = await toHashedAsset(req.file);
+
+        if (req.body.slug) {
+            data.slug = toAsciiSlug(req.body.slug);
+        }
 
         await post.update(data);
         pageCache.invalidateRoutes(['/', '/en', '/blog']);
@@ -1306,6 +1362,10 @@ const buildServiceData = (body) => {
     if (gallery_images) {
         try { parsedGallery = JSON.parse(gallery_images); } catch(e) { parsedGallery = []; }
     }
+    if (!Array.isArray(parsedGallery)) parsedGallery = [];
+    parsedGallery = parsedGallery
+        .map(normalizeAsset)
+        .filter(Boolean);
 
     return {
         title_ar, title_en,
@@ -1325,7 +1385,8 @@ const buildServiceData = (body) => {
         imageAlt_en: imageAlt_en || null,
         seoTitle: seoTitle || null,
         seoDescription: seoDescription || null,
-        seoKeywords: seoKeywords || null
+        seoKeywords: seoKeywords || null,
+        slug: body.slug ? toAsciiSlug(body.slug) : undefined // will be generated in postAddService if missing
     };
 };
 
@@ -1335,6 +1396,9 @@ exports.postAddService = async (req, res) => {
         let image = req.body.existingImage ? normalizeAsset(req.body.existingImage) : null;
         if (!image && req.file) image = await toHashedAsset(req.file);
         data.image = image;
+        if (!data.slug) {
+            data.slug = await ensureUniqueSlug(Service, data.title_ar || data.title_en, 'slug');
+        }
         await Service.create(data);
         pageCache.invalidateRoutes(['/', '/en']);
         res.redirect('/admin/services');
@@ -1368,6 +1432,10 @@ exports.postEditService = async (req, res) => {
             data.image = normalizeAsset(req.body.existingImage);
         } else if (req.file) {
             data.image = await toHashedAsset(req.file);
+        }
+        if (!data.slug) {
+            // keep existing slug if body slug is empty
+            delete data.slug;
         }
         await service.update(data);
         pageCache.invalidateRoutes(['/', '/en']);

@@ -63,6 +63,7 @@
     <meta name="facebook-domain-verification" content="tsxnzbotoeh4bqd5os0nvrzmz7rf6l" />
     
     <link rel="icon" type="image/x-icon" href="<%= favicon %>">
+    <link rel="canonical" href="<%= siteUrl %><%= typeof path !== 'undefined' ? path : '' %>">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -71,6 +72,46 @@
     <meta property="og:description" content="<%= pageDescription %>">
     <% if (pageImage) { %>
         <meta property="og:image" content="<%= pageImage %>">
+    <% } %>
+    <meta property="og:site_name" content="<%= siteTitle %>">
+    <meta property="og:locale" content="<%= typeof lang !== 'undefined' && lang === 'en' ? 'en_US' : 'ar_AR' %>">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= finalTitle %>">
+    <meta name="twitter:description" content="<%= pageDescription %>">
+    <% if (pageImage) { %>
+        <meta name="twitter:image" content="<%= pageImage %>">
+    <% } %>
+    <% if (activeSeo && activeSeo.twitterHandle) { %>
+        <meta name="twitter:site" content="<%= activeSeo.twitterHandle %>">
+    <% } %>
+
+    <!-- JSON-LD Structured Data -->
+    <% if (activeSeo && activeSeo.organizationSchema) { %>
+        <%= activeSeo.organizationSchema %>
+    <% } else if (activeSeo) { %>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "<%= siteTitle %>",
+        "url": "<%= siteUrl %>",
+        "logo": "<%= siteUrl %>/210.png",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "<%= activeSeo.contactPhone || '+966 56 839 49 45' %>",
+            "email": "<%= activeSeo.contactEmail || 'info@cpoint-sa.com' %>",
+            "contactType": "customer service",
+            "areaServed": "SA"
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Riyadh",
+            "addressCountry": "SA"
+        }
+    }
+    </script>
     <% } %>
 
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -593,40 +634,190 @@
             }
         }
         
-        .marquee,
-        .marquee-wrapper {
-            overflow: hidden;
+        .contact-section {
+            padding: 100px 0 60px;
+            background: #050505;
+            color: #fff;
         }
-        .contact-section .marquee-wrapper {
-            margin-bottom: 32px;
+
+        .contact-layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 520px) minmax(320px, 1fr);
+            gap: clamp(28px, 6vw, 100px);
+            align-items: start;
         }
-        .marquee-content {
+
+        .contact-form-panel {
+            border: 1px solid #ff3131;
+            border-radius: 22px;
+            padding: 28px 24px 20px;
+            background: #060606;
+            box-shadow: inset 0 0 0 1px rgba(255, 49, 49, 0.08);
+        }
+
+        .contact-form {
             display: flex;
-            gap: 50px;
-            animation: marquee 12s linear infinite;
-            will-change: transform;
+            flex-direction: column;
+            gap: 14px;
         }
-        @keyframes marquee {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
+
+        .contact-field {
+            width: 100%;
+            height: 56px;
+            border-radius: 999px;
+            border: 1px solid #2a2a2a;
+            background: radial-gradient(130% 100% at 50% 0%, #111 0%, #090909 68%, #070707 100%);
+            color: #fff;
+            padding: 0 20px;
+            outline: 0;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        
-        .grand-footer {
-            background-color: var(--bg-color);
+
+        .contact-field::placeholder {
+            color: #6f6f6f;
         }
-        
-        .finale-text {
-            font-size: clamp(2rem, 5vw, 3.5rem);
+
+        .contact-field:focus {
+            border-color: #ff3131;
+            box-shadow: 0 0 0 3px rgba(255, 49, 49, 0.16);
+        }
+
+        textarea.contact-field {
+            min-height: 96px;
+            height: 96px;
+            border-radius: 28px;
+            padding: 16px 20px;
+            resize: vertical;
+        }
+
+        .contact-submit-btn {
+            width: 100%;
+            height: 50px;
+            border: 0;
+            border-radius: 999px;
+            background: #ff3131;
+            color: #fff;
             font-weight: 800;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            opacity: 0.6;
-            white-space: nowrap;
-            color: #ffffff;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: filter 0.2s ease, transform 0.2s ease;
         }
-        
+
+        .contact-submit-btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .contact-info-panel {
+            padding-top: 2px;
+        }
+
+        .contact-title-custom {
+            font-size: clamp(2.3rem, 5.2vw, 4.2rem);
+            line-height: 1.05;
+            font-weight: 900;
+            margin: 0 0 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .contact-subtitle-custom {
+            color: #dddddd;
+            margin: 0 0 46px;
+            line-height: 1.8;
+            max-width: 680px;
+        }
+
+        .contact-meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .contact-meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .contact-meta-icon {
+            width: 20px;
+            flex: 0 0 20px;
+            color: #ff3131;
+            font-size: 1.15rem;
+            margin-top: 2px;
+        }
+
+        .contact-meta-label {
+            margin: 0;
+            color: #7e7e7e;
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .contact-meta-value {
+            margin: 3px 0 0;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .contact-social-list {
+            margin-top: 26px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .contact-social-link {
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            border: 1px solid #3a3a3a;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .contact-social-link:hover {
+            border-color: #ff3131;
+            background: rgba(255, 49, 49, 0.08);
+        }
+
+        .contact-success-box {
+            margin-top: 16px;
+            padding: 13px 14px;
+            border: 1px solid #3f3f3f;
+            border-radius: 12px;
+            color: #fff;
+            background: #141414;
+            text-align: center;
+        }
+
+        .lang-ar .contact-info-panel {
+            text-align: right;
+        }
+
+        .lang-ar .contact-meta-item {
+            flex-direction: row-reverse;
+        }
+
+        .lang-ar .contact-social-list {
+            justify-content: flex-start;
+        }
+
+        .grand-footer {
+            background-color: #050505;
+            border-top: 1px solid #151515;
+        }
+
         .footer-shell {
-            padding: 28px 0 8px;
+            padding: 18px 0 20px;
         }
         
         .footer-top {
@@ -735,15 +926,14 @@
         }
         
         .footer-bottom {
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-            margin-top: 10px;
+            padding-top: 2px;
+            margin-top: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            color: var(--accent-color);
-            font-size: 0.85rem;
+            color: #8a8a8a;
+            font-size: 0.84rem;
         }
         
         .footer-links {
@@ -752,8 +942,8 @@
         }
         
         .footer-links a {
-            font-size: 0.9rem;
-            color: var(--accent-color);
+            font-size: 0.86rem;
+            color: #a0a0a0;
         }
         
         footer {
@@ -780,6 +970,29 @@
             }
             .footer-lang-social {
                 justify-content: center;
+            }
+            .contact-layout {
+                grid-template-columns: 1fr;
+                gap: 34px;
+            }
+            .contact-info-panel {
+                order: -1;
+            }
+            .contact-title-custom {
+                font-size: clamp(2rem, 9vw, 2.7rem);
+            }
+            .contact-subtitle-custom {
+                margin-bottom: 28px;
+            }
+            .contact-form-panel {
+                padding: 20px 16px 16px;
+            }
+            .contact-field {
+                height: 52px;
+            }
+            textarea.contact-field {
+                min-height: 88px;
+                height: 88px;
             }
             .footer-bottom {
                 flex-direction: column;
@@ -1011,6 +1224,10 @@
 
 </head>
 <body class="<%= typeof isEn !== 'undefined' && isEn ? 'lang-en' : 'lang-ar' %>">
+    <!-- Custom Body Start Scripts (e.g. GTM noscript) -->
+    <% if (typeof activeSeo !== 'undefined' && activeSeo && activeSeo.bodyScripts) { %>
+        <%- activeSeo.bodyScripts %>
+    <% } %>
     
     <div id="cpoint-preloader">
         <div class="cpoint-spinner">
@@ -1028,17 +1245,18 @@
 
             <nav class="header-nav">
                 <% if(typeof isEn !== 'undefined' && isEn) { %>
-                    <a href="/en#journey" class="nav-link active">Her Journey <span class="nav-dot"></span></a>
-                    <a href="/en/philosophy" class="nav-link">Philosophy</a>
-                    <a href="/en/portfolio" class="nav-link">Our Work</a>
-                    <a href="/en#contact" class="nav-link">Be Creative Partner</a>
+                    <a href="/en#journey" class="nav-link">Her Journey <span class="nav-dot"></span></a>
+                    <a href="/en/philosophy" class="nav-link">Philosophy <span class="nav-dot"></span></a>
+                    <a href="/en/services" class="nav-link">Services <span class="nav-dot"></span></a>
+                    <a href="/en/portfolio" class="nav-link">Our Work <span class="nav-dot"></span></a>
+                    <a href="/en#contact" class="nav-link">Be Creative Partner <span class="nav-dot"></span></a>
                     <a href="/" class="lang-switch">العربية</a>
                 <% } else { %>
-                    <a href="/#journey" class="nav-link active">رحلتها <span class="nav-dot"></span></a>
-                    <a href="/philosophy" class="nav-link">فلسفتها</a>
-                    <a href="/services" class="nav-link">خدماتها</a>
-                    <a href="/portfolio" class="nav-link">أعمالها</a>
-                    <a href="/#contact" class="nav-link">كن شريك إبداعي</a>
+                    <a href="/#journey" class="nav-link">رحلتها <span class="nav-dot"></span></a>
+                    <a href="/philosophy" class="nav-link">فلسفتها <span class="nav-dot"></span></a>
+                    <a href="/services" class="nav-link">خدماتها <span class="nav-dot"></span></a>
+                    <a href="/portfolio" class="nav-link">أعمالها <span class="nav-dot"></span></a>
+                    <a href="/#contact" class="nav-link">كن شريك إبداعي <span class="nav-dot"></span></a>
                     <a href="/en" class="lang-switch">English</a>
                 <% } %>
             </nav>
@@ -1102,6 +1320,85 @@
                     }
                 });
             });
+
+            // 5. Active nav link based on current page/section
+            const navLinks = Array.from(document.querySelectorAll('.header-nav .nav-link'));
+            const cleanPath = (p) => {
+                if (!p) return '/';
+                const normalized = p.replace(/\/+$/, '');
+                return normalized || '/';
+            };
+            const setActiveNav = (activeLink) => {
+                navLinks.forEach(link => link.classList.remove('active'));
+                if (activeLink) activeLink.classList.add('active');
+            };
+            const currentPath = cleanPath(window.location.pathname);
+            const currentHash = (window.location.hash || '').toLowerCase();
+            let activeLink = null;
+
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                const [rawPath, rawHash] = href.split('#');
+                const linkPath = cleanPath(rawPath || '/');
+                const linkHash = rawHash ? `#${rawHash.toLowerCase()}` : '';
+
+                if (!linkHash && linkPath === currentPath) {
+                    activeLink = link;
+                }
+            });
+
+            if (currentHash) {
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href') || '';
+                    const [rawPath, rawHash] = href.split('#');
+                    const linkPath = cleanPath(rawPath || '/');
+                    const linkHash = rawHash ? `#${rawHash.toLowerCase()}` : '';
+                    if (linkHash === currentHash && linkPath === currentPath) {
+                        activeLink = link;
+                    }
+                });
+            }
+
+            if (!activeLink) {
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href') || '';
+                    const [rawPath] = href.split('#');
+                    const linkPath = cleanPath(rawPath || '/');
+                    if (linkPath === currentPath) {
+                        activeLink = link;
+                    }
+                });
+            }
+
+            setActiveNav(activeLink);
+
+            const sectionLinks = navLinks
+                .map(link => {
+                    const href = link.getAttribute('href') || '';
+                    const [rawPath, rawHash] = href.split('#');
+                    const linkPath = cleanPath(rawPath || '/');
+                    if (!rawHash || linkPath !== currentPath) return null;
+                    const section = document.getElementById(rawHash);
+                    if (!section) return null;
+                    return { link, section };
+                })
+                .filter(Boolean);
+
+            if (sectionLinks.length && 'IntersectionObserver' in window) {
+                let visibleSection = null;
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+                        const found = sectionLinks.find(item => item.section === entry.target);
+                        if (found) {
+                            visibleSection = found.link;
+                        }
+                    });
+                    if (visibleSection) setActiveNav(visibleSection);
+                }, { rootMargin: '-35% 0px -50% 0px', threshold: 0.1 });
+
+                sectionLinks.forEach(item => observer.observe(item.section));
+            }
         });
     </script>
    

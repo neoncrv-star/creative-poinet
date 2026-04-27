@@ -23,6 +23,11 @@ const Project = sequelize.define('Project', {
         allowNull: true
     },
     // SEO Fields
+    slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true
+    },
     seoTitle: {
         type: DataTypes.STRING,
         allowNull: true

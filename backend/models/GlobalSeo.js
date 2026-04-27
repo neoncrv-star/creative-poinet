@@ -30,6 +30,15 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    homeKeywords: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    homeSlug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: ''
+    },
     portfolioTitle: {
         type: DataTypes.STRING,
         allowNull: true
@@ -38,6 +47,15 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    portfolioKeywords: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    portfolioSlug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'portfolio'
+    },
     blogTitle: {
         type: DataTypes.STRING,
         allowNull: true
@@ -45,6 +63,49 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     blogDescription: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    blogKeywords: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    blogSlug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'blog'
+    },
+    servicesTitle: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    servicesDescription: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    servicesKeywords: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    servicesSlug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'services'
+    },
+    philosophyTitle: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    philosophyDescription: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    philosophyKeywords: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    philosophySlug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'philosophy'
     },
     heroVideoMode: {
         type: DataTypes.STRING,
@@ -179,6 +240,10 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
     
     // الحقول الجديدة لأكواد التتبع والربط الخارجي
     headerScripts: { 
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    bodyScripts: {
         type: DataTypes.TEXT,
         allowNull: true
     },

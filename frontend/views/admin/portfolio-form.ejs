@@ -32,6 +32,12 @@
                         <input type="url" name="externalLink" value="<%= project ? project.externalLink : '' %>" placeholder="https://example.com" style="padding-right: 45px;">
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label>الرابط المختصر (Slug)</label>
+                    <input type="text" name="slug" value="<%= project ? project.slug : '' %>" placeholder="اتركه فارغاً للتوليد التلقائي">
+                    <small style="color: var(--text-muted);">يُستخدم في رابط الصفحة (URL). أحرف إنجليزية فقط.</small>
+                </div>
             </div>
 
             <!-- SEO Section -->

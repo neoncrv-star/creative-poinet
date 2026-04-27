@@ -25,6 +25,42 @@ const assetPath = (p) => p
     ? (p.startsWith('http') ? p : (p.startsWith('/') ? p : '/' + p))
     : '';
 
+const normalizeServiceAsset = (value) => {
+    if (!value) return '';
+    const raw = String(value).trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    const file = storageService.mapDbValueToLocal(raw);
+    if (!file) return '';
+    return storageService.toDbValue(file);
+};
+
+const normalizeGalleryAssets = (gallery) => {
+    if (!gallery) return [];
+    let list = gallery;
+    if (typeof list === 'string') {
+        try {
+            list = JSON.parse(list);
+        } catch {
+            list = [list];
+        }
+    }
+    if (!Array.isArray(list)) return [];
+    return list
+        .map(normalizeServiceAsset)
+        .filter(Boolean);
+};
+
+const normalizeServiceForView = (service) => {
+    if (!service) return service;
+    const plain = typeof service.get === 'function' ? service.get({ plain: true }) : { ...service };
+    return {
+        ...plain,
+        image: normalizeServiceAsset(plain.image),
+        gallery_images: normalizeGalleryAssets(plain.gallery_images)
+    };
+};
+
 // ======================================================
 // تشخيص صور الخدمات (للـ debug فقط)
 // ======================================================
@@ -61,7 +97,8 @@ exports.getHome = async (req, res) => {
     try {
         const projects  = await Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] });
         const partners  = await Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
-        const services  = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const servicesRaw = await Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
+        const services = servicesRaw.map(normalizeServiceForView);
         const posts     = await Post.findAll({ limit: 3, order: [['date', 'DESC']] });
         const seo       = await GlobalSeo.findOne();
         const stats     = await StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] });
@@ -76,7 +113,8 @@ exports.getHome = async (req, res) => {
             stats:      stats    || [],
             services:   services || [],
             lang: 'ar',
-            assetPath
+            assetPath,
+            pageSeo: seo ? { seoTitle: seo.homeTitle, seoDescription: seo.homeDescription } : null
         });
     } catch (error) {
         console.error('Home(AR) Error:', error);
@@ -99,7 +137,7 @@ exports.getHomeEn = async (req, res) => {
         const t0  = Date.now();
         const cap = Number(process.env.HOME_QUERY_TIMEOUT_MS || 800);
 
-        const [projects, partners, posts, seo, stats, services] = await Promise.all([
+        const [projects, partners, posts, seo, stats, servicesRaw] = await Promise.all([
             withTimeout(Project.findAll({ limit: 10, order: [['createdAt', 'DESC']] }), cap, []),
             withTimeout(Partner.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Post.findAll({ limit: 3, order: [['date', 'DESC']] }), cap, []),
@@ -107,6 +145,7 @@ exports.getHomeEn = async (req, res) => {
             withTimeout(StatBlock.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, []),
             withTimeout(Service.findAll({ where: { is_active: true }, order: [['display_order', 'ASC']] }), cap, [])
         ]);
+        const services = servicesRaw.map(normalizeServiceForView);
 
         const dt = Date.now() - t0;
         debugLog(`Home(EN) fetched in ${dt}ms -> projects=${projects.length}, partners=${partners.length}, posts=${posts.length}`);
@@ -166,12 +205,16 @@ exports.getPhilosophyPage = async (req, res) => {
         const data  = raw ? raw.get({ plain: true }) : {};
 
         res.render('philosophy', {
-            title:     isEn ? (data.mainTitleEn || 'Our Philosophy') : (data.mainTitleAr || 'فلسفتنا'),
+            title:     isEn ? (seo && seo.philosophyTitle ? seo.philosophyTitle : (data.mainTitleEn || 'Our Philosophy')) : (seo && seo.philosophyTitle ? seo.philosophyTitle : (data.mainTitleAr || 'فلسفتنا')),
             data,
             seo,
             globalSeo: seo,
             lang:      isEn ? 'en' : 'ar',
-            assetPath
+            assetPath,
+            pageSeo: seo ? {
+                seoTitle: isEn ? seo.philosophyTitle : seo.philosophyTitle,
+                seoDescription: isEn ? seo.philosophyDescription : seo.philosophyDescription
+            } : null
         });
     } catch (error) {
         console.error('Philosophy page error:', error);
@@ -186,22 +229,62 @@ exports.getServicesPage = async (req, res) => {
     try {
         const isEn    = req.path.includes('/en');
         const seo      = await GlobalSeo.findOne();
-        const services = await Service.findAll({
+        const servicesRaw = await Service.findAll({
             where: { is_active: true },
             order: [['display_order', 'ASC']]
         });
+        const services = servicesRaw.map(normalizeServiceForView);
 
         res.render('services', {
-            title:    isEn ? 'Our Services | Creative Point' : 'خدماتنا | Creative Point',
+            title:    isEn ? (seo && seo.servicesTitle ? seo.servicesTitle : 'Our Services | Creative Point') : (seo && seo.servicesTitle ? seo.servicesTitle : 'خدماتنا | Creative Point'),
             services,
             seo,
             globalSeo: seo,
             lang:     isEn ? 'en' : 'ar',
             path:     req.path,
-            assetPath
+            assetPath,
+            pageSeo: seo ? {
+                seoTitle: isEn ? seo.servicesTitle : seo.servicesTitle,
+                seoDescription: isEn ? seo.servicesDescription : seo.servicesDescription
+            } : null
         });
     } catch (error) {
         console.error('Services page error:', error);
+        res.status(500).send('Server Error');
+    }
+};
+
+// ======================================================
+// صفحة تفاصيل الخدمة
+// ======================================================
+exports.getServiceDetail = async (req, res) => {
+    try {
+        const isEn = req.path.includes('/en');
+        const slug = req.params.slug;
+        const seo = await GlobalSeo.findOne();
+        const service = await Service.findOne({
+            where: { slug, is_active: true }
+        });
+        if (!service) {
+            return res.status(404).send(isEn ? 'Service not found' : 'الخدمة غير موجودة');
+        }
+        const servicesList = await Service.findAll({
+            where: { is_active: true },
+            order: [['display_order', 'ASC']]
+        });
+        res.render('services', {
+            title: isEn ? (service.title_en || 'Service') : (service.title_ar || 'خدمة'),
+            services: servicesList.map(normalizeServiceForView),
+            activeService: normalizeServiceForView(service),
+            seo,
+            globalSeo: seo,
+            lang: isEn ? 'en' : 'ar',
+            path: req.path,
+            assetPath,
+            pageSeo: service
+        });
+    } catch (error) {
+        console.error('Service detail error:', error);
         res.status(500).send('Server Error');
     }
 };

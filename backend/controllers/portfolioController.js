@@ -34,12 +34,22 @@ exports.getPortfolioPage = async (req, res) => {
 };
 
 exports.getProject = async (req, res) => {
-    const id = req.params.id;
+    const slugOrId = req.params.slug;
     try {
         const cap = Number(process.env.PORTFOLIO_QUERY_TIMEOUT_MS || process.env.HOME_QUERY_TIMEOUT_MS || 800);
-        const project = await withTimeout(Project.findByPk(id, {
+
+        // Try to find by slug first, then by id
+        let project = await withTimeout(Project.findOne({
+            where: { slug: slugOrId },
             include: [{ model: Category }]
         }), cap, null);
+
+        if (!project) {
+            project = await withTimeout(Project.findByPk(slugOrId, {
+                include: [{ model: Category }]
+            }), cap, null);
+        }
+
         if (!project) {
             return res.status(404).send('المشروع غير موجود');
         }

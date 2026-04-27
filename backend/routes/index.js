@@ -12,20 +12,22 @@ router.post('/contact', pageController.postContact);
 // Portfolio Routes
 router.get('/portfolio', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getPortfolioPage);
 router.get('/en/portfolio', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getPortfolioPage);
-router.get('/portfolio/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
-router.get('/en/portfolio/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
+router.get('/portfolio/:slug', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
+router.get('/en/portfolio/:slug', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), portfolioController.getProject);
 
 // Philosophy Page Route
 router.get('/philosophy', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getPhilosophyPage);
 router.get('/en/philosophy', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getPhilosophyPage);
 
-// أضف هذه الأسطر مع مسارات الصفحات الأخرى
+// Services Routes
 router.get('/services', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getServicesPage);
 router.get('/en/services', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getServicesPage);
-
+// Service detail (by slug)
+router.get('/service/:slug', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getServiceDetail);
+router.get('/en/service/:slug', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), pageController.getServiceDetail);
 
 // Blog Routes
 router.get('/blog', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getBlog);
-router.get('/blog/:id', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getPost);
+router.get('/blog/:slug', cachePage({ ttlMs: 60_000, staleMs: 600_000 }), blogController.getPost);
 
 module.exports = router;

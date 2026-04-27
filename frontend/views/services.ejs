@@ -206,17 +206,17 @@
     <div class="services-container">
         
         <!-- أزرار التنقل (تتولد تلقائياً من الإدارة) -->
-        <div class="services-nav">
-            <% services.forEach((service, index) => { %>
-                <button class="service-tab-btn <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>" onclick="switchService(this.getAttribute('data-index'))">
-                    <%= lang === 'en' ? service.title_en : service.title_ar %>
-                </button>
-            <% }) %>
-        </div>
-
-        <!-- محتوى الخدمات -->
+    <div class="services-nav">
         <% services.forEach((service, index) => { %>
-            <div class="service-content <%= index === 0 ? 'active' : '' %>" id="service-<%= index %>">
+            <button class="service-tab-btn <%= (!activeService && index === 0) || (activeService && activeService.id === service.id) ? 'active' : '' %>" data-index="<%= index %>" onclick="switchService(this.getAttribute('data-index'))">
+                <%= lang === 'en' ? service.title_en : service.title_ar %>
+            </button>
+        <% }) %>
+    </div>
+
+    <!-- محتوى الخدمات -->
+    <% services.forEach((service, index) => { %>
+        <div class="service-content <%= (!activeService && index === 0) || (activeService && activeService.id === service.id) ? 'active' : '' %>" id="service-<%= index %>">
                 
                 <!-- القسم العلوي -->
                 <div class="service-hero">
@@ -241,7 +241,7 @@
                     
                     <div class="service-main-img">
                         <% if(service.image) { %>
-                            <img src="<%= service.image.startsWith('http') ? service.image : '/uploads/' + service.image %>" alt="<%= lang === 'en' ? service.title_en : service.title_ar %>">
+                            <img src="<%= assetPath(service.image) %>" alt="<%= lang === 'en' ? service.title_en : service.title_ar %>">
                         <% } %>
                     </div>
                 </div>
@@ -252,7 +252,7 @@
                         <% service.gallery_images.forEach(img => { %>
                             <% if(img) { %>
                                 <div class="gallery-item">
-                                    <img src="<%= img.startsWith('http') ? img : '/uploads/' + img %>" alt="Gallery Image">
+                                    <img src="<%= assetPath(img) %>" alt="Gallery Image">
                                 </div>
                             <% } %>
                         <% }) %>

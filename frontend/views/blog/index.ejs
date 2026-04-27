@@ -155,7 +155,7 @@
                                 </span>
                                 <h2 class="blog-card-title"><%= post.title %></h2>
                                 <p class="blog-card-excerpt"><%= post.excerpt %></p>
-                                <a href="/blog/<%= post.id %>" class="blog-card-link">
+                                <a href="/blog/<%= post.slug || post.id %>" class="blog-card-link">
                                     <%= typeof isEn !== 'undefined' && isEn ? 'Read More' : 'اقرأ المزيد' %>
                                     <i class="ri-arrow-<%= typeof isEn !== 'undefined' && isEn ? 'right' : 'left' %>-line"></i>
                                 </a>

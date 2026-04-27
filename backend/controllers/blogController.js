@@ -26,10 +26,16 @@ exports.getBlog = async (req, res) => {
 };
 
 exports.getPost = async (req, res) => {
-    const id = req.params.id;
+    const slugOrId = req.params.slug;
     try {
         const cap = Number(process.env.BLOG_QUERY_TIMEOUT_MS || process.env.HOME_QUERY_TIMEOUT_MS || 800);
-        const post = await withTimeout(Post.findByPk(id), cap, null);
+
+        // Try to find by slug first, then by id
+        let post = await withTimeout(Post.findOne({ where: { slug: slugOrId } }), cap, null);
+        if (!post) {
+            post = await withTimeout(Post.findByPk(slugOrId), cap, null);
+        }
+
         if (!post) {
             return res.status(404).send('المقال غير موجود');
         }

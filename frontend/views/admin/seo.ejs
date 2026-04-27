@@ -60,10 +60,10 @@
                     </div>
                 </div>
 
-                <!-- Portfolio & Blog Pages Card -->
+                <!-- Portfolio, Blog, Services & Philosophy Pages Card -->
                 <div class="admin-card">
                     <h3 style="margin-bottom: 1.5rem; color: var(--secondary-color); border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-file-alt"></i> إعدادات صفحات القوائم (أعمالنا والمدونة)
+                        <i class="fas fa-file-alt"></i> إعدادات صفحات الموقع الداخلية
                     </h3>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
@@ -87,6 +87,30 @@
                             <div class="form-group">
                                 <label>وصف الصفحة</label>
                                 <textarea name="blogDescription" rows="3" placeholder="تابع آخر التطورات والمقالات التقنية..."><%= seo ? seo.blogDescription : '' %></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 2rem;">
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">صفحة الخدمات</h4>
+                            <div class="form-group">
+                                <label>عنوان الصفحة</label>
+                                <input type="text" name="servicesTitle" value="<%= seo ? seo.servicesTitle : '' %>" placeholder="خدماتنا | Creative Point">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الصفحة</label>
+                                <textarea name="servicesDescription" rows="3" placeholder="خدماتنا الإبداعية في التصميم والتطوير..."><%= seo ? seo.servicesDescription : '' %></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">صفحة فلسفتنا</h4>
+                            <div class="form-group">
+                                <label>عنوان الصفحة</label>
+                                <input type="text" name="philosophyTitle" value="<%= seo ? seo.philosophyTitle : '' %>" placeholder="فلسفتنا | Creative Point">
+                            </div>
+                            <div class="form-group">
+                                <label>وصف الصفحة</label>
+                                <textarea name="philosophyDescription" rows="3" placeholder="فلسفتنا ورؤيتنا الإبداعية..."><%= seo ? seo.philosophyDescription : '' %></textarea>
                             </div>
                         </div>
                     </div>
@@ -130,9 +154,15 @@
                         <textarea name="headerScripts" rows="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; direction: ltr; text-align: left;" placeholder="<!-- الصق أكواد الهيدر هنا -->"><%= seo ? seo.headerScripts : '' %></textarea>
                     </div>
 
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="font-weight: bold;">أكواد بداية البودي (Body Start Scripts)</label>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">توضع مباشرة بعد فتح وسم <code>&lt;body&gt;</code>. (مثال: Google Tag Manager <code>noscript</code>)</p>
+                        <textarea name="bodyScripts" rows="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; direction: ltr; text-align: left;" placeholder="<!-- الصق أكواد بداية البودي هنا -->"><%= seo ? seo.bodyScripts : '' %></textarea>
+                    </div>
+
                     <div class="form-group">
                         <label style="font-weight: bold;">أكواد التذييل (Footer Scripts)</label>
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">توضع قبل إغلاق وسم <code>&lt;/body&gt;</code>. (مثل: Google Tag Manager (noscript), أدوات المحادثة Chatbots)</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">توضع قبل إغلاق وسم <code>&lt;/body&gt;</code>. (مثل: أدوات المحادثة Chatbots وأكواد التتبع المؤجلة)</p>
                         <textarea name="footerScripts" rows="6" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; direction: ltr; text-align: left;" placeholder="<!-- الصق أكواد الفوتر هنا -->"><%= seo ? seo.footerScripts : '' %></textarea>
                     </div>
                 </div>

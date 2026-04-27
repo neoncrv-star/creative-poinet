@@ -138,6 +138,11 @@
                         <label>ترتيب العرض</label>
                         <input type="number" name="display_order" value="<%= service ? service.display_order : 0 %>">
                     </div>
+                    <div class="form-group">
+                        <label>الرابط المختصر (Slug)</label>
+                        <input type="text" name="slug" value="<%= service ? service.slug : '' %>" placeholder="اتركه فارغاً للتوليد التلقائي">
+                        <small style="color: var(--text-muted); display: block;">للرابط (URL). أحرف إنجليزية فقط.</small>
+                    </div>
                     <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="is_active" name="is_active" <%= !service || service.is_active ? 'checked' : '' %>>
                         <label for="is_active" style="margin: 0; display: inline-block !important;">إظهار الخدمة في الموقع</label>

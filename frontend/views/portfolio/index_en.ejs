@@ -386,7 +386,7 @@
                 <div class="portfolio-grid">
                     <% if (projects && projects.length > 0) { %>
                         <% projects.forEach((project, index) => {
-                            let projectLink = "/en/portfolio/" + project.id;
+                            let projectLink = "/en/portfolio/" + (project.slug || project.id);
                             %>
                             <div class="portfolio-item" data-category="<%= project.Category ? project.Category.slug : (project.category || 'other') %>" data-gsap="fade-up">
                                 <a href="<%= projectLink %>" class="item-link">
