@@ -72,8 +72,7 @@ const Service = sequelize.define('Service', {
     // SEO Fields
     slug: {
         type: DataTypes.STRING,
-        allowNull: true,
-        unique: true
+        allowNull: true
     },
     seoTitle: {
         type: DataTypes.STRING,
