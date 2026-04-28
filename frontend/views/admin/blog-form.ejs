@@ -30,7 +30,8 @@
 
                     <div class="form-group">
                         <label><i class="fas fa-file-alt"></i> نص المقال</label>
-                        <textarea name="content" id="blog-content-editor" rows="15" placeholder="اكتب محتوى المقال بالتفصيل هنا..." required><%= post ? post.content : '' %></textarea>
+                        <div id="blog-content-editor" style="min-height: 400px; background: #fff; direction: rtl;"></div>
+                        <textarea name="content" id="blog-content-editor-src" style="display: none;"><%= post ? post.content : '' %></textarea>
                     </div>
                 </div>
 
@@ -128,28 +129,41 @@
   </style>
 </div>
 
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
-tinymce.init({
-    selector: '#blog-content-editor',
-    height: 500,
-    menubar: true,
-    directionality: 'rtl',
-    language: 'ar',
-    plugins: [
-        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'help', 'wordcount'
-    ],
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | removeformat fullscreen code | help',
-    font_size_formats: '8px 10px 12px 14px 16px 18px 20px 24px 28px 32px 36px 48px',
-    content_style: 'body { font-family: TheSansArabic, Tahoma, Arial, sans-serif; font-size: 16px; direction: rtl; line-height: 1.8; }',
-    setup: function(editor) {
-        editor.on('change', function() {
-            editor.save(); // sync content back to textarea
-        });
+var quill = new Quill('#blog-content-editor', {
+    theme: 'snow',
+    placeholder: 'اكتب محتوى المقال هنا...',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': [] }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            [{ 'direction': 'rtl' }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            ['blockquote', 'code-block'],
+            ['link', 'image', 'video'],
+            ['clean']
+        ]
     }
 });
+
+var existingContent = document.querySelector('#blog-content-editor-src');
+if (existingContent && existingContent.value) {
+    quill.root.innerHTML = existingContent.value;
+}
+
+var form = document.querySelector('form[action]');
+if (form) {
+    form.onsubmit = function() {
+        existingContent.value = quill.root.innerHTML;
+    };
+}
 
 function updateFileName(input) {
     const fileName = input.files[0]?.name;

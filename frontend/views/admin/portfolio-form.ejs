@@ -22,7 +22,8 @@
                 
                 <div class="form-group">
                     <label>المحتوى التفصيلي</label>
-                    <textarea name="content" id="blog-content-editor" rows="10" placeholder="اكتب تفاصيل المشروع هنا..."><%= project ? project.content : '' %></textarea>
+                    <div id="blog-content-editor" style="min-height: 350px; background: #fff; direction: rtl;"></div>
+                    <textarea name="content" id="blog-content-editor-src" style="display: none;"><%= project ? project.content : '' %></textarea>
                 </div>
                 
                 <div class="form-group">
