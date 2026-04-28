@@ -942,7 +942,7 @@ exports.postAddProject = async (req, res) => {
             externalLink,
             category,
             display_order: display_order || 0,
-            is_active: is_active === 'on',
+            is_active: is_active !== undefined ? is_active === 'on' : true,
             seoTitle,
             seoDescription,
             seoKeywords
