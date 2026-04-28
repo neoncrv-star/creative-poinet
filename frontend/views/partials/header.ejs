@@ -13,9 +13,11 @@
         let separator = '|';
         let description = 'وكالة إبداعية متخصصة في الحلول الرقمية';
         let keywords = 'تصميم, برمجة, تسويق';
-        let favicon = '/210.png';   
+        let favicon = '/210.png';
         let defaultOgImage = null;
-        
+        let preloaderImg = '/preloader-spinner.png';
+        let siteLogoUrl = '/210.png';
+
         if (activeSeo) {
             siteTitle = activeSeo.siteTitle || siteTitle;
             siteUrl = activeSeo.siteUrl || siteUrl;
@@ -24,6 +26,8 @@
             keywords = activeSeo.defaultKeywords || keywords;
             favicon = activeSeo.favicon || favicon;
             defaultOgImage = activeSeo.ogImage;
+            preloaderImg = activeSeo.preloaderImage || preloaderImg;
+            siteLogoUrl = activeSeo.siteLogo || siteLogoUrl;
         }
 
         if (siteUrl && siteUrl.endsWith('/')) siteUrl = siteUrl.slice(0, -1);
@@ -97,7 +101,7 @@
         "@type": "Organization",
         "name": "<%= siteTitle %>",
         "url": "<%= siteUrl %>",
-        "logo": "<%= siteUrl %>/210.png",
+        "logo": "<%= siteUrl %>/<%= (activeSeo && activeSeo.siteLogo) ? activeSeo.siteLogo : '210.png' %>",
         "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "<%= activeSeo.contactPhone || '+966 56 839 49 45' %>",
@@ -1231,7 +1235,7 @@
     
     <div id="cpoint-preloader">
         <div class="cpoint-spinner">
-            <img src="/preloader-spinner.png" alt="Creative Point Loading">
+            <img src="<%= preloaderImg %>" alt="Creative Point Loading">
         </div>
     </div>
 
@@ -1239,7 +1243,7 @@
         <div class="container header-container">
             <div class="logo">
                 <a href="<%= typeof isEn !== 'undefined' && isEn ? '/en' : '/' %>" style="text-decoration: none; color: inherit;">
-                    <img src="/210.png" alt="Creative Point Logo" class="header-logo-img" width="60" decoding="async" fetchpriority="high">
+                    <img src="<%= siteLogoUrl %>" alt="Creative Point Logo" class="header-logo-img" width="60" decoding="async" fetchpriority="high" data-logo-dark="<%= siteLogoUrl %>" data-logo-light="/212.png">
                 </a>
             </div>
 

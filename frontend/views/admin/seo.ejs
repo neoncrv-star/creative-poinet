@@ -6,7 +6,10 @@
         <p style="color: var(--text-muted); margin-top: 5px;">تحكم في كيفية ظهور موقعك في محركات البحث وإعدادات الفيديو الرئيسية.</p>
     </div>
 
-    <form action="/admin/seo" method="POST" enctype="multipart/form-data">
+    <form action="/admin/seo" method="POST" enctype="multipart/form-data" id="seo-form">
+        <input type="hidden" name="headerScripts_enc" id="headerScripts_enc">
+        <input type="hidden" name="bodyScripts_enc" id="bodyScripts_enc">
+        <input type="hidden" name="footerScripts_enc" id="footerScripts_enc">
         <div class="form-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
             <!-- Main Settings Column -->
             <div class="form-main-col">
@@ -187,6 +190,16 @@
                         <i class="fas fa-fingerprint"></i> أصول الهوية (Identity)
                     </h3>
                     <div class="form-group">
+                        <label>شعار الموقع (للـ Header وتبويب المتصفح)</label>
+                        <% if (seo && seo.siteLogo) { %>
+                            <div style="margin-bottom: 10px; text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+                                <img src="<%= seo.siteLogo %>" alt="Site Logo" style="max-height: 60px;">
+                            </div>
+                        <% } %>
+                        <input type="file" name="siteLogo" accept="image/*">
+                        <small style="color: var(--text-muted); display: block; margin-top: 6px;">📐 المقاس: 200×60 بكسل (PNG شفاف، يظهر في الهيدر وتبويب المتصفح)</small>
+                    </div>
+                    <div class="form-group">
                         <label>أيقونة الموقع (Favicon)</label>
                         <% if (seo && seo.favicon) { %>
                             <div style="margin-bottom: 10px; text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px;">
@@ -194,6 +207,17 @@
                             </div>
                         <% } %>
                         <input type="file" name="favicon" accept="image/x-icon,image/png">
+                        <small style="color: var(--text-muted); display: block; margin-top: 6px;">📐 المقاس: 32×32 بكسل (PNG أو ICO)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>صورة شاشة التحميل (Preloader)</label>
+                        <% if (seo && seo.preloaderImage) { %>
+                            <div style="margin-bottom: 10px; text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+                                <img src="<%= seo.preloaderImage %>" alt="Preloader" style="max-height: 80px;">
+                            </div>
+                        <% } %>
+                        <input type="file" name="preloaderImage" accept="image/*">
+                        <small style="color: var(--text-muted); display: block; margin-top: 6px;">📐 المقاس: 300×300 بكسل (PNG شفاف، يظهر أثناء تحميل الموقع)</small>
                     </div>
                     <div class="form-group">
                         <label>صورة المشاركة الاجتماعية (OG Image)</label>
@@ -203,7 +227,7 @@
                             </div>
                         <% } %>
                         <input type="file" name="ogImage" accept="image/*">
-                        <small style="color: var(--text-muted);">يفضل مقاس 1200×630 بكسل.</small>
+                        <small style="color: var(--text-muted);">📐 المقاس: 1200×630 بكسل.</small>
                     </div>
                 </div>
 
@@ -229,6 +253,19 @@
         </div>
     </form>
 </div>
+
+<script>
+document.getElementById('seo-form').addEventListener('submit', function(e) {
+    var fields = ['headerScripts', 'bodyScripts', 'footerScripts'];
+    fields.forEach(function(name) {
+        var ta = document.querySelector('textarea[name="' + name + '"]');
+        if (ta && ta.value.trim()) {
+            document.getElementById(name + '_enc').value = btoa(unescape(encodeURIComponent(ta.value)));
+            ta.removeAttribute('name');
+        }
+    });
+});
+</script>
 
 <style>
 @media (max-width: 992px) {

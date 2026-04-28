@@ -17,7 +17,7 @@
             <% } %>
             <div class="form-group">
                 <input type="file" name="heroImage" accept="image/*" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
-                <small style="color: #888;">يفضل رفع صورة بخلفية شفافة (PNG) أو بيضاء للخطوط الحمراء.</small>
+                <small style="color: #888;">📐 المقاس الموصى به: 1200×600 بكسل (أفقي عريض، PNG بخلفية بيضاء).</small>
             </div>
         </div>
 
@@ -68,6 +68,7 @@
                                 <img src="/uploads/<%= data['pillar'+i+'Icon'] %>" style="height: 40px; margin-bottom: 10px; display: block;">
                             <% } %>
                             <input type="file" name="pillar<%= i %>Icon" accept="image/*" style="width: 100%;">
+                            <small style="color: #888;">📐 200×200 بكسل (PNG بخلفية شفافة)</small>
                         </div>
                         <div class="form-group">
                             <label>النص (عربي)</label>

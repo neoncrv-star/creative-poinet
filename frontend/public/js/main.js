@@ -33,7 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Logos (Header and Footer)
         const logos = document.querySelectorAll('.header-logo-img, .footer-logo-img');
         logos.forEach(img => {
-            img.src = theme === 'dark' ? '/210.png' : '/212.png';
+            const darkSrc = img.getAttribute('data-logo-dark');
+            const lightSrc = img.getAttribute('data-logo-light');
+            if (darkSrc && lightSrc) {
+                img.src = theme === 'dark' ? darkSrc : lightSrc;
+            }
         });
     }
 

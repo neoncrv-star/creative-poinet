@@ -74,6 +74,30 @@ const Service = sequelize.define('Service', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    bullet_points_ar: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    bullet_points_en: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    gallery_images: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        get() {
+            const raw = this.getDataValue('gallery_images');
+            if (!raw) return [];
+            try { return JSON.parse(raw); } catch { return []; }
+        },
+        set(val) {
+            if (Array.isArray(val)) {
+                this.setDataValue('gallery_images', JSON.stringify(val));
+            } else {
+                this.setDataValue('gallery_images', val);
+            }
+        }
+    },
     seoTitle: {
         type: DataTypes.STRING,
         allowNull: true

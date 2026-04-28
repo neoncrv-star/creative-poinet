@@ -81,7 +81,9 @@ router.get('/uploads/list', adminController.listUploads);
 router.get('/seo', adminController.getSeoSettings);
 router.post('/seo', upload.fields([
     { name: 'favicon', maxCount: 1 },
-    { name: 'ogImage', maxCount: 1 }
+    { name: 'ogImage', maxCount: 1 },
+    { name: 'preloaderImage', maxCount: 1 },
+    { name: 'siteLogo', maxCount: 1 }
 ]), adminController.postSeoSettings);
 
 // Design Routes

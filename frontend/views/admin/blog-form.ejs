@@ -30,7 +30,7 @@
 
                     <div class="form-group">
                         <label><i class="fas fa-file-alt"></i> نص المقال</label>
-                        <textarea name="content" rows="15" placeholder="اكتب محتوى المقال بالتفصيل هنا..." required><%= post ? post.content : '' %></textarea>
+                        <textarea name="content" id="blog-content-editor" rows="15" placeholder="اكتب محتوى المقال بالتفصيل هنا..." required><%= post ? post.content : '' %></textarea>
                     </div>
                 </div>
 
@@ -102,8 +102,8 @@
                         </button>
                         <input type="hidden" name="existingImage" id="existingImageBlog" value="<%= post && post.image ? post.image : '' %>">
                         <div id="file-name" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); text-align: center;"></div>
+                        <small style="display: block; margin-top: 10px; color: var(--text-muted); text-align: center;">📐 المقاس الموصى به: 1200×630 بكسل (نسبة 1.91:1)</small>
                     </div>
-                    <small style="display: block; margin-top: 10px; color: var(--text-muted); text-align: center;">يفضل مقاس 1200×800 بكسل</small>
                 </div>
             </div>
         </div>
@@ -128,7 +128,29 @@
   </style>
 </div>
 
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
+tinymce.init({
+    selector: '#blog-content-editor',
+    height: 500,
+    menubar: true,
+    directionality: 'rtl',
+    language: 'ar',
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | removeformat fullscreen code | help',
+    font_size_formats: '8px 10px 12px 14px 16px 18px 20px 24px 28px 32px 36px 48px',
+    content_style: 'body { font-family: TheSansArabic, Tahoma, Arial, sans-serif; font-size: 16px; direction: rtl; line-height: 1.8; }',
+    setup: function(editor) {
+        editor.on('change', function() {
+            editor.save(); // sync content back to textarea
+        });
+    }
+});
+
 function updateFileName(input) {
     const fileName = input.files[0]?.name;
     document.getElementById('file-name').textContent = fileName ? `المجلد المختار: ${fileName}` : '';

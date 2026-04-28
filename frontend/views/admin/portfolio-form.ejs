@@ -22,7 +22,7 @@
                 
                 <div class="form-group">
                     <label>المحتوى التفصيلي</label>
-                    <textarea name="content" rows="10" placeholder="اكتب تفاصيل المشروع هنا..."><%= project ? project.content : '' %></textarea>
+                    <textarea name="content" id="blog-content-editor" rows="10" placeholder="اكتب تفاصيل المشروع هنا..."><%= project ? project.content : '' %></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -127,6 +127,7 @@
                     </button>
                     <input type="hidden" name="existingImage" id="existingImageProject" value="<%= project && project.image ? project.image : '' %>">
                     <div id="file-name" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; text-align: center;"></div>
+                    <small style="display: block; margin-top: 8px; color: var(--text-muted); text-align: center; font-size: 0.8rem;">📐 المقاس الموصى به: 1200×800 بكسل (16:9 أفقي)</small>
                 </div>
             </div>
 
@@ -157,7 +158,28 @@
   </style>
 </div>
 
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
+tinymce.init({
+    selector: '#blog-content-editor',
+    height: 400,
+    menubar: false,
+    directionality: 'rtl',
+    language: 'ar',
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table | removeformat fullscreen code',
+    content_style: 'body { font-family: TheSansArabic, Tahoma, Arial, sans-serif; font-size: 16px; direction: rtl; line-height: 1.8; }',
+    setup: function(editor) {
+        editor.on('change', function() {
+            editor.save();
+        });
+    }
+});
+
 function updateFileName(input) {
     const fileName = input.files[0]?.name;
     document.getElementById('file-name').textContent = fileName ? `الملف المختار: ${fileName}` : '';

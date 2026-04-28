@@ -86,36 +86,63 @@
     .service-bullets {
         list-style: none;
         padding: 0;
+        margin: 25px 0 10px;
     }
 
     .service-bullets li {
         position: relative;
-        padding-right: 20px;
-        margin-bottom: 15px;
+        padding: 12px 16px 12px 16px;
+        margin-bottom: 10px;
         font-size: 1rem;
-        color: #eee;
+        color: #ddd;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        line-height: 1.6;
+        transition: all 0.3s ease;
     }
 
-    /* دعم اتجاه اللغة الإنجليزية */
-    html[lang="en"] .service-bullets li,
-    [dir="ltr"] .service-bullets li {
-        padding-right: 0;
-        padding-left: 20px;
+    .service-bullets li:hover {
+        background: rgba(255, 49, 49, 0.06);
+        border-color: rgba(255, 49, 49, 0.2);
+        transform: translateX(4px);
+    }
+
+    html[dir="rtl"] .service-bullets li {
+        padding-right: 40px;
+        padding-left: 16px;
+    }
+
+    html[dir="ltr"] .service-bullets li {
+        padding-right: 16px;
+        padding-left: 40px;
+    }
+
+    html[dir="rtl"] .service-bullets li:hover {
+        transform: translateX(-4px);
+    }
+
+    html[dir="ltr"] .service-bullets li:hover {
+        transform: translateX(4px);
     }
 
     .service-bullets li::before {
         content: '';
         position: absolute;
-        top: 8px;
-        width: 6px;
-        height: 6px;
+        top: 19px;
+        width: 8px;
+        height: 8px;
         background-color: #D00000;
         border-radius: 50%;
+        box-shadow: 0 0 10px rgba(208, 0, 0, 0.5);
     }
 
-    html[dir="rtl"] .service-bullets li::before,
-    [dir="rtl"] .service-bullets li::before {
-        right: 0;
+    html[dir="rtl"] .service-bullets li::before {
+        right: 18px;
+    }
+
+    html[dir="ltr"] .service-bullets li::before {
+        left: 18px;
     }
 
     html[lang="en"] .service-bullets li::before,

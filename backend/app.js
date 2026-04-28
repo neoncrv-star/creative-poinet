@@ -88,8 +88,8 @@ app.use(session({
 // ⚙️ إعداد المحرك والقوالب
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'frontend', 'views'));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 // 🛡️ حماية ضد هجمات (Rate Limiting)
 const ipHits = new Map();
@@ -245,6 +245,9 @@ const port = process.env.PORT || 3000;
         await safeAddColumn('Projects', 'slug', col);
         await safeAddColumn('Posts', 'slug', col);
         await safeAddColumn('Services', 'slug', col);
+        await safeAddColumn('Services', 'bullet_points_ar', 'TEXT NULL');
+        await safeAddColumn('Services', 'bullet_points_en', 'TEXT NULL');
+        await safeAddColumn('Services', 'gallery_images', 'TEXT NULL');
         await safeAddColumn('GlobalSeos', 'homeKeywords', col);
         await safeAddColumn('GlobalSeos', 'homeSlug', "VARCHAR(255) NULL DEFAULT ''");
         await safeAddColumn('GlobalSeos', 'portfolioKeywords', col);
@@ -259,6 +262,8 @@ const port = process.env.PORT || 3000;
         await safeAddColumn('GlobalSeos', 'philosophyDescription', 'TEXT NULL');
         await safeAddColumn('GlobalSeos', 'philosophyKeywords', col);
         await safeAddColumn('GlobalSeos', 'philosophySlug', "VARCHAR(255) NULL DEFAULT 'philosophy'");
+        await safeAddColumn('GlobalSeos', 'preloaderImage', col);
+        await safeAddColumn('GlobalSeos', 'siteLogo', col);
 
         console.log('✅ Database ready.');
     }

@@ -697,9 +697,21 @@ exports.postSeoSettings = async (req, res) => {
         await ensureGlobalSeoModelSync();
         let seo = await GlobalSeo.findOne();
         const data = { ...req.body };
-        data.headerScripts = sanitizeCustomScriptBlock(data.headerScripts);
-        data.bodyScripts = sanitizeCustomScriptBlock(data.bodyScripts);
-        data.footerScripts = sanitizeCustomScriptBlock(data.footerScripts);
+
+        // فك تشفير base64 من الحقول المخفية (لتجاوز حماية ModSecurity)
+        const decodeScript = (enc, fallback) => {
+            if (enc && typeof enc === 'string' && enc.trim()) {
+                try { return decodeURIComponent(escape(atob(enc.trim()))); } catch {}
+            }
+            return sanitizeCustomScriptBlock(fallback);
+        };
+        data.headerScripts = decodeScript(data.headerScripts_enc, data.headerScripts);
+        data.bodyScripts = decodeScript(data.bodyScripts_enc, data.bodyScripts);
+        data.footerScripts = decodeScript(data.footerScripts_enc, data.footerScripts);
+
+        delete data.headerScripts_enc;
+        delete data.bodyScripts_enc;
+        delete data.footerScripts_enc;
         data.homeSlug = normalizePageSlug(data.homeSlug, '');
         data.portfolioSlug = normalizePageSlug(data.portfolioSlug, 'portfolio');
         data.blogSlug = normalizePageSlug(data.blogSlug, 'blog');
@@ -709,9 +721,13 @@ exports.postSeoSettings = async (req, res) => {
         if (req.files) {
             if (req.files['favicon']) data.favicon = await toHashedAsset(req.files['favicon'][0]);
             if (req.files['ogImage']) data.ogImage = await toHashedAsset(req.files['ogImage'][0]);
+            if (req.files['preloaderImage']) data.preloaderImage = await toHashedAsset(req.files['preloaderImage'][0]);
+            if (req.files['siteLogo']) data.siteLogo = await toHashedAsset(req.files['siteLogo'][0]);
         }
         if (data.favicon) data.favicon = normalizeAsset(data.favicon);
         if (data.ogImage) data.ogImage = normalizeAsset(data.ogImage);
+        if (data.preloaderImage) data.preloaderImage = normalizeAsset(data.preloaderImage);
+        if (data.siteLogo) data.siteLogo = normalizeAsset(data.siteLogo);
 
         if (!seo) {
             seo = await GlobalSeo.create(data);

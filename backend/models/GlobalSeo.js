@@ -129,6 +129,14 @@ const GlobalSeo = sequelize.define('GlobalSeo', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    preloaderImage: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    siteLogo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     twitterHandle: {
         type: DataTypes.STRING,
         allowNull: true
